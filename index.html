@@ -12,24 +12,31 @@
     --ok:#16a34a; --warn:#f59e0b; --bad:#dc2626;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,system-ui,Segoe UI,Inter,Roboto,Helvetica,Arial}
+  html,body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.5 -apple-system,system-ui,Segoe UI,Inter,Roboto,Helvetica,Arial;
+    -webkit-text-size-adjust:100%;
+  }
   a{color:inherit;text-decoration:none}
   .wrap{max-width:420px;margin:0 auto;padding:16px}
   h1{font-size:22px;margin:0 0 6px}
   .sub{color:var(--muted);font-size:13px}
-
-  .tile{background:var(--tile);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px;overflow:hidden}
-  .inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .tile{
+    background:var(--tile);border:1px solid var(--line);border-radius:16px;
+    padding:14px;margin-top:12px;overflow:hidden
+  }
+  .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .btn{display:inline-block;padding:10px 12px;border-radius:12px;border:1px solid var(--btnline);background:var(--btn);color:var(--btnink);font-weight:600}
   .btn.small{padding:7px 10px;font-weight:600}
-  input, textarea{width:100%;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px}
-  textarea{min-height:110px}
-
   .chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--chipline);background:var(--chip);padding:6px 10px;border-radius:999px;font-size:12px;line-height:1;height:26px}
   .pill{padding:4px 8px;border-radius:999px;border:1px solid var(--chipline);background:var(--chip);font-size:12px}
   .ok{background:rgba(22,163,74,.12);border-color:rgba(22,163,74,.35)}
   .warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35)}
   .bad{background:rgba(220,38,38,.12);border-color:rgba(220,38,38,.35)}
+  input, textarea{
+    width:100%;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px
+  }
+  textarea{min-height:90px}
   .kicker{color:var(--muted);font-size:12px;margin-bottom:6px}
   .row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
   .knum{font-size:34px;font-weight:800;letter-spacing:0.5px}
@@ -41,17 +48,16 @@
   .mval{font-weight:700;margin-top:2px}
   .list{display:flex;flex-direction:column;gap:10px;margin-top:6px}
   .rcpt{border:1px solid var(--line);border-radius:14px;padding:10px}
-  .rcpt .h{display:flex;justify-content:space-between;align-items:center}
+  .rcpt .h{display:flex;justify-content:space-between;align-items:center;gap:8px}
   .rcpt .subline{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
-  .ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px;display:inline-block}
+  .ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;display:inline-block}
   .danger{border-color:rgba(220,38,38,.35)}
   .okay{border-color:rgba(22,163,74,.35)}
   .center{display:flex;justify-content:space-between;align-items:center}
-  .right{display:flex;gap:8px;align-items:center}
-  .muted{color:var(--muted)}
+  .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .tap{font-size:12px;color:var(--muted)}
   .tight{margin-top:8px}
-  /* compact mode for issuer cards */
+  /* compact toggle for issuer cards */
   .issuer-card.compact .grid{grid-template-columns:1fr 1fr}
   .issuer-card.compact .metric{padding:8px}
   .issuer-card.compact .knum{font-size:26px}
@@ -64,7 +70,7 @@
       <h1>OpenLine Wallet</h1>
       <div class="sub">Proof moves; data doesn’t.</div>
     </div>
-    <a class="btn small" href="https://github.com/terryncew/openline-wallet" target="_blank">Repo</a>
+    <a class="btn small" href="https://github.com/terryncew/openline-wallet" target="_blank" rel="noopener">Repo</a>
   </div>
 
   <!-- OVERALL -->
@@ -79,30 +85,29 @@
 
   <!-- ACTIONS -->
   <div class="tile">
-    <div class="inline" style="margin-bottom:8px">
+    <div class="inline" style="gap:8px;margin-bottom:8px">
       <a class="btn" id="addRand">Add Random</a>
       <a class="btn" id="addRand5">Add ×5</a>
       <a class="btn" id="exportJsonl">Export JSONL</a>
     </div>
-
-    <div class="inline" style="margin-bottom:8px">
+    <div class="inline" style="gap:8px;margin-bottom:8px">
       <input id="urlBox" placeholder="Add receipt by URL (raw GitHub best)">
       <a class="btn" id="addUrl">Add</a>
     </div>
-
-    <!-- NEW: paste JSON/JSONL & file picker -->
-    <div class="inline" style="margin-bottom:8px">
-      <textarea id="jsonBox" placeholder="Paste receipt JSON, an array of receipts, or JSONL (one per line)…"></textarea>
+    <div class="inline" style="gap:8px;margin-bottom:8px">
+      <input type="file" id="fileBox" accept=".json,.jsonl,application/json,text/plain">
+      <a class="btn" id="addFile">Import</a>
     </div>
-    <div class="inline">
-      <a class="btn" id="addBox">Add JSON</a>
-      <input id="filePick" type="file" accept=".json,.jsonl,application/json" style="display:none">
-      <a class="btn" id="addFile">Import file</a>
-      <a class="btn" id="clearAll">Clear</a>
-      <a class="btn" id="exportPdf">Export PDF</a>
-      <a class="btn" id="copySummary">Copy Summary</a>
+    <div class="tight">
+      <textarea id="pasteBox" placeholder="Or paste JSON / JSONL here and press Paste →"></textarea>
+      <div class="inline" style="gap:8px;margin-top:8px">
+        <a class="btn" id="addPaste">Paste →</a>
+        <a class="btn" id="clearAll">Clear</a>
+        <a class="btn" id="exportPdf">Export PDF</a>
+        <a class="btn" id="copySummary">Copy Summary</a>
+      </div>
     </div>
-    <div class="note tight">Demo data in-memory. Mix real URLs, paste JSON/JSONL, or import a file.</div>
+    <div class="note tight">Demo data runs in-memory. Mix real URLs/files for realism.</div>
   </div>
 
   <!-- ISSUER HEALTH -->
@@ -151,7 +156,7 @@ function makeRandomReceipt(){
   else { badge='RED'; kRange=[0.90,1.20]; dRange=[0.60,1.00]; pRange=[0.10,0.45]; }
   const pick = a => a[Math.floor(Math.random()*a.length)];
   const between=(a,b)=> a + Math.random()*(b-a);
-  return canonicalize({
+  return {
     rid: crypto.randomUUID(),
     issuer_id: pick(labs),
     model: pick(models),
@@ -163,88 +168,22 @@ function makeRandomReceipt(){
       phi_star:+between(...pRange).toFixed(3)
     },
     bytes: 512 + Math.floor(Math.random()*120)
-  }, null);
+  };
 }
 
 /* -------------------- store -------------------- */
 let RECEIPTS = [];
+
 function addReceipt(r){ RECEIPTS.push(r); }
-
-/* -------------------- NORMALIZATION -------------------- */
-/* Accept object, array of objects, or JSONL (string). Map loose shapes to canonical. */
-function canonicalize(obj, originalText){
-  const txtBytes = originalText ? new TextEncoder().encode(originalText).length : undefined;
-  const badge = ((obj.attrs?.status)||(obj.status)||(obj.badge)||'').toString().toUpperCase();
-  const k = obj.signals?.kappa ?? obj.kappa ?? obj.κ;
-  const d = obj.signals?.dhol  ?? obj.dhol  ?? obj.drift;
-  const p = obj.signals?.phi_star ?? obj.phi_star ?? obj.phi ?? obj['phi*'];
-
-  return {
-    rid: obj.rid || crypto.randomUUID(),
-    issuer_id: obj.issuer_id || obj.issuer || 'unknown',
-    model: obj.model || obj.model_family || '—',
-    issued_at: obj.issued_at || obj.when || nowISO(),
-    attrs: { status: badge || 'GREEN' },
-    signals: {
-      kappa: Number.isFinite(+k) ? +k : 0,
-      dhol:  Number.isFinite(+d) ? +d : 0,
-      phi_star: Number.isFinite(+p) ? +p : 0
-    },
-    bytes: obj.bytes ?? txtBytes ?? 0,
-    ctr: obj.ctr,
-    prev: obj.prev,
-    sig: obj.sig
-  };
-}
-
-function parseJsonish(text){
-  // Try JSON; if that fails, treat as JSONL
-  try{
-    const parsed = JSON.parse(text);
-    return Array.isArray(parsed) ? parsed.map(o=>canonicalize(o, JSON.stringify(o))) : [canonicalize(parsed, text)];
-  }catch{
-    // JSONL mode
-    const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
-    const out=[];
-    for (const line of lines){
-      try{ out.push(canonicalize(JSON.parse(line), line)); }catch{}
-    }
-    if (!out.length) throw new Error('No JSON/JSONL found');
-    return out;
-  }
-}
-
-/* -------------------- ingest paths -------------------- */
 function addRandom(n=1){ for(let i=0;i<n;i++) addReceipt(makeRandomReceipt()); renderAll(); }
 
 async function addByUrl(u){
   try{
     const raw = toRaw(u.trim());
     const res = await fetch(raw + (raw.includes('?')?'&':'?') + 'v=' + Date.now(), {cache:'no-store'});
-    const txt = await res.text();
-    const list = parseJsonish(txt);
-    list.forEach(addReceipt);
-    renderAll();
-  }catch(e){ alert('Add by URL failed.'); }
-}
-
-function addFromBox(){
-  const txt = $('#jsonBox').value.trim(); if(!txt) return;
-  try{
-    parseJsonish(txt).forEach(addReceipt);
-    $('#jsonBox').value='';
-    renderAll();
-  }catch(e){ alert('Could not parse JSON / JSONL.'); }
-}
-
-function addFromFile(file){
-  if (!file) return;
-  file.text().then(txt=>{
-    try{
-      parseJsonish(txt).forEach(addReceipt);
-      renderAll();
-    }catch{ alert('File did not contain valid JSON / JSONL.'); }
-  });
+    const txt = await res.text(); const json = JSON.parse(txt);
+    normalizeIncoming(json, txt); addReceipt(json); renderAll();
+  }catch{ alert('Add failed');}
 }
 
 function toRaw(u){
@@ -258,19 +197,66 @@ function toRaw(u){
   }catch{ return u; }
 }
 
+/* JSON/JSONL ingestion (file + paste) */
+async function addFromFile(f){
+  const txt = await f.text(); addFromText(txt);
+}
+function addFromText(txt){
+  // JSONL or JSON object/array
+  const lines = txt.trim().includes('\n') ? txt.trim().split('\n') : [txt.trim()];
+  for (const line of lines){
+    if (!line) continue;
+    const obj = JSON.parse(line);
+    normalizeIncoming(obj, line);
+    addReceipt(obj);
+  }
+  renderAll();
+}
+function normalizeIncoming(json, txt){
+  json.bytes = new TextEncoder().encode(txt).length;
+  json.rid = json.rid || crypto.randomUUID();
+  json.issuer_id = json.issuer_id || 'unknown';
+  json.attrs = json.attrs || {status: (json.status||'').toUpperCase()};
+  json.signals = json.signals || {kappa: json.kappa, dhol: json.dhol, phi_star: json.phi||json.phi_star};
+}
+
 /* -------------------- analytics -------------------- */
+/* UI-only proxies: VKD-style margin & observability window */
+function vkdProxy(signals={}){
+  // A simple margin proxy: higher κ & Δhol hurt, higher Φ* helps.
+  const k = clamp(Number(signals.kappa ?? 0.5),0,1);
+  const d = clamp(Number(signals.dhol  ?? 0.5),0,1);
+  const p = clamp(Number(signals.phi_star ?? 0.5),0,1);
+  // 0..1 where higher is safer margin; keep it boring & explainable.
+  const margin = clamp(0.5*(1-p) + 0.3*k + 0.2*d, 0, 1);
+  return 1 - margin; // VKD-like "viability" side (1 = comfy, 0 = at risk)
+}
+function obsProxy(signals={}, guards={}){
+  const clamp01 = v=>Math.max(0,Math.min(1,Number(v)));
+  const k  = clamp01(signals.kappa ?? 0.5);
+  const d  = clamp01(signals.dhol  ?? 0.5);
+  const u  = clamp01(guards.ucr    ?? 0.5); // unsupported-claim ratio if present
+  const es = clamp01(signals.evidence_strength ?? 0.5);
+  const capacity = (1 - k) * (1 - d) * es;
+  const load     = 0.5*u + 0.5*d;
+  const r = capacity / (capacity + load + 1e-9);
+  return clamp01(r);
+}
+
 function computeIssuerStats(items){
   const byIssuer = {};
   for(const r of items){
     const k=r.signals?.kappa, d=r.signals?.dhol, p=r.signals?.phi_star;
     const badge=(r.attrs?.status||'').toUpperCase();
     const id=r.issuer_id||'unknown';
-    (byIssuer[id] ||= {id, total:0, green:0, kappas:[], dhols:[], phis:[], last:[]});
+    (byIssuer[id] ||= {id, total:0, green:0, kappas:[], dhols:[], phis:[], last:[], vkdList:[], obsList:[]});
     const b = byIssuer[id];
     b.total++; if (badge==='GREEN') b.green++;
     if (Number.isFinite(k)) b.kappas.push(k);
     if (Number.isFinite(d)) b.dhols.push(d);
     if (Number.isFinite(p)) b.phis.push(p);
+    b.vkdList.push(vkdProxy(r.signals));
+    b.obsList.push(obsProxy(r.signals, r.guards||{}));
     b.last.push({t:Date.parse(r.issued_at||nowISO()), d});
   }
   const out=[];
@@ -280,6 +266,8 @@ function computeIssuerStats(items){
     x.k95 = percentile(x.kappas, 0.95);
     x.phiFloor = x.phis.length? Math.min(...x.phis): 0;
     x.dholTrend = slopeLast(x.last.map(o=>o.d ?? 0));
+    x.vkdAvg = avg(x.vkdList);
+    x.obsAvg = avg(x.obsList);
     x.health = scoreHealth(x.greenRate, x.k95, x.dholTrend, x.phiFloor);
     x.advice = adviceFor(x);
     out.push(x);
@@ -287,6 +275,7 @@ function computeIssuerStats(items){
   out.sort((a,b)=>b.health-a.health);
   return out;
 }
+function avg(arr){ return arr.length? arr.reduce((a,b)=>a+b,0)/arr.length : 0; }
 function percentile(arr, q){
   if (!arr.length) return 0;
   const a=[...arr].sort((x,y)=>x-y);
@@ -313,21 +302,24 @@ function scoreHealth(green, k95, dTrend, phiFloor){
   return Math.round(s);
 }
 function adviceFor(x){
+  // Short, useful, COLE-ish.
   const msgs=[];
-  if (x.k95>=0.95) msgs.push('Brake: κ high → tighten guardrails or roll back config.');
-  if (x.phiFloor<0.20) msgs.push('Raise coherence floor: add test prompts / sampling controls.');
-  if (x.dholTrend>=0.15) msgs.push('Watch drift: Δhol rising → investigate data/agent changes.');
-  if (x.greenRate<0.60) msgs.push('Lift green rate: simplify chain or reduce variability.');
-  if (!msgs.length) msgs.push('Stable: hold config; sample controls weekly.');
+  if (x.k95>=0.95) msgs.push('Brake: κ high → reduce chain width or sampling; roll back risky config.');
+  if (x.phiFloor<0.20) msgs.push('Raise Φ* floor: add test prompts or clamp temperature.');
+  if (x.dholTrend>=0.15) msgs.push('Drift ↑: diff configs/data since last stable run.');
+  if (x.greenRate<0.60) msgs.push('Green rate low: simplify tool/step graph.');
+  if (x.obsAvg<0.40) msgs.push('Obs window tight: receipts mandatory for deploys.');
+  if (!msgs.length) msgs.push('Stable: hold config; weekly sample controls.');
   return msgs.join(' ');
 }
 function overallFrom(stats){
-  if (!stats.length) return {score:0, txt:'—'};
+  if (!stats.length) return {score:0, txt:'—', worstAdvice:'—'};
   const w = s => s.total;
   const sumW = stats.reduce((a,b)=>a+w(b),0);
   const score = Math.round(stats.reduce((a,s)=>a + s.health*w(s),0)/sumW);
-  const green = (stats.reduce((a,s)=>a + s.green,0) / stats.reduce((a,s)=>a + s.total,0)) || 0;
-  const txt = `${(green*100).toFixed(1)}% green • ${stats.reduce((a,s)=>a+s.total,0)} receipts`;
+  const total = stats.reduce((a,s)=>a+s.total,0);
+  const green = (stats.reduce((a,s)=>a + s.green,0) / total) || 0;
+  const txt = `${(green*100).toFixed(1)}% green • ${total} receipts`;
   const worst = [...stats].sort((a,b)=>a.health-b.health)[0];
   return {score, txt, worstAdvice: worst? adviceFor(worst): '—'};
 }
@@ -343,6 +335,11 @@ function renderIssuerCards(stats){
     head.appendChild(el('div','issuer', s.id));
     head.appendChild(el('div','knum', String(s.health)));
     card.appendChild(head);
+
+    const line = el('div','right');
+    line.appendChild(chip(`Obs ${(s.obsAvg*100|0)}%`));
+    line.appendChild(chip(`VKD ${(s.vkdAvg*100|0)}%`));
+    card.appendChild(line);
 
     const grid = el('div','grid');
     grid.appendChild(metric('Green', pct(s.greenRate)));
@@ -377,6 +374,10 @@ function renderReceipts(list){
     pills.appendChild(chip(r.model));
     const badge = (r.attrs?.status||'—').toUpperCase();
     pills.appendChild(chip(badge, badge==='GREEN'?'ok':badge==='AMBER'?'warn':'bad'));
+    // per-receipt mini analytics
+    const v = vkdProxy(r.signals), o = obsProxy(r.signals, r.guards||{});
+    pills.appendChild(chip(`Obs ${String((o*100)|0)}%`));
+    pills.appendChild(chip(`VKD ${String((v*100)|0)}%`));
     h.appendChild(pills);
     tile.appendChild(h);
 
@@ -470,15 +471,14 @@ async function exportPdf(){
 
   page.drawText('Issuer health (7 days)', {x:40,y, size:12, font:bold}); y-=16;
   stats.slice(0,10).forEach(s=>{
-    page.drawText(`${s.id.padEnd(10)}  Health ${String(s.health).padStart(3)}  Green ${pct(s.greenRate)}  κ95 ${round3(s.k95)}  ΔholTrend ${(s.dholTrend>=0?'+':'')+round3(s.dholTrend)}  Φ*floor ${round3(s.phiFloor)}`, {x:40,y, size:10, font});
-    y-=14;
+    const line = `${s.id.padEnd(10)}  Health ${String(s.health).padStart(3)}  Green ${(s.greenRate*100).toFixed(1)}%  κ95 ${round3(s.k95)}  ΔholTrend ${(s.dholTrend>=0?'+':'')+round3(s.dholTrend)}  Φ*floor ${round3(s.phiFloor)}  Obs ${(s.obsAvg*100|0)}%  VKD ${(s.vkdAvg*100|0)}%`;
+    page.drawText(line, {x:40,y, size:10, font}); y-=14;
   });
   y-=10;
   page.drawText('Top 20 receipts (most recent)', {x:40,y, size:12, font:bold}); y-=16;
   RECEIPTS.slice(-20).reverse().forEach(r=>{
-    const line = `${(r.issued_at||'—').replace('T',' ').replace('Z','')}  ${r.issuer_id||'unk'}  ${r.model||'—'}  ${(r.attrs?.status||'—').toUpperCase()}  κ ${round3(r.signals?.kappa||0)}  Δ ${round3(r.signals?.dhol||0)}  Φ* ${round3(r.signals?.phi_star||0)}`;
-    page.drawText(line, {x:40,y, size:9, font});
-    y-=12;
+    const line = `${(r.issued_at||'—').replace('T',' ').replace('Z','')}  ${r.issuer_id||'unk'}  ${r.model||'—'}  ${(r.attrs?.status||'—').toUpperCase()}  κ ${round3(r.signals?.kappa||0)}  Δ ${round3(r.signals?.dhol||0)}  Φ* ${round3(r.signals?.phi_star||0)}  Obs ${(obsProxy(r.signals,r.guards||{})*100|0)}%  VKD ${(vkdProxy(r.signals)*100|0)}%`;
+    page.drawText(line, {x:40,y, size:9, font}); y-=12;
   });
 
   const pdfBytes = await pdfDoc.save();
@@ -488,10 +488,16 @@ async function exportPdf(){
 /* -------------------- events -------------------- */
 $('#addRand').addEventListener('click', ()=> addRandom(1));
 $('#addRand5').addEventListener('click', ()=> addRandom(5));
-$('#addUrl').addEventListener('click', ()=> { const u=$('#urlBox').value.trim(); if(!u) return; addByUrl(u); $('#urlBox').value=''; });
-$('#addBox').addEventListener('click', addFromBox);
-$('#addFile').addEventListener('click', ()=> $('#filePick').click());
-$('#filePick').addEventListener('change', e=> addFromFile(e.target.files?.[0]));
+$('#addUrl').addEventListener('click', ()=> {
+  const u=$('#urlBox').value.trim(); if(!u) return;
+  addByUrl(u); $('#urlBox').value='';
+});
+$('#addFile').addEventListener('click', ()=>{
+  const f=$('#fileBox').files?.[0]; if(!f) return; addFromFile(f);
+});
+$('#addPaste').addEventListener('click', ()=>{
+  const t=$('#pasteBox').value.trim(); if(!t) return; addFromText(t); $('#pasteBox').value='';
+});
 $('#clearAll').addEventListener('click', ()=>{ if(!confirm('Clear all receipts?')) return; RECEIPTS=[]; renderAll(); });
 $('#exportJsonl').addEventListener('click', ()=> download(`receipts-${Date.now()}.jsonl`, asJsonl(RECEIPTS), 'application/jsonl'));
 $('#copySummary').addEventListener('click', ()=>{
@@ -502,7 +508,7 @@ $('#copySummary').addEventListener('click', ()=>{
     `Overall health: ${ov.score} (${ov.txt})`,
     `Advice: ${ov.worstAdvice}`,
     `Issuers:`,
-    ...stats.map(s=>`  ${s.id}: health ${s.health}, green ${pct(s.greenRate)}, κ95 ${round3(s.k95)}, ΔholTrend ${(s.dholTrend>=0?'+':'')+round3(s.dholTrend)}, Φ*floor ${round3(s.phiFloor)}`)
+    ...stats.map(s=>`  ${s.id}: health ${s.health}, green ${pct(s.greenRate)}, κ95 ${round3(s.k95)}, ΔholTrend ${(s.dholTrend>=0?'+':'')+round3(s.dholTrend)}, Φ*floor ${round3(s.phiFloor)}, Obs ${(s.obsAvg*100|0)}%, VKD ${(s.vkdAvg*100|0)}%`)
   ];
   clipboard(lines.join('\n')); alert('Summary copied.');
 });
@@ -513,8 +519,7 @@ $('#toggleDeep').addEventListener('click', ()=>{
   w.style.display = show?'block':'none';
   if (show) renderDeepTable(RECEIPTS);
 });
-
-/* drag-drop (desktop bonus) */
+/* drag-drop ingest */
 document.addEventListener('dragover', e=>{e.preventDefault();});
 document.addEventListener('drop', async e=>{
   e.preventDefault();
