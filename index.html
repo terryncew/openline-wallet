@@ -1,458 +1,384 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<title>OpenLine Wallet · Analytics</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="color-scheme" content="dark light">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>OpenLine Wallet · Analyst View</title>
+<meta name="color-scheme" content="dark light" />
 <style>
   :root{
     --bg:#0a0c10; --ink:#e7ecf4; --muted:#97a3b6; --line:#1b2230; --tile:#0f141c;
-    --btn:#1e293b; --btnink:#e7ecf4; --btnline:#2a3a55; --chip:#121925; --chipline:#1b2536;
-    --ok:#1ea672; --warn:#b38b10; --bad:#d23d3d;
+    --ok:#11a867; --warn:#b38b10; --bad:#d23d3d;
+    --chip:#121925; --chipline:#1b2536; --btn:#182233; --btnline:#2a3a55;
   }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,system-ui,Segoe UI,Inter,Roboto,Helvetica,Arial}
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:1100px;margin:0 auto;padding:18px}
+  .wrap{max-width:980px;margin:0 auto;padding:16px}
   header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
   header h1{font-size:20px;margin:2px 0 0}
   .sub{color:var(--muted);font-size:13px}
-  .section{margin:18px 0}
-  h2{font-size:16px;margin:0 0 8px}
-  .hero,.tile{background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:12px}
-  .hero{padding:14px}
-  .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .btn{display:inline-block;padding:8px 12px;border-radius:10px;border:1px solid var(--btnline);background:var(--btn);color:var(--btnink);font-weight:600;cursor:pointer}
-  .btn.ok{background:rgba(30,166,114,.15);border-color:rgba(30,166,114,.35)}
-  .btn.bad{background:rgba(210,61,61,.15);border-color:rgba(210,61,61,.35)}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;border:1px solid var(--btnline);background:var(--btn)}
+  .tile{background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:12px}
   .tile + .tile{margin-top:12px}
-  .note{color:var(--muted);font-size:12px;margin:8px 2px}
-  textarea{width:100%;min-height:120px;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px;resize:vertical}
-  select{background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:6px 8px}
   .chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--chipline);background:var(--chip);padding:6px 10px;border-radius:999px;font-size:12px;line-height:1;height:26px}
-  .okchip{background:rgba(30,166,114,.15);border-color:rgba(30,166,114,.35)}
-  .warnchip{background:rgba(179,139,16,.15);border-color:rgba(179,139,16,.35)}
-  .badchip{background:rgba(210,61,61,.15);border-color:rgba(210,61,61,.35)}
-  .neutral{opacity:.85}
-  table{width:100%;border-collapse:separate;border-spacing:0}
-  th,td{padding:10px 12px;border-top:1px solid var(--line);white-space:nowrap}
-  thead th{border-top:0;font-weight:700;color:var(--muted);text-align:left;cursor:pointer}
-  tbody tr:hover{background:rgba(255,255,255,.02)}
-  /* sticky header + first column for desktop grid */
-  .table-xl thead th{position:sticky; top:0; background:var(--tile); z-index:2}
-  .table-xl td:first-child, .table-xl th:first-child{position:sticky; left:0; background:var(--tile); z-index:1}
-  /* responsive switch: mobile cards / desktop grid */
-  .table-xl{display:none}
-  .cards-sm{display:block}
-  @media (min-width:641px){
-    .table-xl{display:block}
-    .cards-sm{display:none}
+  .ok{color:var(--ok);border-color:color-mix(in oklab,var(--ok) 50%,#000);background:color-mix(in oklab,var(--ok) 12%,transparent)}
+  .warn{color:var(--warn);border-color:color-mix(in oklab,var(--warn) 50%,#000);background:color-mix(in oklab,var(--warn) 12%,transparent)}
+  .bad{color:var(--bad);border-color:color-mix(in oklab,var(--bad) 50%,#000);background:color-mix(in oklab,var(--bad) 12%,transparent)}
+  .note{color:var(--muted);font-size:12px}
+  /* ---------- table that works on mobile ---------- */
+  .table{width:100%;border-collapse:separate;border-spacing:0;min-width:620px}
+  .th,.td{padding:10px 12px;border-top:1px solid var(--line);white-space:nowrap}
+  .th{position:sticky;top:0;background:var(--tile);z-index:1;font-weight:600;color:var(--muted);backdrop-filter:saturate(1.2) blur(6px)}
+  .tr:first-child .td{border-top:0}
+  .scroller{overflow:auto;border:1px solid var(--line);border-radius:12px}
+  /* cards on narrow screens */
+  @media (max-width:640px){
+    .scroller{overflow:visible;border:none}
+    .table{display:none}
+    .cards{display:grid;gap:10px}
+    .card{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--tile)}
+    .kv{display:grid;grid-template-columns:110px 1fr;gap:6px 10px}
+    .kv div{padding:2px 0;border-bottom:1px dashed color-mix(in oklab,var(--line) 60%,transparent)}
+    .kv div:nth-child(odd){color:var(--muted)}
   }
-  /* brake ribbon on issuer rows/cards */
-  .brake{position:relative}
-  .brake::after{
-    content:'BRAKE'; position:absolute; top:8px; right:-6px; transform:rotate(8deg);
-    background:rgba(210,61,61,.2); border:1px solid rgba(210,61,61,.4); color:#ffd5d5;
-    font-size:11px; padding:2px 6px; border-radius:6px;
-  }
-  canvas.spark{display:block;width:100%;height:28px}
+  /* compact toggles */
+  .controls{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  input,textarea{width:100%;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px}
+  .pill{display:inline-flex;gap:8px;align-items:center}
 </style>
 </head>
 <body>
 <div class="wrap">
-
   <header>
     <div>
-      <h1>OpenLine Wallet · Analytics</h1>
-      <div class="sub">Receipts in, insight out. Mobile cards by default; desktop grid when there’s room.</div>
+      <h1>OpenLine Wallet</h1>
+      <div class="sub">Opinionated analytics for receipts (OLR/1.5-P compatible)</div>
     </div>
-    <div class="inline">
-      <a class="btn" href="https://terryncew.github.io/openline-hub/">Back to Hub</a>
+    <div class="controls">
+      <a class="btn" id="btnAdd">Add JSON (from box)</a>
+      <a class="btn" id="btnExport">Export JSONL</a>
+      <a class="btn" id="btnClear">Clear all</a>
+      <a class="btn" id="btnVerify">Enable Ed25519 verify (beta)</a>
     </div>
   </header>
 
-  <div class="section hero">
-    <div style="font-size:18px;font-weight:700;margin-bottom:8px">Proof moves; data doesn’t.</div>
-    <div class="sub">Paste JSON or JSONL below, or hit “Seed demo”. Wallet stores locally and computes issuer health.</div>
-  </div>
-
-  <!-- Controls -->
-  <div class="section tile">
-    <div class="inline" style="gap:8px; margin-bottom:8px">
-      <a class="btn" id="seedBtn">Seed demo</a>
-      <a class="btn" id="ingestBtn">Add JSON (from box)</a>
-      <a class="btn" id="exportBtn">Export JSONL</a>
-      <a class="btn" id="clearBtn">Clear all</a>
-      <a class="btn" id="verifyBtn">Enable Ed25519 verify (beta)</a>
-    </div>
-    <textarea id="box" placeholder='Paste a single receipt JSON or multiple lines (JSONL). Example:
-{"rid":"r1","issuer_id":"labA","issued_at":"2025-11-04T18:49:46.898Z","model":"agent-x","badge":"RED","kappa":1.044,"dhol":0.682,"phi":0.382}
-{"rid":"r2","issuer_id":"opsX","issued_at":"2025-11-04T18:49:46.878Z","model":"demo-llm","badge":"GREEN","kappa":0.344,"dhol":0.135,"phi":0.867}'></textarea>
-    <div id="flash" class="note">—</div>
-  </div>
-
-  <!-- KPI strip -->
-  <div id="kpis" class="inline tile" style="justify-content:space-between;flex-wrap:wrap">
-    <div><b>Health</b> <span id="kpiHealth" class="chip neutral">—</span></div>
-    <div><b>Green</b> <span id="kpiGreen" class="chip neutral">—</span></div>
-    <div><b>κ p95</b> <span id="kpiK95" class="chip neutral">—</span></div>
-    <div><b>Δhol trend</b> <span id="kpiDTrend" class="chip neutral">—</span></div>
-  </div>
-
-  <!-- Filters -->
-  <div class="section">
-    <div id="filters" class="inline" style="gap:8px;margin:10px 0">
-      <a class="chip" data-badge="ALL">All</a>
-      <a class="chip" data-badge="GREEN">Green</a>
-      <a class="chip" data-badge="AMBER">Amber</a>
-      <a class="chip" data-badge="RED">Red</a>
-      <select id="issuerSel" class="chip" style="height:28px"><option>ALL</option></select>
-    </div>
-  </div>
+  <!-- Analyst verdict -->
+  <section class="tile" id="analyst">
+    <div style="font-weight:700;margin-bottom:6px">Analyst</div>
+    <div id="analystVerdict" class="note">Add receipts to get a verdict. Rules: brake on κ₉₅&gt;0.95; flag drift if Δhol↑ &gt;0.15; floor if Φ* &lt;0.30; low green &lt;60%.</div>
+    <div id="analystList" style="margin-top:8px;display:grid;gap:6px"></div>
+  </section>
 
   <!-- Issuer health -->
-  <div class="section">
-    <h2>Issuer health (7-day window)</h2>
-    <div id="issuerCards" class="cards-sm"></div>
-    <div class="tile table-xl">
-      <table>
+  <section class="tile">
+    <div class="pill">
+      <div style="font-weight:700">Issuer health</div>
+      <div class="chip">Window:
+        <select id="win" style="margin-left:6px;background:transparent;border:none;color:inherit">
+          <option value="7">7d</option><option value="14">14d</option><option value="30">30d</option>
+        </select>
+      </div>
+      <label class="chip" style="gap:6px"><input id="compact" type="checkbox">Compact</label>
+    </div>
+    <div class="note" style="margin:6px 0">
+      Score = 100×(0.5·green + 0.2·(1−κ₉₅) + 0.2·(1−Δhol_trend) + 0.1·Φ* floor)
+    </div>
+
+    <div class="scroller" id="healthTableBox">
+      <table class="table" id="healthTable">
         <thead>
-          <tr>
-            <th data-sort="issuer">Issuer</th>
-            <th data-sort="health">Health</th>
-            <th data-sort="green">Green</th>
-            <th data-sort="k95">κ p95</th>
-            <th data-sort="dtrend">Δhol trend</th>
-            <th data-sort="phifloor">Φ* floor</th>
-            <th>Spark</th>
+          <tr class="tr">
+            <th class="th">Issuer</th><th class="th">Health</th><th class="th">Green</th>
+            <th class="th">κ p95</th><th class="th">Δhol trend</th><th class="th">Φ* floor</th>
           </tr>
         </thead>
         <tbody id="healthBody"></tbody>
       </table>
     </div>
-  </div>
+
+    <!-- card fallback for mobile -->
+    <div class="cards" id="healthCards" style="display:none"></div>
+  </section>
 
   <!-- Receipts -->
-  <div class="section">
-    <h2>Receipts</h2>
-    <div id="cards" class="cards-sm"></div>
-    <div class="tile table-xl">
-      <table>
+  <section class="tile">
+    <div class="pill"><div style="font-weight:700">Receipts</div>
+      <div class="chip" id="countChip">0 items</div>
+    </div>
+
+    <div class="scroller" id="recTableBox">
+      <table class="table" id="recTable">
         <thead>
-          <tr>
-            <th data-sr="issued_at">When</th>
-            <th data-sr="issuer_id">Issuer</th>
-            <th data-sr="model">Model</th>
-            <th data-sr="badge">Badge</th>
-            <th data-sr="kappa">κ</th>
-            <th data-sr="dhol">Δhol</th>
-            <th data-sr="phi">Φ*</th>
+          <tr class="tr">
+            <th class="th">When</th><th class="th">Issuer</th><th class="th">Model</th>
+            <th class="th">Badge</th><th class="th">κ</th><th class="th">Δhol</th><th class="th">Φ*</th>
           </tr>
         </thead>
-        <tbody id="receiptsBody"></tbody>
+        <tbody id="recBody"></tbody>
       </table>
     </div>
-  </div>
+    <!-- card fallback for mobile -->
+    <div class="cards" id="recCards" style="display:none"></div>
+  </section>
 
-  <div class="section"><div class="sub">OpenLine · COLE · MIT.</div></div>
+  <!-- Input box -->
+  <section class="tile">
+    <div class="pill" style="justify-content:space-between;width:100%">
+      <div style="font-weight:700">Paste JSON here</div>
+      <div>
+        <a class="btn" id="btnSeed1">Seed demo (25)</a>
+        <a class="btn" id="btnSeed5">Seed demo (100)</a>
+      </div>
+    </div>
+    <textarea id="box" rows="6" placeholder='[{ "issuer_id":"labA", "attrs":{"status":"GREEN"}, "signals":{"kappa":0.2,"dhol":0.1,"phi_star":0.9}, "model":{"family":"demo-llm"}, "issued_at":"2025-11-04T19:12:35.545Z" }, ...]'></textarea>
+  </section>
 
+  <section class="sub" style="margin:10px 2px">OpenLine · COLE · MIT.</section>
 </div>
 
 <script>
-/* ---------- tiny utils ---------- */
-const $ = s => document.querySelector(s);
-const el=(t,c,txt)=>{const e=document.createElement(t); if(c) e.className=c; if(txt!=null) e.textContent=txt; return e;};
+/* ========== helpers ========== */
 const clamp01 = v => Math.max(0, Math.min(1, v));
-function percentile(arr, p){
-  if(!arr.length) return 0;
-  const a=[...arr].sort((x,y)=>x-y); const idx=(p/100)*(a.length-1);
-  const lo=Math.floor(idx), hi=Math.ceil(idx), frac=idx-lo;
-  return a[lo] + (a[hi]-a[lo])*(isFinite(frac)?frac:0);
+const pct = v => (v*100).toFixed(1)+'%';
+const fmt = n => Number.isFinite(n) ? n.toFixed(3) : '—';
+const toDate = s => new Date(s);
+const by = k => (a,b)=> a[k]<b[k]?-1:a[k]>b[k]?1:0;
+const chip = (txt,cls='') => `<span class="chip ${cls}">${txt}</span>`;
+const badgeChip = s => {
+  const t=(s||'').toUpperCase();
+  const cls = t==='GREEN'?'ok':t==='AMBER'?'warn':t==='RED'?'bad':'';
+  return `<span class="chip ${cls}">${t||'—'}</span>`;
 }
-function linTrendY(xs, ys){ // returns slope magnitude in [0,1] range
-  const n=xs.length; if(n<2) return 0;
-  const xmean=xs.reduce((a,b)=>a+b,0)/n, ymean=ys.reduce((a,b)=>a+b,0)/n;
-  let num=0, den=0; for(let i=0;i<n;i++){ num+=(xs[i]-xmean)*(ys[i]-ymean); den+=(xs[i]-xmean)**2; }
-  const slope = den ? num/den : 0;
-  return clamp01(Math.abs(slope));
-}
+const qs = id => document.getElementById(id);
 
-/* ---------- storage ---------- */
-const KEY='ol.wallet.analytics.v1';
-let R = []; // receipts
-function load(){ try{ R = JSON.parse(localStorage.getItem(KEY)) || []; }catch{ R=[]; } }
-function save(){ localStorage.setItem(KEY, JSON.stringify(R)); }
+/* ========== data model (in-memory) ========== */
+let RECEIPTS = []; // normalized items
+let VERIFY = false;
 
-/* ---------- ingest / export ---------- */
-function normalizeReceipt(r){
-  return {
-    rid: r.rid || crypto.randomUUID(),
-    issuer_id: r.issuer_id || r.issuer || 'unknown',
-    issued_at: r.issued_at || r.issued || new Date().toISOString(),
-    model: r.model || r.model_id || 'demo-llm',
-    badge: (r.badge || r.attrs?.status || 'GREEN').toUpperCase(),
-    kappa: Number(r.kappa ?? r.signals?.kappa ?? 0),
-    dhol: Number(r.dhol ?? r.signals?.dhol ?? 0),
-    phi: Number(r.phi ?? r.signals?.phi_star ?? 0),
-    ctr: Number.isFinite(r.ctr)?r.ctr:null,
-    prev: r.prev || null,
-    sig: r.sig || r.signature || null,
-    bytes: r.bytes || (new TextEncoder().encode(JSON.stringify(r)).length)
-  };
+/* normalize incoming receipt */
+function norm(r){
+  const status = (r.attrs?.status || r.status || '').toUpperCase();
+  const issuer = r.issuer_id || r.issuer || r.org || 'unknown';
+  const model = r.model?.family || r.model?.name || r.model || '—';
+  const ts = r.issued_at || r.issued || r.time || r.date || r.run?.ts || new Date().toISOString();
+  const k = num(r.signals?.kappa ?? r.kappa ?? r.κ);
+  const d = num(r.signals?.dhol ?? r.signals?.delta_hol ?? r.delta_hol ?? r.Δhol);
+  const p = num(r.signals?.phi_star ?? r.phi_star);
+  const bytes = new TextEncoder().encode(JSON.stringify(r)).length;
+  return {ts, issuer, model, badge:status, kappa:k, dhol:d, phi:p, bytes, raw:r};
 }
-async function ingestText(text){
-  text=text.trim(); if(!text) return 0;
-  let count=0;
-  if(text.startsWith('{')){ R.push(normalizeReceipt(JSON.parse(text))); count=1; }
-  else{
-    text.split('\n').forEach(line=>{
-      if(!line.trim()) return;
-      try{ R.push(normalizeReceipt(JSON.parse(line))); count++; }catch{}
-    });
+function num(v){ const n=Number(v); return Number.isFinite(n)?n:null; }
+
+/* ========== health / analytics ========== */
+function windowed(list, days){
+  const cutoff = Date.now()-days*86400_000;
+  return list.filter(x=> toDate(x.ts).getTime() >= cutoff );
+}
+function p95(values){
+  if(!values.length) return null;
+  const s=[...values].sort((a,b)=>a-b);
+  const idx = Math.floor(0.95*(s.length-1));
+  return s[idx];
+}
+function trend(values){ // simple last-avg minus first-avg
+  if(values.length<4) return 0;
+  const h=Math.floor(values.length/2);
+  const a=avg(values.slice(0,h)), b=avg(values.slice(h));
+  return b-a;
+}
+function minv(values){ return values.length? Math.min(...values) : null; }
+function avg(values){ return values.length? values.reduce((a,b)=>a+b,0)/values.length : 0; }
+
+function computeIssuerHealth(days){
+  const data = windowed(RECEIPTS, days);
+  const byIssuer = {};
+  for(const r of data){ (byIssuer[r.issuer] ||= []).push(r); }
+
+  const out = [];
+  for(const [issuer,rows] of Object.entries(byIssuer)){
+    const greens = rows.filter(x=>x.badge==='GREEN').length;
+    const greenRate = rows.length? greens/rows.length : 0;
+    const k95 = p95(rows.map(x=>x.kappa).filter(Number.isFinite)) ?? 0;
+    const dTrend = trend(rows.map(x=>x.dhol).filter(Number.isFinite)) ?? 0;
+    const phiFloor = (minv(rows.map(x=>x.phi).filter(Number.isFinite)) ?? 0);
+
+    const score = 100 * (
+      0.5 * greenRate +
+      0.2 * (1 - clamp01(k95)) +
+      0.2 * (1 - clamp01(dTrend)) +
+      0.1 * clamp01(phiFloor)
+    );
+    out.push({issuer, n:rows.length, greenRate, k95, dTrend, phiFloor, score:Math.round(score)});
   }
-  save(); flash(`Added ${count} receipt${count===1?'':'s'}.`); renderAll(); return count;
+  return out.sort((a,b)=> b.score - a.score);
 }
-function exportJSONL(){
-  const lines = R.map(r=>JSON.stringify(r)).join('\n');
-  const blob = new Blob([lines], {type:'application/json'});
-  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='receipts.jsonl'; a.click();
-}
-function clearAll(){ if(!confirm('Clear all receipts from this device?'))return; R=[]; save(); renderAll(); }
 
-/* ---------- demo seeder ---------- */
-function seedDemo(n=120){
-  const issuers=['labA','opsX','labB'], models=['demo-llm','op-llm','agent-x'];
-  const now=Date.now();
+function analyst(days){
+  const health = computeIssuerHealth(days);
+  const notes = [];
+  const reds24 = windowed(RECEIPTS,1).filter(r=>r.badge==='RED');
+
+  // global signals
+  if(reds24.length){
+    const top = Object.entries(reds24.reduce((m,r)=>(m[r.issuer]=(m[r.issuer]||0)+1,m),{}))
+                 .sort((a,b)=>b[1]-a[1])[0];
+    notes.push({level:'bad', text:`Incident cluster: ${reds24.length} red in last 24h (${top[0]} tops with ${top[1]}).`});
+  }
+
+  // issuer rules
+  for(const h of health){
+    if(h.k95>0.95) notes.push({level:'bad', text:`Brake ${h.issuer}: κ₉₅ ${fmt(h.k95)} > 0.95.`});
+    if(h.greenRate<0.60) notes.push({level:'warn', text:`Stabilize ${h.issuer}: green ${pct(h.greenRate)} < 60%.`});
+    if(h.dTrend>0.15) notes.push({level:'warn', text:`Drift rising on ${h.issuer}: Δhol trend ${fmt(h.dTrend)}.`});
+    if(h.phiFloor<0.30) notes.push({level:'warn', text:`Coherence floor low on ${h.issuer}: Φ* floor ${fmt(h.phiFloor)}.`});
+  }
+
+  // top/bottom summary
+  if(health.length){
+    notes.push({level:'ok', text:`Best: ${health[0].issuer} (health ${health[0].score}).`});
+    const worst = health[health.length-1];
+    notes.push({level:'warn', text:`Weakest: ${worst.issuer} (health ${worst.score}).`});
+  }
+  return notes;
+}
+
+/* ========== rendering ========== */
+function render(){
+  const days = Number(qs('win').value);
+  const compact = qs('compact').checked;
+
+  // analyst pane
+  const verdict = analyst(days);
+  qs('analystList').innerHTML = verdict.length
+    ? verdict.map(n => `<div>${chip(n.level.toUpperCase(), n.level==='bad'?'bad':n.level==='warn'?'warn':'ok')} ${n.text}</div>`).join('')
+    : '<div class="note">No concerns. Keep shipping receipts.</div>';
+
+  // health tables
+  const H = computeIssuerHealth(days);
+  qs('healthBody').innerHTML = H.map(h => `
+    <tr class="tr">
+      <td class="td">${h.issuer}</td>
+      <td class="td"><b>${h.score}</b></td>
+      <td class="td">${pct(h.greenRate)}</td>
+      <td class="td">${fmt(h.k95)}</td>
+      <td class="td">${fmt(h.dTrend)}</td>
+      <td class="td">${fmt(h.phiFloor)}</td>
+    </tr>`).join('');
+
+  // health cards (mobile)
+  qs('healthCards').style.display = window.matchMedia('(max-width:640px)').matches ? 'grid' : 'none';
+  if(qs('healthCards').style.display==='grid'){
+    qs('healthCards').innerHTML = H.map(h => `
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-weight:700">${h.issuer}</div>
+          ${chip('Health '+h.score, h.score>=80?'ok':h.score>=60?'warn':'bad')}
+        </div>
+        <div class="kv">
+          <div>Green</div><div>${pct(h.greenRate)}</div>
+          <div>κ p95</div><div>${fmt(h.k95)}</div>
+          <div>Δhol trend</div><div>${fmt(h.dTrend)}</div>
+          <div>Φ* floor</div><div>${fmt(h.phiFloor)}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // receipts table/cards
+  qs('countChip').textContent = `${RECEIPTS.length} items`;
+  const rows = [...RECEIPTS].sort((a,b)=> toDate(b.ts)-toDate(a.ts));
+  qs('recBody').innerHTML = rows.map(r => `
+    <tr class="tr">
+      <td class="td">${r.ts.replace('T',' ').replace('Z','')}</td>
+      <td class="td">${r.issuer}</td>
+      <td class="td">${r.model}</td>
+      <td class="td">${badgeChip(r.badge)}</td>
+      <td class="td">${fmt(r.kappa)}</td>
+      <td class="td">${fmt(r.dhol)}</td>
+      <td class="td">${fmt(r.phi)}</td>
+    </tr>`).join('');
+
+  qs('recCards').style.display = window.matchMedia('(max-width:640px)').matches ? 'grid' : 'none';
+  if(qs('recCards').style.display==='grid'){
+    qs('recCards').innerHTML = rows.map(r => `
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-weight:700">${r.issuer} · ${r.model}</div>
+          ${badgeChip(r.badge)}
+        </div>
+        <div class="kv">
+          <div>When</div><div>${r.ts.replace('T',' ').replace('Z','')}</div>
+          <div>κ</div><div>${fmt(r.kappa)}</div>
+          <div>Δhol</div><div>${fmt(r.dhol)}</div>
+          <div>Φ*</div><div>${fmt(r.phi)}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // compact mode
+  document.querySelectorAll('.td,.th').forEach(el=>{
+    el.style.padding = compact ? '6px 8px' : '10px 12px';
+  });
+}
+
+/* ========== interactions ========== */
+qs('win').onchange = render;
+qs('compact').onchange = render;
+
+qs('btnAdd').onclick = () => {
+  try{
+    const val = qs('box').value.trim();
+    if(!val) return;
+    const arr = JSON.parse(val);
+    const list = Array.isArray(arr) ? arr : [arr];
+    for(const r of list) RECEIPTS.push(norm(r));
+    qs('box').value='';
+    render();
+  }catch{ alert('JSON parse failed.'); }
+};
+
+qs('btnExport').onclick = () => {
+  const lines = RECEIPTS.map(r => JSON.stringify(r.raw));
+  const blob = new Blob([lines.join('\n')], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'receipts.jsonl'; a.click();
+  URL.revokeObjectURL(a.href);
+};
+
+qs('btnClear').onclick = () => { if(confirm('Clear all receipts?')){ RECEIPTS = []; render(); } };
+qs('btnVerify').onclick = () => { VERIFY = !VERIFY; alert(VERIFY?'Verify ON (stub)':'Verify OFF'); };
+
+qs('btnSeed1').onclick = () => seed(25);
+qs('btnSeed5').onclick = () => seed(100);
+
+/* ========== demo seeding (random receipts) ========== */
+function seed(n){
+  const issuers = ['labA','labB','opsX'];
+  const models = ['demo-llm','op-llm','agent-x'];
+  const now = Date.now();
   for(let i=0;i<n;i++){
-    const bucket=Math.random();
-    let badge,kR,dR,pR;
-    if(bucket<0.6){ badge='GREEN'; kR=[0.05,0.50]; dR=[0.00,0.30]; pR=[0.80,0.98]; }
-    else if(bucket<0.9){ badge='AMBER'; kR=[0.50,0.90]; dR=[0.30,0.60]; pR=[0.45,0.80]; }
-    else{ badge='RED'; kR=[0.90,1.20]; dR=[0.60,1.00]; pR=[0.10,0.45]; }
-    const t = new Date(now - Math.random()*7*24*3600*1000).toISOString();
-    R.push({
-      rid: crypto.randomUUID(),
-      issuer_id: issuers[Math.floor(Math.random()*issuers.length)],
-      issued_at: t,
-      model: models[Math.floor(Math.random()*models.length)],
-      badge,
-      kappa:+(kR[0]+Math.random()*(kR[1]-kR[0])).toFixed(3),
-      dhol:+(dR[0]+Math.random()*(dR[1]-dR[0])).toFixed(3),
-      phi:+(pR[0]+Math.random()*(pR[1]-pR[0])).toFixed(3),
-      ctr:null, prev:null, sig:null, bytes:0
-    });
+    const age = Math.floor(Math.random()*7*86400_000); // 7d
+    const ts = new Date(now - age - Math.random()*3600_000).toISOString();
+    const bucket = Math.random();
+    const badge = bucket < .66 ? 'GREEN' : bucket < .90 ? 'AMBER' : 'RED';
+    const k = badge==='GREEN' ? r(0.05,0.50) : badge==='AMBER' ? r(0.5,0.9) : r(0.9,1.2);
+    const d = badge==='GREEN' ? r(0.00,0.30) : badge==='AMBER' ? r(0.30,0.60) : r(0.60,1.00);
+    const p = badge==='GREEN' ? r(0.80,0.98) : badge==='AMBER' ? r(0.45,0.80) : r(0.10,0.45);
+    const rec = {
+      issuer_id: pick(issuers),
+      model:{family: pick(models)},
+      attrs:{status: badge},
+      issued_at: ts,
+      signals:{kappa:+k.toFixed(3), dhol:+d.toFixed(3), phi_star:+p.toFixed(3)}
+    };
+    RECEIPTS.push(norm(rec));
   }
-  save(); flash(`Seeded ${n} demo receipts.`); renderAll();
+  render();
 }
+function r(a,b){ return a + Math.random()*(b-a); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-/* ---------- aggregates ---------- */
-function windowed(days=7){
-  const cutoff = Date.now() - days*24*3600*1000;
-  return R.filter(r=> new Date(r.issued_at).getTime() >= cutoff);
-}
-function computeOverall(){
-  const W = windowed(7);
-  const greenRate = W.length ? W.filter(r=>r.badge==='GREEN').length/W.length : 0;
-  const kappaP95 = percentile(W.map(r=>r.kappa), 95);
-  // daily Δhol averages then trend slope magnitude
-  const byDay = {};
-  W.forEach(r=>{ const d=r.issued_at.slice(0,10); (byDay[d]??=[]).push(r.dhol); });
-  const days = Object.keys(byDay).sort();
-  const xs = days.map((_,i)=>i);
-  const ys = days.map(d=> byDay[d].reduce((a,b)=>a+b,0)/byDay[d].length);
-  const dholTrend = linTrendY(xs, ys);
-  const phiFloor = W.length ? Math.min(...W.map(r=>r.phi)) : 0;
-  return {greenRate, kappaP95, dholTrend, phiFloor};
-}
-function computeHealth({greenRate,kappaP95,dholTrend,phiFloor}){
-  const h = 100*(0.5*greenRate + 0.2*(1-Math.min(1,kappaP95)) + 0.2*(1-Math.min(1,dholTrend)) + 0.1*phiFloor);
-  return Math.round(Math.max(0, Math.min(100, h)));
-}
-function issuerStats(){
-  const W = windowed(7);
-  const map = new Map();
-  W.forEach(r=>{
-    const m = map.get(r.issuer_id)||{rows:[]}; m.rows.push(r); map.set(r.issuer_id,m);
-  });
-  const out=[];
-  for (const [issuer, m] of map){
-    const rows = m.rows.sort((a,b)=> a.issued_at.localeCompare(b.issued_at));
-    const greenRate = rows.filter(r=>r.badge==='GREEN').length/rows.length;
-    const k95 = percentile(rows.map(r=>r.kappa), 95);
-    // Δhol daily trend
-    const byDay={}, days=[];
-    rows.forEach(r=>{const d=r.issued_at.slice(0,10); (byDay[d]??=[]).push(r.dhol);});
-    Object.keys(byDay).sort().forEach((d,i)=>{days.push({x:i,y:byDay[d].reduce((a,b)=>a+b,0)/byDay[d].length});});
-    const dtrend = days.length? linTrendY(days.map(d=>d.x), days.map(d=>d.y)) : 0;
-    const phifloor = Math.min(...rows.map(r=>r.phi));
-    const health = computeHealth({greenRate,kappaP95:k95,dholTrend:dtrend,phiFloor:phifloor});
-    // sparkline source: last 24 κ
-    const kseries = rows.slice(-24).map(r=>r.kappa);
-    out.push({issuer, health, greenRate, k95, dtrend, phifloor, kseries});
-  }
-  // sort by worst first to surface problems
-  out.sort((a,b)=>a.health-b.health);
-  return out;
-}
-
-/* ---------- render ---------- */
-let FILTER_BADGE='ALL', FILTER_ISSUER='ALL';
-function flash(msg){ $('#flash').textContent=msg; }
-function badgeClass(b){ return b==='GREEN'?'okchip':b==='AMBER'?'warnchip':'badchip'; }
-
-function drawSpark(canvas, values){
-  const ctx=canvas.getContext('2d'); const w=canvas.width, h=canvas.height;
-  ctx.clearRect(0,0,w,h);
-  if(!values.length){ ctx.strokeStyle='rgba(231,236,244,.35)'; ctx.beginPath(); ctx.moveTo(0,h-2); ctx.lineTo(w,h-2); ctx.stroke(); return; }
-  const min=Math.min(...values), max=Math.max(...values);
-  const xstep = values.length>1 ? w/(values.length-1) : w;
-  ctx.beginPath();
-  values.forEach((v,i)=>{
-    const x=i*xstep, y=h - ((v-min)/(max-min||1))*h;
-    i?ctx.lineTo(x,y):ctx.moveTo(x,y);
-  });
-  ctx.strokeStyle='rgba(231,236,244,.85)'; ctx.lineWidth=1.5; ctx.stroke();
-}
-
-function setKpis(){
-  const a=computeOverall(); const H=computeHealth(a);
-  const chip=$('#kpiHealth'); chip.textContent=H; chip.className='chip ' + (H>=80?'okchip':H>=60?'warnchip':'badchip');
-  $('#kpiGreen').textContent=(a.greenRate*100).toFixed(1)+'%';
-  $('#kpiK95').textContent=a.kappaP95.toFixed(3);
-  $('#kpiDTrend').textContent=a.dholTrend.toFixed(3);
-}
-
-function renderIssuerHealth(){
-  const list=issuerStats();
-  // issuer dropdown
-  const sel=$('#issuerSel'); const chosen=sel.value||'ALL';
-  sel.innerHTML='<option>ALL</option>' + Array.from(new Set(list.map(r=>r.issuer))).map(i=>`<option${i===chosen?' selected':''}>${i}</option>`).join('');
-  // mobile cards
-  const cards=$('#issuerCards'); cards.innerHTML='';
-  list.forEach(s=>{
-    const card=el('div','tile '+(s.k95>=0.95?'brake':'')); // show brake if over threshold
-    card.innerHTML = `
-      <div class="inline" style="justify-content:space-between">
-        <div style="font-weight:700">${s.issuer}</div>
-        <span class="chip ${s.health>=80?'okchip':s.health>=60?'warnchip':'badchip'}">${s.health}</span>
-      </div>
-      <div class="inline" style="gap:8px;margin-top:6px">
-        <span class="chip neutral">Green ${(s.greenRate*100).toFixed(1)}%</span>
-        <span class="chip neutral">κ p95 ${s.k95.toFixed(3)}</span>
-        <span class="chip neutral">Δhol ${s.dtrend.toFixed(3)}</span>
-        <span class="chip neutral">Φ* floor ${s.phifloor.toFixed(3)}</span>
-      </div>
-      <canvas class="spark" width="300" height="28"></canvas>
-    `;
-    cards.appendChild(card);
-    drawSpark(card.querySelector('canvas'), s.kseries);
-  });
-  // desktop table
-  const tb=$('#healthBody'); tb.innerHTML='';
-  list.forEach(s=>{
-    const tr=document.createElement('tr'); if(s.k95>=0.95) tr.classList.add('brake');
-    tr.innerHTML = `
-      <td>${s.issuer}</td>
-      <td><span class="chip ${s.health>=80?'okchip':s.health>=60?'warnchip':'badchip'}">${s.health}</span></td>
-      <td>${(s.greenRate*100).toFixed(1)}%</td>
-      <td>${s.k95.toFixed(3)}</td>
-      <td>${s.dtrend.toFixed(3)}</td>
-      <td>${s.phifloor.toFixed(3)}</td>
-      <td><canvas class="spark" width="160" height="28"></canvas></td>
-    `;
-    tb.appendChild(tr);
-    drawSpark(tr.querySelector('canvas'), s.kseries);
-  });
-}
-
-function applyFilters(rows){
-  return rows.filter(r=> (FILTER_BADGE==='ALL'||r.badge===FILTER_BADGE) &&
-                         (FILTER_ISSUER==='ALL'||r.issuer_id===FILTER_ISSUER));
-}
-
-let sortKey='issued_at', sortDir=-1; // newest first
-function setSort(k){ if(sortKey===k) sortDir*=-1; else {sortKey=k; sortDir=1;} renderReceipts(); }
-
-function renderReceipts(){
-  const rows = applyFilters([...R]).sort((a,b)=>{
-    const av=a[sortKey], bv=b[sortKey];
-    return (av>bv?1:av<bv?-1:0)*sortDir;
-  });
-  // mobile cards
-  const box=$('#cards'); box.innerHTML='';
-  rows.forEach(r=>{
-    const d=el('div','tile');
-    d.innerHTML = `
-      <div class="inline" style="justify-content:space-between">
-        <div style="font-weight:700">${r.issuer_id} · ${r.model}</div>
-        <span class="chip ${badgeClass(r.badge)}">${r.badge}</span>
-      </div>
-      <div class="note">${new Date(r.issued_at).toLocaleString()}</div>
-      <div class="inline" style="gap:8px;margin-top:6px">
-        <span class="chip neutral">κ ${Number(r.kappa).toFixed(3)}</span>
-        <span class="chip neutral">Δhol ${Number(r.dhol).toFixed(3)}</span>
-        <span class="chip neutral">Φ* ${Number(r.phi).toFixed(3)}</span>
-      </div>`;
-    box.appendChild(d);
-  });
-  // desktop table
-  const tb=$('#receiptsBody'); tb.innerHTML='';
-  rows.forEach(r=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML = `
-      <td>${new Date(r.issued_at).toLocaleString()}</td>
-      <td>${r.issuer_id}</td>
-      <td>${r.model}</td>
-      <td><span class="chip ${badgeClass(r.badge)}">${r.badge}</span></td>
-      <td>${Number(r.kappa).toFixed(3)}</td>
-      <td>${Number(r.dhol).toFixed(3)}</td>
-      <td>${Number(r.phi).toFixed(3)}</td>`;
-    tb.appendChild(tr);
-  });
-}
-
-function renderAll(){ setKpis(); renderIssuerHealth(); renderReceipts(); }
-
-/* ---------- verify (stubbed beta) ---------- */
-/* Placeholder: checks presence of rid + (optional) sig and monotonic ctr within issuer chains.
-   Swap with real COSE/Ed25519 when you’re ready. */
-async function runVerify(){
-  const byIssuer = new Map();
-  for(const r of R){
-    if(!r.rid) throw new Error('missing rid');
-    const list = byIssuer.get(r.issuer_id) || []; list.push(r); byIssuer.set(r.issuer_id, list);
-  }
-  for(const [issuer, list] of byIssuer){
-    const withCtr = list.filter(x=>Number.isFinite(x.ctr)).sort((a,b)=>a.ctr-b.ctr);
-    for(let i=1;i<withCtr.length;i++){
-      if(withCtr[i].ctr <= withCtr[i-1].ctr){ throw new Error(`non-monotonic ctr for ${issuer}`); }
-    }
-  }
-  return true;
-}
-
-/* ---------- events ---------- */
-$('#seedBtn').addEventListener('click',()=>seedDemo(120));
-$('#ingestBtn').addEventListener('click',()=>ingestText($('#box').value));
-$('#exportBtn').addEventListener('click',exportJSONL);
-$('#clearBtn').addEventListener('click',clearAll);
-$('#verifyBtn').addEventListener('click', async ()=>{
-  const b=$('#verifyBtn'); b.textContent='Verifying…'; b.disabled=true;
-  try{ const ok=await runVerify(); b.textContent= ok?'Verified ✓':'Failed ✗'; b.className='btn '+(ok?'ok':'bad'); }
-  catch(e){ b.textContent='Failed ✗'; b.className='btn bad'; flash(e.message||'Verify failed'); }
-  setTimeout(()=>{ b.textContent='Enable Ed25519 verify (beta)'; b.className='btn'; b.disabled=false; }, 3500);
-});
-$('#filters').addEventListener('click',e=>{
-  if(e.target.dataset.badge){ FILTER_BADGE=e.target.dataset.badge; renderAll(); }
-});
-$('#issuerSel').addEventListener('change',e=>{ FILTER_ISSUER=e.target.value; renderAll(); });
-document.querySelectorAll('thead th[data-sr]').forEach(th=> th.addEventListener('click',()=>setSort(th.dataset.sr)));
-
-/* ---------- boot ---------- */
-load();
-renderAll();
-if(R.length===0) seedDemo(90); // show motion on first load
+/* first paint */
+render();
 </script>
 </body>
 </html>
