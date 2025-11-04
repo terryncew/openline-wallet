@@ -167,6 +167,6 @@ If you use OpenLine Wallet/Receipts in research or production write-ups, please 
 
 ## License
 
-MIT — see LICENSE.
+ — see LICENSE.s
 
 Questions / pilots: open an issue or DM @sir_terrynce.
