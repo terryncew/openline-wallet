@@ -131,4 +131,82 @@ function computeHealth(list){
     const ps = rows.map(r=>r.signals?.phi_star).filter(Number.isFinite);
     const k95 = clamp01(p95(ks));
     const dTrend = clamp01(trend(ds));
-    const pFloor = clamp01(Math.min(...ps,
+    const pFloor = clamp01(Math.min(...ps,1));
+    const health = Math.round(100*(0.5*green + 0.2*(1-k95) + 0.2*(1-dTrend) + 0.1*pFloor));
+    out.push({issuer,health,green,k95,dTrend,pFloor});
+  }
+  out.sort((a,b)=>b.health-a.health);
+  return out;
+}
+function classify(h){
+  if(h.k95>=0.95 || h.pFloor<0.15) return {tag:'BRAKE', cls:'act-brake', msg:`κ p95 ${fmt3(h.k95)}${h.pFloor<0.15?`, Φ* floor ${fmt3(h.pFloor)}`:''}. Cut traffic 50% & inspect reds.`};
+  if(h.dTrend>=0.15 || h.green<0.60) return {tag:'WATCH', cls:'act-watch', msg:`drift ↑ ${fmt3(h.dTrend)} or green ${pct(h.green)}. Add guardrails & sample prompts.`};
+  if(h.green>=0.85 && h.k95<0.60) return {tag:'GO', cls:'act-go', msg:`stable (green ${pct(h.green)}, κ p95 ${fmt3(h.k95)}). Safe to scale.`};
+  return {tag:'WATCH', cls:'act-watch', msg:`mixed posture. Hold steady; gather 24h more receipts.`};
+}
+
+/* ===== render ===== */
+const $issuers = document.getElementById('issuers');
+const $list = document.getElementById('list');
+const $stats = document.getElementById('stats');
+
+function render(){
+  // stats
+  const greens = RECEIPTS.filter(r=>/green|ok|clean/i.test(r.attrs?.status||r.status)).length;
+  $stats.textContent = RECEIPTS.length ? `Items ${RECEIPTS.length} · GREEN ${(greens/RECEIPTS.length*100|0)}%` : 'No items yet. Tap +5 or +20.';
+
+  // issuers compact
+  const health = computeHealth(RECEIPTS);
+  $issuers.innerHTML='';
+  for(const h of health){
+    const action = classify(h);
+    const div = document.createElement('div');
+    div.className='issuer';
+    div.innerHTML = `
+      <div class="row">
+        <div style="font-weight:600">${h.issuer}</div>
+        <div class="action ${action.cls}">${action.tag}</div>
+      </div>
+      <div class="kpis mono">
+        <div class="kpi"><div class="lab">Health</div><div class="val">${h.health}</div></div>
+        <div class="kpi"><div class="lab">Green</div><div class="val">${pct(h.green)}</div></div>
+        <div class="kpi"><div class="lab">κ p95</div><div class="val">${fmt3(h.k95)}</div></div>
+        <div class="kpi"><div class="lab">Δhol trend</div><div class="val">${fmt3(h.dTrend)}</div></div>
+        <div class="kpi"><div class="lab">Φ* floor</div><div class="val">${fmt3(h.pFloor)}</div></div>
+        <div class="kpi hide-xs"><div class="lab">Reds last 50</div><div class="val">${countReds(h.issuer)}</div></div>
+      </div>
+      <div class="insight sub">• ${action.msg}</div>
+    `;
+    $issuers.appendChild(div);
+  }
+
+  // receipts compact list (contained)
+  $list.innerHTML='';
+  for(const r of RECEIPTS.slice(-120).reverse()){
+    const it = document.createElement('div');
+    it.className='item mono';
+    const b = asBadge(r.attrs?.status||r.status);
+    it.innerHTML = `
+      <div>${r.issued_at.replace('T',' ').replace('Z','')}</div>
+      <div>${r.issuer||'unknown'}</div>
+      <div class="hide-xs">${r.model||'—'}</div>
+      <div class="badge ${b==='ok'?'b-ok':b==='warn'?'b-warn':'b-bad'}">${r.attrs?.status||r.status||'—'}</div>
+    `;
+    $list.appendChild(it);
+  }
+}
+function countReds(issuer){
+  return RECEIPTS.filter(r=>r.issuer===issuer && /red|risk|bad/i.test(r.attrs?.status||r.status)).length;
+}
+
+/* ===== wire up ===== */
+document.getElementById('add5').onclick = ()=>{for(let i=0;i<5;i++)RECEIPTS.push(sample());render();};
+document.getElementById('add20').onclick= ()=>{for(let i=0;i<20;i++)RECEIPTS.push(sample());render();};
+document.getElementById('clr').onclick  = ()=>{ if(confirm('Clear all receipts?')){RECEIPTS.length=0;render();} };
+
+/* seed a little so it’s not empty */
+for(let i=0;i<24;i++) RECEIPTS.push(sample());
+render();
+</script>
+</body>
+</html>
