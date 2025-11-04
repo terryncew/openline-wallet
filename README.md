@@ -167,6 +167,6 @@ If you use OpenLine Wallet/Receipts in research or production write-ups, please 
 
 ## License
 
- — see LICENSE.s
+Apache License 2.0 — see LICENSE.s
 
 Questions / pilots: open an issue or DM @sir_terrynce.
