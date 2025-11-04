@@ -2,306 +2,465 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<title>OpenLine Wallet · Mobile</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
-<title>OpenLine Wallet · Mobile</title>
 <style>
   :root{
-    --bg:#0a0c10; --ink:#e7ecf4; --muted:#98a3b6; --line:#1b2230; --tile:#0f141c;
-    --ok:#1ea672; --warn:#b38b10; --bad:#d23d3d; --chip:#121925; --chipline:#1b2536;
+    --bg:#0a0c10; --ink:#e7ecf4; --muted:#9aa7ba; --line:#1b2230; --tile:#0f141c;
+    --btn:#1e293b; --btnink:#e7ecf4; --btnline:#2a3a55; --chip:#121925; --chipline:#1b2536;
+    --ok:#16a34a; --warn:#f59e0b; --bad:#dc2626;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,system-ui,Segoe UI,Inter,Roboto,Helvetica,Arial}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,system-ui,Segoe UI,Inter,Roboto,Helvetica,Arial}
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:420px;margin:0 auto;padding:12px calc(12px + env(safe-area-inset-right)); padding-left:calc(12px + env(safe-area-inset-left))}
-  header{display:flex;justify-content:space-between;align-items:center;margin:4px 0 10px}
-  h1{font-size:18px;margin:0}
-  .sub{color:var(--muted);font-size:12px}
-  .btn{display:inline-flex;gap:6px;align-items:center;padding:8px 12px;border-radius:10px;border:1px solid #2a3a55;background:#1e293b;color:var(--ink);font-weight:600}
-  .panel{background:var(--tile);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:hidden}
-  .panel + .panel{margin-top:12px}
-  .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--chipline);background:var(--chip);
-        padding:6px 10px;border-radius:999px;font-size:12px;line-height:1.0;white-space:nowrap}
-  .badge{padding:4px 10px;border-radius:999px;border:1px solid #2a2f36;font-weight:700;font-size:12px}
-  .b-ok{background:rgba(30,166,114,.15);border-color:rgba(30,166,114,.35)}
-  .b-warn{background:rgba(179,139,16,.15);border-color:rgba(179,139,16,.35)}
-  .b-bad{background:rgba(210,61,61,.15);border-color:rgba(210,61,61,.35)}
+  .wrap{max-width:420px;margin:0 auto;padding:16px}
+  h1{font-size:22px;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:13px}
+  .tile{background:var(--tile);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px;overflow:hidden}
+  .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{display:inline-block;padding:10px 12px;border-radius:12px;border:1px solid var(--btnline);background:var(--btn);color:var(--btnink);font-weight:600}
+  .btn.small{padding:7px 10px;font-weight:600}
+  .chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--chipline);background:var(--chip);padding:6px 10px;border-radius:999px;font-size:12px;line-height:1;height:26px}
+  .pill{padding:4px 8px;border-radius:999px;border:1px solid var(--chipline);background:var(--chip);font-size:12px}
+  .ok{background:rgba(22,163,74,.12);border-color:rgba(22,163,74,.35)}
+  .warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35)}
+  .bad{background:rgba(220,38,38,.12);border-color:rgba(220,38,38,.35)}
+  input{width:100%;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px}
+  .kicker{color:var(--muted);font-size:12px;margin-bottom:6px}
+  .row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+  .knum{font-size:34px;font-weight:800;letter-spacing:0.5px}
+  .note{color:var(--muted);font-size:12px}
+  .issuer{font-weight:700;margin-bottom:6px}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .metric{border:1px solid var(--line);background:rgba(255,255,255,.01);border-radius:12px;padding:10px}
+  .mkey{color:var(--muted);font-size:12px}
+  .mval{font-weight:700;margin-top:2px}
+  .list{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+  .rcpt{border:1px solid var(--line);border-radius:14px;padding:10px}
+  .rcpt .h{display:flex;justify-content:space-between;align-items:center}
+  .rcpt .subline{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+  .ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:240px;display:inline-block}
+  .danger{border-color:rgba(220,38,38,.35)}
+  .okay{border-color:rgba(22,163,74,.35)}
+  .center{display:flex;justify-content:space-between;align-items:center}
+  .right{display:flex;gap:8px;align-items:center}
   .muted{color:var(--muted)}
-  .small{font-size:12px}
-  .health{font-size:22px;font-weight:800}
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
-  .kv{display:flex;justify-content:space-between;gap:8px;border:1px solid var(--line);background:#0d121a;border-radius:10px;padding:8px}
-  .kv b{font-variant-numeric:tabular-nums}
-  .opinion{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .list{display:flex;flex-direction:column;gap:8px}
-  .tile{border:1px solid var(--line);background:#0d121a;border-radius:12px;padding:10px}
-  .tile .row{align-items:center}
-  .issuer{font-weight:700}
-  .nowrap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .controls{display:flex;flex-wrap:wrap;gap:8px}
-  input{width:100%;background:#0d121a;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px}
-  /* ensure nothing bleeds */
-  img,table,pre,code{max-width:100%}
+  .tap{font-size:12px;color:var(--muted)}
+  .tight{margin-top:8px}
+  /* compact mode for issuer cards */
+  .issuer-card.compact .grid{grid-template-columns:1fr 1fr}
+  .issuer-card.compact .metric{padding:8px}
+  .issuer-card.compact .knum{font-size:26px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
+  <div class="center">
     <div>
       <h1>OpenLine Wallet</h1>
       <div class="sub">Proof moves; data doesn’t.</div>
     </div>
-    <a class="btn" href="https://github.com/terryncew/openline-wallet" target="_blank" rel="noopener">Repo</a>
-  </header>
-
-  <!-- TOP SUMMARY -->
-  <div class="panel" id="summary">
-    <div class="row">
-      <div class="small muted">7-day posture</div>
-      <div class="small"><span id="overallGreen">—</span> green • <span id="count">0</span> receipts</div>
-    </div>
-    <div class="row" style="margin-top:6px">
-      <div class="small muted">Overall health</div>
-      <div class="health mono" id="overallHealth">—</div>
-    </div>
-    <div class="opinion" id="overallOpinion">Loading…</div>
+    <a class="btn small" href="https://github.com/terryncew/openline-wallet" target="_blank">Repo</a>
   </div>
 
-  <!-- CONTROLS -->
-  <div class="panel">
-    <div class="controls">
+  <!-- OVERALL -->
+  <div class="tile" id="overall">
+    <div class="kicker" id="windowText">7-day posture</div>
+    <div class="row">
+      <div class="muted" id="postureLine">—</div>
+      <div class="knum" id="overallScore">—</div>
+    </div>
+    <div class="tight" id="adviceLine" aria-live="polite">—</div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="tile">
+    <div class="inline" style="gap:8px;margin-bottom:8px">
       <a class="btn" id="addRand">Add Random</a>
       <a class="btn" id="addRand5">Add ×5</a>
       <a class="btn" id="exportJsonl">Export JSONL</a>
+    </div>
+    <div class="inline" style="gap:8px;margin-bottom:8px">
+      <input id="urlBox" placeholder="Add receipt by URL (raw GitHub best)">
+      <a class="btn" id="addUrl">Add</a>
+    </div>
+    <div class="inline" style="gap:8px">
       <a class="btn" id="clearAll">Clear</a>
+      <a class="btn" id="exportPdf">Export PDF</a>
+      <a class="btn" id="copySummary">Copy Summary</a>
     </div>
-    <div style="margin-top:8px" class="row">
-      <input id="addUrl" placeholder="Add receipt by URL (raw GitHub best)">
-      <a class="btn" id="addUrlBtn">Add</a>
-    </div>
-    <div class="small muted" id="sourceNote"></div>
+    <div class="note tight">Demo data runs in-memory. Mix real URLs for realism.</div>
   </div>
 
-  <!-- ISSUER CARDS -->
-  <div class="panel">
-    <div class="row"><div style="font-weight:700">Issuer health</div><div class="small muted">tap rows = compact</div></div>
-    <div id="issuerList" class="list" style="margin-top:8px"></div>
+  <!-- ISSUER HEALTH -->
+  <div class="tile">
+    <div class="center">
+      <div style="font-weight:700">Issuer health</div>
+      <div class="tap">tap rows = compact</div>
+    </div>
+    <div id="issuerCards" class="list"></div>
   </div>
 
   <!-- RECEIPTS -->
-  <div class="panel">
-    <div class="row"><div style="font-weight:700">Receipts</div><div class="small muted mono" id="recCount">0</div></div>
-    <div id="recList" class="list" style="margin-top:8px"></div>
+  <div class="tile">
+    <div style="font-weight:700;margin-bottom:6px">Receipts</div>
+    <div id="receiptList" class="list"></div>
+    <div class="center tight">
+      <span class="note" id="receiptCount">—</span>
+      <a class="btn small" id="toggleDeep">Show deep table</a>
+    </div>
+    <div id="deepTableWrap" class="tight" style="display:none">
+      <div class="note">Nerd mode · horizontal scroll</div>
+      <div id="deepTable" class="tight" style="overflow-x:auto;border:1px solid var(--line);border-radius:12px"></div>
+    </div>
   </div>
 
-  <div class="sub" style="margin:10px 2px">OpenLine · COLE · MIT.</div>
+  <div class="sub" style="margin:16px 0">OpenLine · COLE · MIT.</div>
 </div>
 
 <script>
-/* ---------- helpers ---------- */
-const byId = id => document.getElementById(id);
-const clamp01 = v => Math.max(0, Math.min(1, v));
-const pct = x => (x*100).toFixed(1)+'%';
-const chip = (txt, cls='') => `<span class="chip ${cls}">${txt}</span>`;
-const badge = s=>{
-  const k = (s||'').toLowerCase();
-  const c = k.includes('red')?'b-bad':k.includes('amber')||k.includes('warn')?'b-warn':k.includes('green')||k.includes('ok')?'b-ok':'';
-  return `<span class="badge ${c}">${(s||'').toUpperCase()}</span>`;
-};
-const byteLen = s => new TextEncoder().encode(s).length;
-const STATUS_GREEN = s => /^(green|clean|ok)$/i.test(String(s||''));
+/* -------------------- tiny helpers -------------------- */
+const $ = sel => document.querySelector(sel);
+const el=(t,c,txt)=>{const e=document.createElement(t); if(c) e.className=c; if(txt!=null) e.textContent=txt; return e;};
+const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
+const pct = v => (v*100).toFixed(1)+'%';
+const round3 = v => (Math.round(v*1000)/1000).toFixed(3);
+const nowISO = ()=> new Date().toISOString();
 
-/* ---------- normalizer ---------- */
-function normalize(r){
-  // tolerant mapping across your variants
-  const issuer = r.issuer || r.issuer_id || r.signer || r.org || 'unknown';
-  const model  = r.model?.family || r.model?.name || r.model?.id || r.model || '—';
-  const status = (r.attrs?.status || r.status || r.badge || '—').toString();
-  const ts = r.issued_at || r.issued || r.run?.ts || r.time || r.date || new Date().toISOString();
-  const kappa = r.signals?.kappa ?? r.kappa ?? r.κ ?? r.dials?.kappa ?? null;
-  const dhol  = r.signals?.dhol ?? r.signals?.delta_hol ?? r.delta_hol ?? r.Δhol ?? r.dials?.delta_hol ?? null;
-  const phi   = r.signals?.phi_star ?? r.phi_star ?? r.dials?.phi_star ?? null;
-  const version = r.version || r.receipt_version || r.sku || '—';
-  return {issuer, model, status, ts, kappa, dhol, phi, version};
+/* -------------------- demo receipt generator -------------------- */
+function makeRandomReceipt(){
+  const labs = ['labA','labB','opsX','unknown'];
+  const models = ['demo-llm','op-llm','agent-x'];
+  const bucket = Math.random();
+  let badge, kRange, dRange, pRange;
+  if (bucket<0.55){ badge='GREEN'; kRange=[0.05,0.50]; dRange=[0.00,0.28]; pRange=[0.75,0.98]; }
+  else if (bucket<0.9){ badge='AMBER'; kRange=[0.50,0.90]; dRange=[0.28,0.60]; pRange=[0.45,0.80]; }
+  else { badge='RED'; kRange=[0.90,1.20]; dRange=[0.60,1.00]; pRange=[0.10,0.45]; }
+  const pick = a => a[Math.floor(Math.random()*a.length)];
+  const between=(a,b)=> a + Math.random()*(b-a);
+  return {
+    rid: crypto.randomUUID(),
+    issuer_id: pick(labs),
+    model: pick(models),
+    issued_at: nowISO(),
+    attrs:{status:badge},
+    signals:{
+      kappa:+between(...kRange).toFixed(3),
+      dhol:+between(...dRange).toFixed(3),
+      phi_star:+between(...pRange).toFixed(3)
+    },
+    bytes: 512 + Math.floor(Math.random()*120)
+  };
 }
 
-/* ---------- health/opinion ---------- */
-function p95(arr){
-  if(!arr.length) return 0;
-  const a = [...arr].sort((x,y)=>x-y);
-  const idx = Math.min(a.length-1, Math.floor(0.95*(a.length-1)));
-  return a[idx];
-}
-function trend(arr){ // simple last-avg minus prior-avg
-  if(arr.length<4) return 0;
-  const mid = Math.floor(arr.length*0.7);
-  const a = arr.slice(0,mid).reduce((s,v)=>s+v,0)/mid;
-  const b = arr.slice(mid).reduce((s,v)=>s+v,0)/Math.max(1, arr.length-mid);
-  return b - a; // >0 rising drift
-}
-function healthScore({greenRate, k95, dTrend, phiFloor}){
-  // 100×(0.5×green + 0.2×(1−k95) + 0.2×(1−dTrend+) + 0.1×phiFloor)
-  const dPos = Math.max(0,dTrend); // only penalize upward drift
-  const s = 100*(0.5*greenRate + 0.2*(1-clamp01(k95)) + 0.2*(1-clamp01(dPos)) + 0.1*clamp01(phiFloor));
-  return Math.round(Math.max(0, Math.min(100, s)));
-}
-function opinion({greenRate, k95, dTrend, phiFloor}){
-  if(k95>=0.9) return "Brake: κ p95 high → reduce concurrency or roll back risky config.";
-  if(dTrend>0.2) return "Watch drift: Δhol rising → freeze data/weights; run quick A/B on prompts.";
-  if(greenRate<0.6) return "Underperforming: lift green rate; tighten guardrails or simplify chain.";
-  if(phiFloor<0.2) return "Coherence floor low: add checks or raise refusal thresholds.";
-  return "Stable: hold config; sample controls weekly.";
-}
+/* -------------------- store -------------------- */
+let RECEIPTS = [];
 
-/* ---------- store ---------- */
-const WALLET = {items:[]}; // in-memory for demo; page reload ok
-
-function addReceipt(obj){
-  const rec = obj.json || obj;
-  const n = normalize(rec);
-  const bytes = obj.bytes ?? byteLen(JSON.stringify(rec));
-  WALLET.items.push({...n, bytes});
+function addReceipt(r){ RECEIPTS.push(r); }
+function addRandom(n=1){ for(let i=0;i<n;i++) addReceipt(makeRandomReceipt()); renderAll(); }
+async function addByUrl(u){
+  try{
+    const raw = toRaw(u.trim());
+    const res = await fetch(raw + (raw.includes('?')?'&':'?') + 'v=' + Date.now(), {cache:'no-store'});
+    const txt = await res.text(); const json = JSON.parse(txt);
+    json.bytes = new TextEncoder().encode(txt).length;
+    json.rid = json.rid || crypto.randomUUID();
+    json.issuer_id = json.issuer_id || 'unknown';
+    json.attrs = json.attrs || {status: (json.status||'').toUpperCase()};
+    json.signals = json.signals || {kappa: json.kappa, dhol: json.dhol, phi_star: json.phi||json.phi_star};
+    addReceipt(json); renderAll();
+  }catch{ alert('Add failed');}
+}
+function toRaw(u){
+  try{
+    const url = new URL(u);
+    if (url.hostname==='github.com'){
+      const p = url.pathname.split('/').filter(Boolean);
+      if (p[2]==='blob') return `https://raw.githubusercontent.com/${p[0]}/${p[1]}/${p[3]}/${p.slice(4).join('/')}`;
+    }
+    return u;
+  }catch{ return u; }
 }
 
-/* ---------- UI ---------- */
-function render(){
-  const items = WALLET.items.slice().sort((a,b)=>b.ts.localeCompare(a.ts));
-  byId('recCount').textContent = String(items.length);
-
-  // receipts list (compact rows)
-  const rows = items.map(r=>{
-    return `<div class="tile">
-      <div class="row">
-        <div class="nowrap" style="max-width:52%">${new Date(r.ts).toISOString().replace('T',' ').slice(0,19)}</div>
-        <div>${badge(r.status)}</div>
-      </div>
-      <div class="row small muted">
-        <div class="issuer nowrap" style="max-width:55%">${r.issuer}</div>
-        <div class="nowrap" style="max-width:45%">${r.model}</div>
-      </div>
-      <div class="row small" style="margin-top:6px">
-        ${chip(`κ ${isFinite(r.kappa)?r.kappa.toFixed(3):'—'}`)}
-        ${chip(`Δhol ${isFinite(r.dhol)?r.dhol.toFixed(3):'—'}`)}
-        ${chip(`Φ* ${isFinite(r.phi)?r.phi.toFixed(3):'—'}`)}
-      </div>
-    </div>`;
-  }).join('');
-  byId('recList').innerHTML = rows || `<div class="small muted">No receipts yet. Add random or URL above.</div>`;
-
-  // aggregate by issuer
+/* -------------------- analytics -------------------- */
+function computeIssuerStats(items){
   const byIssuer = {};
   for(const r of items){
-    const g = (byIssuer[r.issuer] ||= {issuer:r.issuer, total:0, greens:0, ks:[], ds:[], phis:[]});
-    g.total++; if(STATUS_GREEN(r.status)) g.greens++;
-    if(isFinite(r.kappa)) g.ks.push(r.kappa);
-    if(isFinite(r.dhol))  g.ds.push(r.dhol);
-    if(isFinite(r.phi))   g.phis.push(r.phi);
+    const k=r.signals?.kappa, d=r.signals?.dhol, p=r.signals?.phi_star;
+    const badge=(r.attrs?.status||'').toUpperCase();
+    const id=r.issuer_id||'unknown';
+    (byIssuer[id] ||= {id, total:0, green:0, kappas:[], dhols:[], phis:[], last:[]});
+    const b = byIssuer[id];
+    b.total++; if (badge==='GREEN') b.green++;
+    if (Number.isFinite(k)) b.kappas.push(k);
+    if (Number.isFinite(d)) b.dhols.push(d);
+    if (Number.isFinite(p)) b.phis.push(p);
+    b.last.push({t:Date.parse(r.issued_at||nowISO()), d});
   }
-  const cards = Object.values(byIssuer).map(g=>{
-    const greenRate = g.total? g.greens/g.total : 0;
-    const k95 = p95(g.ks);
-    const dTrend = trend(g.ds);
-    const phiFloor = g.phis.length? Math.min(...g.phis) : 0;
-    const hs = healthScore({greenRate,k95,dTrend,phiFloor});
-    const talk = opinion({greenRate,k95,dTrend,phiFloor});
-    return `<div class="tile">
-      <div class="row">
-        <div class="issuer nowrap" style="max-width:55%">${g.issuer}</div>
-        <div class="health mono">${hs}</div>
-      </div>
-      <div class="grid">
-        <div class="kv small"><span class="muted">Green</span><b>${pct(greenRate)}</b></div>
-        <div class="kv small"><span class="muted">κ p95</span><b>${k95.toFixed(3)}</b></div>
-        <div class="kv small"><span class="muted">Δhol trend</span><b>${(dTrend>=0?'+':'')+dTrend.toFixed(3)}</b></div>
-        <div class="kv small"><span class="muted">Φ* floor</span><b>${phiFloor.toFixed(3)}</b></div>
-      </div>
-      <div class="opinion">${talk}</div>
-    </div>`;
-  }).sort((a,b)=>0).join('');
-  byId('issuerList').innerHTML = cards || `<div class="small muted">No issuers yet.</div>`;
-
-  // overall
-  const total = items.length;
-  const greens = items.filter(x=>STATUS_GREEN(x.status)).length;
-  const overallGreen = total? greens/total : 0;
-  byId('overallGreen').textContent = pct(overallGreen);
-  byId('count').textContent = String(total);
-
-  // compute overall like a synthetic issuer
-  const ks = items.map(x=>x.kappa).filter(Number.isFinite);
-  const ds = items.map(x=>x.dhol).filter(Number.isFinite);
-  const phis = items.map(x=>x.phi).filter(Number.isFinite);
-  const overall = {
-    greenRate: overallGreen,
-    k95: p95(ks),
-    dTrend: trend(ds),
-    phiFloor: phis.length? Math.min(...phis) : 0
-  };
-  byId('overallHealth').textContent = String(healthScore(overall));
-  byId('overallOpinion').textContent = opinion(overall);
+  const out=[];
+  for (const id in byIssuer){
+    const x = byIssuer[id];
+    x.greenRate = x.total ? x.green/x.total : 0;
+    x.k95 = percentile(x.kappas, 0.95);
+    x.phiFloor = x.phis.length? Math.min(...x.phis): 0;
+    x.dholTrend = slopeLast(x.last.map(o=>o.d ?? 0));
+    x.health = scoreHealth(x.greenRate, x.k95, x.dholTrend, x.phiFloor);
+    x.advice = adviceFor(x);
+    out.push(x);
+  }
+  out.sort((a,b)=>b.health-a.health);
+  return out;
+}
+function percentile(arr, q){
+  if (!arr.length) return 0;
+  const a=[...arr].sort((x,y)=>x-y);
+  const i=clamp((a.length-1)*q,0,a.length-1), lo=Math.floor(i), hi=Math.ceil(i);
+  return lo===hi? a[lo] : a[lo]+(a[hi]-a[lo])*(i-lo);
+}
+function slopeLast(arr){
+  if (arr.length<4) return 0;
+  const n = Math.min(arr.length, 12);
+  const xs = Array.from({length:n}, (_,i)=>i);
+  const ys = arr.slice(-n);
+  const xbar = xs.reduce((a,b)=>a+b,0)/n;
+  const ybar = ys.reduce((a,b)=>a+b,0)/n;
+  let num=0, den=0;
+  for(let i=0;i<n;i++){ num += (xs[i]-xbar)*(ys[i]-ybar); den += (xs[i]-xbar)**2; }
+  return den? num/den : 0; // rough trend; positive = rising drift
+}
+function scoreHealth(green, k95, dTrend, phiFloor){
+  const g = clamp(green,0,1);
+  const k = clamp(k95,0,1);         // treat ≥1 as 1
+  const d = clamp(dTrend,0,1);      // rising drift penalized
+  const p = clamp(phiFloor,0,1);
+  const s = 100*(0.5*g + 0.2*(1-k) + 0.2*(1-d) + 0.1*p);
+  return Math.round(s);
+}
+function adviceFor(x){
+  const msgs=[];
+  if (x.k95>=0.95) msgs.push('Brake: κ high → tighten guardrails or roll back config.');
+  if (x.phiFloor<0.20) msgs.push('Raise coherence floor: add test prompts / sampling controls.');
+  if (x.dholTrend>=0.15) msgs.push('Watch drift: Δhol rising → investigate data/agent changes.');
+  if (x.greenRate<0.60) msgs.push('Lift green rate: simplify chain or reduce variability.');
+  if (!msgs.length) msgs.push('Stable: hold config; sample controls weekly.');
+  return msgs.join(' ');
+}
+function overallFrom(stats){
+  if (!stats.length) return {score:0, txt:'—'};
+  const w = s => s.total; // weight by volume
+  const sumW = stats.reduce((a,b)=>a+w(b),0);
+  const score = Math.round(stats.reduce((a,s)=>a + s.health*w(s),0)/sumW);
+  const green = (stats.reduce((a,s)=>a + s.green,0) / stats.reduce((a,s)=>a + s.total,0)) || 0;
+  const txt = `${(green*100).toFixed(1)}% green • ${stats.reduce((a,s)=>a+s.total,0)} receipts`;
+  const worst = [...stats].sort((a,b)=>a.health-b.health)[0];
+  return {score, txt, worstAdvice: worst? adviceFor(worst): '—'};
 }
 
-/* ---------- demo data & actions ---------- */
-function randBetween(a,b){ return a + Math.random()*(b-a); }
-function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-function makeRandom(){
-  const bucket = Math.random();
-  let status, kRange, dRange, pRange;
-  if (bucket < 0.6){ status='GREEN'; kRange=[0.05,0.50]; dRange=[0.00,0.30]; pRange=[0.80,0.98]; }
-  else if (bucket < 0.9){ status='AMBER'; kRange=[0.50,0.90]; dRange=[0.30,0.60]; pRange=[0.45,0.80]; }
-  else { status='RED';   kRange=[0.90,1.20]; dRange=[0.60,1.00]; pRange=[0.10,0.45]; }
-  const now = new Date().toISOString();
-  return {
-    version:"OLR/1.5-P", issued_at: now, attrs:{status},
-    issuer: pick(['labA','labB','opsX']),
-    model:{family: pick(['demo-llm','op-llm','agent-x'])},
-    signals:{
-      kappa:+randBetween(...kRange).toFixed(3),
-      dhol:+randBetween(...dRange).toFixed(3),
-      phi_star:+randBetween(...pRange).toFixed(3)
-    }
-  };
+/* -------------------- render -------------------- */
+function chip(txt,cls=''){ const s=el('span','pill '+cls,txt); return s; }
+
+function renderIssuerCards(stats){
+  const box = $('#issuerCards'); box.innerHTML='';
+  stats.forEach(s=>{
+    const card = el('div','rcpt issuer-card');
+    const head = el('div','center');
+    head.appendChild(el('div','issuer', s.id));
+    head.appendChild(el('div','knum', String(s.health)));
+    card.appendChild(head);
+
+    const grid = el('div','grid');
+    grid.appendChild(metric('Green', pct(s.greenRate)));
+    grid.appendChild(metric('κ p95', round3(s.k95)));
+    grid.appendChild(metric('Δhol trend', (s.dholTrend>=0?'+':'')+round3(s.dholTrend)));
+    grid.appendChild(metric('Φ* floor', round3(s.phiFloor)));
+    card.appendChild(grid);
+
+    const advice = el('div','note tight', s.advice);
+    card.appendChild(advice);
+
+    card.addEventListener('click', ()=> card.classList.toggle('compact'));
+    box.appendChild(card);
+  });
 }
-async function addUrl(u){
-  try{
-    const raw = (()=>{
-      try{
-        const url = new URL(u.trim());
-        if (url.hostname==='github.com'){
-          const p = url.pathname.split('/').filter(Boolean);
-          if (p[2]==='blob') return `https://raw.githubusercontent.com/${p[0]}/${p[1]}/${p[3]}/${p.slice(4).join('/')}`;
-        }
-      }catch{}
-      return u;
-    })();
-    const res = await fetch(raw + (raw.includes('?')?'&':'?')+'v='+Date.now(), {cache:'no-store'});
-    if(!res.ok) throw new Error('fetch failed');
-    const txt = await res.text();
-    addReceipt({json: JSON.parse(txt), bytes: byteLen(txt)});
-    render();
-  }catch{ alert('Add failed'); }
+function metric(k,v){
+  const m = el('div','metric');
+  m.appendChild(el('div','mkey',k));
+  m.appendChild(el('div','mval',v));
+  return m;
 }
 
-/* ---------- wire up ---------- */
-byId('addRand').onclick = ()=>{ addReceipt(makeRandom()); render(); };
-byId('addRand5').onclick = ()=>{ for(let i=0;i<5;i++) addReceipt(makeRandom()); render(); };
-byId('exportJsonl').onclick = ()=>{
-  const lines = WALLET.items.map(x=>JSON.stringify(x)).join('\n');
-  const blob = new Blob([lines], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = 'receipts.jsonl'; a.click();
-};
-byId('clearAll').onclick = ()=>{ WALLET.items = []; render(); };
-byId('addUrlBtn').onclick = (e)=>{ e.preventDefault(); const u = byId('addUrl').value.trim(); if(!u) return; addUrl(u).then(()=>{ byId('addUrl').value=''; }); };
+function renderReceipts(list){
+  const box = $('#receiptList'); box.innerHTML='';
+  const recent = [...list].slice(-25).reverse();
+  recent.forEach(r=>{
+    const tile = el('div','rcpt ' + (r.attrs?.status==='RED'?'danger':r.attrs?.status==='GREEN'?'okay':''));
+    const h = el('div','h');
+    h.appendChild(el('div','ell', (r.issued_at||'—').replace('T',' ').replace('Z','')));
+    const pills = el('div','right');
+    pills.appendChild(chip(r.issuer_id));
+    pills.appendChild(chip(r.model));
+    const badge = (r.attrs?.status||'—').toUpperCase();
+    pills.appendChild(chip(badge, badge==='GREEN'?'ok':badge==='AMBER'?'warn':'bad'));
+    h.appendChild(pills);
+    tile.appendChild(h);
 
-/* ---------- boot ---------- */
+    const sub = el('div','subline');
+    sub.appendChild(chip('κ '+round3(r.signals?.kappa ?? 0)));
+    sub.appendChild(chip('Δhol '+round3(r.signals?.dhol ?? 0)));
+    sub.appendChild(chip('Φ* '+round3(r.signals?.phi_star ?? 0)));
+    sub.appendChild(chip((r.bytes||0)+'B'));
+    tile.appendChild(sub);
+    box.appendChild(tile);
+  });
+  $('#receiptCount').textContent = `${list.length} total • showing ${Math.min(25,list.length)}`;
+}
+
+function renderDeepTable(list){
+  const wrap = $('#deepTable'); wrap.innerHTML='';
+  const tbl = document.createElement('table');
+  tbl.style.width='660px'; tbl.style.borderCollapse='collapse'; tbl.style.fontSize='13px';
+  const thead = document.createElement('thead');
+  thead.innerHTML = `<tr>
+    <th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">When</th>
+    <th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Issuer</th>
+    <th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Model</th>
+    <th style="text-align:left;padding:8px;border-bottom:1px solid var(--line)">Badge</th>
+    <th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">κ</th>
+    <th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">Δhol</th>
+    <th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">Φ*</th>
+    <th style="text-align:right;padding:8px;border-bottom:1px solid var(--line)">bytes</th>
+  </tr>`;
+  tbl.appendChild(thead);
+  const tb = document.createElement('tbody');
+  list.slice(-200).reverse().forEach(r=>{
+    const tr=document.createElement('tr');
+    const td=(t,align='left')=>{const d=document.createElement('td'); d.style.padding='8px'; d.style.borderBottom='1px solid var(--line)'; d.style.textAlign=align; d.textContent=t; return d;};
+    tr.appendChild(td((r.issued_at||'—').replace('T',' ').replace('Z','')));
+    tr.appendChild(td(r.issuer_id||'unknown'));
+    tr.appendChild(td(r.model||'—'));
+    tr.appendChild(td((r.attrs?.status||'—').toUpperCase()));
+    tr.appendChild(td(round3(r.signals?.kappa ?? 0),'right'));
+    tr.appendChild(td(round3(r.signals?.dhol ?? 0),'right'));
+    tr.appendChild(td(round3(r.signals?.phi_star ?? 0),'right'));
+    tr.appendChild(td(String(r.bytes||0),'right'));
+    tb.appendChild(tr);
+  });
+  tbl.appendChild(tb); wrap.appendChild(tbl);
+}
+
+/* -------------------- top render -------------------- */
+function renderAll(){
+  const stats = computeIssuerStats(RECEIPTS);
+  const ov = overallFrom(stats);
+  $('#postureLine').textContent = ov.txt;
+  $('#overallScore').textContent = String(ov.score);
+  $('#adviceLine').textContent = ov.worstAdvice;
+  renderIssuerCards(stats);
+  renderReceipts(RECEIPTS);
+}
+
+/* -------------------- export / summary -------------------- */
+function asJsonl(arr){
+  return arr.map(o=>JSON.stringify(o)).join('\n');
+}
+function download(name, text, type='application/octet-stream'){
+  const blob = new Blob([text], {type}); const url = URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove();},0);
+}
+function clipboard(text){ navigator.clipboard.writeText(text); }
+
+async function exportPdf(){
+  // lazy-load pdf-lib only when needed
+  if (!window.PDFLib){
+    await new Promise((res,rej)=>{
+      const s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js';
+      s.onload=res; s.onerror=rej; document.head.appendChild(s);
+    });
+  }
+  const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([612, 792]); // US Letter
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const stats = computeIssuerStats(RECEIPTS);
+  const ov = overallFrom(stats);
+  let y = 760;
+  page.drawText('OpenLine Wallet — Compliance Summary', {x:40,y, size:16, font:bold}); y-=22;
+  page.drawText(new Date().toISOString(), {x:40,y, size:10, font});
+  y-=24;
+  page.drawText(`Overall health: ${ov.score}`, {x:40,y, size:14, font:bold}); y-=18;
+  page.drawText(`Posture: ${ov.txt}`, {x:40,y, size:12, font}); y-=16;
+  page.drawText(`Advice: ${ov.worstAdvice}`, {x:40,y, size:12, font}); y-=24;
+
+  page.drawText('Issuer health (7 days)', {x:40,y, size:12, font:bold}); y-=16;
+  stats.slice(0,10).forEach(s=>{
+    page.drawText(`${s.id.padEnd(10)}  Health ${String(s.health).padStart(3)}  Green ${pct(s.greenRate)}  κ95 ${round3(s.k95)}  ΔholTrend ${(s.dholTrend>=0?'+':'')+round3(s.dholTrend)}  Φ*floor ${round3(s.phiFloor)}`, {x:40,y, size:10, font});
+    y-=14;
+  });
+  y-=10;
+  page.drawText('Top 20 receipts (most recent)', {x:40,y, size:12, font:bold}); y-=16;
+  RECEIPTS.slice(-20).reverse().forEach(r=>{
+    const line = `${(r.issued_at||'—').replace('T',' ').replace('Z','')}  ${r.issuer_id||'unk'}  ${r.model||'—'}  ${(r.attrs?.status||'—').toUpperCase()}  κ ${round3(r.signals?.kappa||0)}  Δ ${round3(r.signals?.dhol||0)}  Φ* ${round3(r.signals?.phi_star||0)}`;
+    page.drawText(line, {x:40,y, size:9, font});
+    y-=12;
+  });
+
+  const pdfBytes = await pdfDoc.save();
+  download(`openline-wallet-${Date.now()}.pdf`, pdfBytes, 'application/pdf');
+}
+
+/* -------------------- events -------------------- */
+$('#addRand').addEventListener('click', ()=> addRandom(1));
+$('#addRand5').addEventListener('click', ()=> addRandom(5));
+$('#addUrl').addEventListener('click', ()=> {
+  const u=$('#urlBox').value.trim(); if(!u) return;
+  addByUrl(u); $('#urlBox').value='';
+});
+$('#clearAll').addEventListener('click', ()=>{ if(!confirm('Clear all receipts?')) return; RECEIPTS=[]; renderAll(); });
+$('#exportJsonl').addEventListener('click', ()=> download(`receipts-${Date.now()}.jsonl`, asJsonl(RECEIPTS), 'application/jsonl'));
+$('#copySummary').addEventListener('click', ()=>{
+  const stats = computeIssuerStats(RECEIPTS);
+  const ov = overallFrom(stats);
+  const lines = [
+    `OpenLine Wallet — 7-day summary`,
+    `Overall health: ${ov.score} (${ov.txt})`,
+    `Advice: ${ov.worstAdvice}`,
+    `Issuers:`,
+    ...stats.map(s=>`  ${s.id}: health ${s.health}, green ${pct(s.greenRate)}, κ95 ${round3(s.k95)}, ΔholTrend ${(s.dholTrend>=0?'+':'')+round3(s.dholTrend)}, Φ*floor ${round3(s.phiFloor)}`)
+  ];
+  clipboard(lines.join('\n')); alert('Summary copied.');
+});
+$('#exportPdf').addEventListener('click', exportPdf);
+$('#toggleDeep').addEventListener('click', ()=>{
+  const w = $('#deepTableWrap');
+  const show = w.style.display==='none';
+  w.style.display = show?'block':'none';
+  if (show) renderDeepTable(RECEIPTS);
+});
+/* drag-drop ingest */
+document.addEventListener('dragover', e=>{e.preventDefault();});
+document.addEventListener('drop', async e=>{
+  e.preventDefault();
+  const f = e.dataTransfer?.files?.[0]; if(!f) return;
+  const txt = await f.text(); const json = JSON.parse(txt);
+  json.bytes = new TextEncoder().encode(txt).length;
+  json.rid = json.rid || crypto.randomUUID();
+  json.issuer_id = json.issuer_id || 'unknown';
+  json.attrs = json.attrs || {status: (json.status||'').toUpperCase()};
+  json.signals = json.signals || {kappa: json.kappa, dhol: json.dhol, phi_star: json.phi||json.phi_star};
+  addReceipt(json); renderAll();
+});
+
+/* seed & show */
 (function boot(){
-  // seed a little so the page "speaks" immediately
-  for(let i=0;i<12;i++) addReceipt(makeRandom());
-  byId('sourceNote').textContent = 'Demo data in-memory. Add real URLs to mix.';
-  render();
+  const q = new URLSearchParams(location.search);
+  if (q.get('u')) addByUrl(q.get('u'));
+  addRandom(12);
+  $('#windowText').textContent = '7-day posture';
 })();
 </script>
 </body>
