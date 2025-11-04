@@ -1,5 +1,4 @@
 [
-  "receipts/sample-green.json",
-  "receipts/sample-amber.json",
-  "receipts/sample-red.json"
+  "https://raw.githubusercontent.com/terryncew/open-receipts/main/docs/receipt.latest.json",
+  "https://raw.githubusercontent.com/terryncew/openline-csm/main/docs/receipt.latest.json"
 ]
