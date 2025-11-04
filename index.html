@@ -1,45 +1,38 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>OpenLine Wallet · Analyst Edition (COLE-lite)</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<meta name="color-scheme" content="dark light" />
+<meta charset="utf-8">
+<title>OpenLine Wallet · Portable Proof</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
 <style>
-  :root{
-    --bg:#0a0c10; --ink:#e7ecf4; --muted:#97a3b6; --line:#1b2230; --tile:#0f141c;
-    --btn:#1e293b; --btnink:#e7ecf4; --btnline:#2a3a55; --chip:#121925; --chipline:#1b2536;
-    --ok:#1ea672; --warn:#b38b10; --bad:#d23d3d;
-  }
+  :root{--bg:#0a0c10;--ink:#e7ecf4;--muted:#97a3b6;--line:#1b2230;--tile:#0f141c;--btn:#1e293b;--btnink:#e7ecf4;--btnline:#2a3a55;--chip:#121925;--chipline:#1b2536}
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,system-ui,Segoe UI,Inter,Roboto,Helvetica,Arial}
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:1080px;margin:0 auto;padding:18px}
+  .wrap{max-width:980px;margin:0 auto;padding:18px}
   header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
   header h1{font-size:20px;margin:2px 0 0}
   .sub{color:var(--muted);font-size:13px}
   .section{margin:18px 0}
   h2{font-size:16px;margin:0 0 8px}
   .tile{background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:12px}
-  .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .btn{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border-radius:10px;border:1px solid var(--btnline);background:var(--btn);color:var(--btnink);font-weight:600;cursor:pointer}
-  .grid{display:grid;grid-template-columns:repeat(4,minmax(160px,1fr));gap:10px}
-  .kpi{background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:10px}
-  .kpi b{display:block;font-size:18px;margin-bottom:4px}
-  .note{color:var(--muted);font-size:12px;margin:6px 2px}
+  .tile + .tile{margin-top:12px}
+  .inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .btn{display:inline-block;padding:8px 12px;border-radius:10px;border:1px solid var(--btnline);background:var(--btn);color:var(--btnink);font-weight:600;cursor:pointer}
   .chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--chipline);background:var(--chip);padding:6px 10px;border-radius:999px;font-size:12px;line-height:1;height:26px}
   .ok{background:rgba(30,166,114,.15);border-color:rgba(30,166,114,.35)}
   .warn{background:rgba(179,139,16,.15);border-color:rgba(179,139,16,.35)}
   .bad{background:rgba(210,61,61,.15);border-color:rgba(210,61,61,.35)}
-  table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-  th,td{padding:10px;border-bottom:1px solid var(--line);font-size:13px}
-  th{background:rgba(255,255,255,.02);text-align:left;color:var(--muted)}
-  tr:last-child td{border-bottom:0}
-  .spark{width:120px;height:28px;display:block}
-  .rowflex{display:flex;gap:8px;align-items:center}
-  code{background:rgba(255,255,255,.06);padding:2px 6px;border-radius:6px;border:1px solid var(--line)}
-  @media (max-width:900px){ .grid{grid-template-columns:repeat(2,1fr)} }
-  @media (max-width:560px){ .grid{grid-template-columns:1fr} }
+  .neutral{opacity:.85}
+  .note{color:var(--muted);font-size:12px;margin:8px 2px}
+  input,textarea{width:100%;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px}
+  textarea{min-height:110px}
+  table{width:100%;border-collapse:collapse;margin-top:8px}
+  th,td{padding:8px 10px;border-top:1px solid var(--line);text-align:left;font-size:13px}
+  th{color:var(--muted);font-weight:600}
+  .right{text-align:right}
+  @media (max-width:560px){ .hide-sm{display:none} }
 </style>
 </head>
 <body>
@@ -47,393 +40,286 @@
 
   <header>
     <div>
-      <h1>OpenLine Wallet · Analyst Edition</h1>
-      <div class="sub">COLE-lite inside: verify ➜ store ➜ explain.</div>
+      <h1>OpenLine Wallet</h1>
+      <div class="sub">Verify · Store · Explain — all local</div>
     </div>
     <div class="inline">
-      <a class="btn" href="https://terryncew.github.io/openline-hub/" target="_blank" rel="noopener">Hub (Viewer)</a>
+      <a class="btn" id="btnInstall" role="button">Install</a>
+      <a class="btn" id="btnOffline" role="button">Offline ready?</a>
     </div>
   </header>
 
-  <!-- Controls -->
-  <div class="section tile">
-    <div class="inline" style="gap:8px;margin-bottom:8px">
-      <input id="addUrl" placeholder="Add receipt by URL (raw GitHub best)" style="flex:1;min-width:220px;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px" />
-      <button class="btn" id="addUrlBtn" type="button">Add</button>
-      <button class="btn" id="seedBtn" type="button">Seed 5 (featured)</button>
-      <button class="btn" id="rand1Btn" type="button">Add Random</button>
-      <button class="btn" id="rand5Btn" type="button">Add 5 Random</button>
-      <button class="btn" id="clearBtn" type="button">Clear</button>
+  <div class="tile">
+    <div class="inline">
+      <input id="urlInput" placeholder="Add receipt by URL (raw GitHub best)">
+      <button class="btn" id="btnAddUrl" type="button">Add URL</button>
+      <button class="btn" id="btnSeed"   type="button">Seed from manifest</button>
+      <button class="btn" id="btnRand1"  type="button">Add Random</button>
+      <button class="btn" id="btnRand5"  type="button">Add 5 Random</button>
     </div>
-    <div class="note">URLs should point to JSON receipts (OLR/1.4L or 1.5-P). Random adds simulated receipts to show analytics moving.</div>
-  </div>
-
-  <!-- Analytics KPIs -->
-  <div class="section">
-    <h2>Analytics</h2>
-    <div class="grid" id="kpis">
-      <div class="kpi"><b id="kpiTotal">0</b><div class="sub">Total receipts</div></div>
-      <div class="kpi"><b id="kpiGreen">—</b><div class="sub">Green rate (7d)</div></div>
-      <div class="kpi"><b id="kpiK95">—</b><div class="sub">κ p95 (7d)</div></div>
-      <div class="kpi"><b id="kpiDhol">—</b><div class="sub">Δhol avg (7d)</div></div>
-      <div class="kpi"><b id="kpiPhi">—</b><div class="sub">Φ* floor (7d)</div></div>
-      <div class="kpi"><b id="kpiHealth">—</b><div class="sub">Wallet health (0–100)</div></div>
-      <div class="kpi"><b id="kpiInc">—</b><div class="sub">Incidents (24h)</div></div>
-      <div class="kpi"><b id="kpiChains">—</b><div class="sub">Active issuers</div></div>
+    <div class="note">Tip: <code>?u=&lt;url&gt;</code> auto-imports on open. Drag a JSON file anywhere on this page to ingest.</div>
+    <div style="margin-top:10px">
+      <textarea id="jsonBox" placeholder="Or paste one receipt JSON here…"></textarea>
+      <div class="inline" style="margin-top:8px">
+        <button class="btn" id="btnAddJson" type="button">Add JSON (from box)</button>
+        <button class="btn" id="btnExport"  type="button">Export JSONL</button>
+        <button class="btn" id="btnClear"   type="button">Clear all</button>
+        <button class="btn" id="btnVerify"  type="button">Enable Ed25519 verify (beta)</button>
+      </div>
     </div>
   </div>
 
-  <!-- Issuer table -->
   <div class="section">
-    <h2>Issuer Health</h2>
+    <h2>Issuer health</h2>
+    <div class="note">Score = 100×(0.5·green + 0.2·(1−κ_p95) + 0.2·(1−Δhol_trend) + 0.1·Φ* floor). Window: last 7 days.</div>
     <div class="tile">
-      <table id="issuerTbl">
+      <table id="healthTable">
         <thead>
           <tr>
-            <th>Issuer</th><th>Health</th><th>Green%</th><th>κ p95</th><th>Δhol avg</th><th>Φ* floor</th><th>7-day trend</th>
+            <th>Issuer</th><th class="hide-sm">Window</th><th class="right">Health</th><th class="right">Green</th><th class="right">κ p95</th><th class="right">Δhol trend</th><th class="right">Φ* floor</th>
           </tr>
         </thead>
-        <tbody></tbody>
+        <tbody id="healthBody"><tr><td colspan="7" class="note">No data yet.</td></tr></tbody>
       </table>
-      <div class="note">Health score formula (wallet): <code>100×(0.5·green + 0.2·(1−κp95) + 0.2·(1−Δhol_avg) + 0.1·Φ*floor)</code>, clamped to [0,100].</div>
     </div>
   </div>
 
-  <!-- Anomalies -->
   <div class="section">
-    <h2>Anomalies (24h)</h2>
-    <div class="tile" id="anomBox">No anomalies detected in the last 24h.</div>
-    <div class="note">Rules: κ > mean+3σ, Δhol > mean+3σ (7d baseline), Φ* < 0.70, or green rate drop &gt; 10% vs prior 7d window.</div>
+    <h2>Receipts</h2>
+    <div class="tile" id="receiptsBox">
+      <table>
+        <thead>
+          <tr>
+            <th>When</th><th>Issuer</th><th>Model</th><th>Badge</th>
+            <th class="right">κ</th><th class="right">Δhol</th><th class="right">Φ*</th><th class="hide-sm right">Bytes</th>
+          </tr>
+        </thead>
+        <tbody id="receiptsBody"><tr><td colspan="8" class="note">Add or seed to begin.</td></tr></tbody>
+      </table>
+    </div>
   </div>
 
-  <!-- Weekly summary -->
-  <div class="section">
-    <h2>Weekly Narrative Summary</h2>
-    <div class="tile" id="summaryBox">Add receipts to generate a summary.</div>
-  </div>
-
-  <!-- Receipts list -->
-  <div class="section">
-    <h2>Receipts (wallet)</h2>
-    <div class="tile" id="listBox">No receipts yet.</div>
-    <div class="note">Stored locally only (localStorage). This demo does not upload anything.</div>
-  </div>
-
-  <div class="section"><div class="sub">OpenLine · COLE · MIT.</div></div>
+  <div class="section"><div class="sub">All data stays on-device (IndexedDB). No servers. Works offline after first load.</div></div>
 </div>
 
 <script>
-/*** COLE-lite wrapper (no deps) ***/
-const WALLET_KEY = 'ol.wallet.analytics.v1';
-const FEATURED = [
-  // survive repo renames using two options when useful
-  'https://raw.githubusercontent.com/terryncew/COLE-Coherence-Layer-Engine/main/docs/receipt.mini.json',
-  'https://raw.githubusercontent.com/terryncew/open-receipts/main/docs/receipt.latest.json',
-  'https://raw.githubusercontent.com/terryncew/openline-csm/main/docs/receipt.latest.json',
-  // two more—feel free to swap to your own later:
-  'https://raw.githubusercontent.com/terryncew/open-receipts/main/docs/receipt.sample.green.json',
-  'https://raw.githubusercontent.com/terryncew/open-receipts/main/docs/receipt.sample.red.json',
-];
-
-const el=(t,c,txt)=>{const e=document.createElement(t); if(c) e.className=c; if(txt!=null) e.textContent=txt; return e;};
-const byId = id => document.getElementById(id);
-const clamp = (v,a,b)=>Math.max(a,Math.min(b,v));
-const pct=(x)=> (isFinite(x)?(x*100).toFixed(1)+'%':'—');
-const p95=(arr)=>{ if(!arr.length) return NaN; const a=[...arr].sort((a,b)=>a-b); const idx=Math.floor(0.95*(a.length-1)); return a[idx]; };
-const mean=(arr)=>arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:NaN;
-const std  =(arr)=>{ if(arr.length<2) return NaN; const m=mean(arr); const v=mean(arr.map(x=>(x-m)**2)); return Math.sqrt(v); };
-const parseISO=(s)=>{ const d=new Date(s); return isNaN(+d)?null:d; };
-
-function normStatus(s){ s=String(s||'').toLowerCase(); if(/(green|clean|ok|coherent)/.test(s)) return 'green'; if(/(amber|warn|check)/.test(s)) return 'amber'; if(/(red|risk|bad)/.test(s)) return 'red'; return 'unknown'; }
-function issuerFrom(rec, url){
-  // best effort: explicit issuer field? else URL host? else model family?
-  if (rec.issuer_id) return String(rec.issuer_id);
-  try{ if(url){ const u=new URL(url); return u.hostname.replace('raw.githubusercontent.com','github'); } }catch{}
-  if (rec.model?.family) return 'model:'+rec.model.family;
-  return 'unknown';
-}
-function normalizeReceipt(rec, url){
-  // accept 1.5-P or 1.4L shapes
-  const issued = rec.issued_at || rec.issued || rec.run?.ts || rec.time || rec.date || new Date().toISOString();
-  const kappa  = rec.signals?.kappa ?? rec.kappa ?? rec.κ ?? rec.dials?.kappa ?? rec.telem?.kappa_eff ?? null;
-  const dhol   = rec.signals?.dhol  ?? rec.signals?.delta_hol ?? rec.delta_hol ?? rec.Δhol ?? rec.dials?.delta_hol ?? rec.telem?.delta_hol ?? null;
-  const phi    = rec.signals?.phi_star ?? rec.phi_star ?? rec.dials?.phi_star ?? null;
-  const status = normStatus(rec.attrs?.status || rec.status);
-  return {
-    rid: rec.rid || crypto.randomUUID(),
-    issuer_id: issuerFrom(rec,url),
-    issued_at: issued,
-    model: rec.model?.family || rec.model?.name || rec.model?.id || '—',
-    badge: status,
-    kappa: typeof kappa==='number'?kappa:Number(kappa),
-    dhol:  typeof dhol==='number'?dhol:Number(dhol),
-    phi:   typeof phi==='number'?phi:Number(phi),
-    bytes: rec._bytes || null,
-    url: url || null
-  };
-}
-
-/*** storage ***/
-function loadW(){ try{ return JSON.parse(localStorage.getItem(WALLET_KEY)) || {items:[]}; }catch{ return {items:[]}; } }
-function saveW(w){ localStorage.setItem(WALLET_KEY, JSON.stringify(w)); }
-let W = loadW();
-
-/*** fetchers ***/
+/* ============ tiny helpers ============ */
+const $ = sel => document.querySelector(sel);
+const toRaw = (u)=>{ try{ const url=new URL(u.trim()); if(url.hostname==='github.com'){ const p=url.pathname.split('/').filter(Boolean); if(p[2]==='blob') return `https://raw.githubusercontent.com/${p[0]}/${p[1]}/${p[3]}/${p.slice(4).join('/')}`;} return u;}catch{ return u; } };
+const clamp01 = v => Math.max(0,Math.min(1,v));
 const byteLen = s => new TextEncoder().encode(s).length;
-function toRaw(u){
-  try{
-    const url = new URL(u.trim());
-    if (url.hostname === 'github.com') {
-      const p = url.pathname.split('/').filter(Boolean);
-      if (p[2] === 'blob') return `https://raw.githubusercontent.com/${p[0]}/${p[1]}/${p[3]}/${p.slice(4).join('/')}`;
-    }
-    return u;
-  }catch{ return u; }
+const todayISO = ()=> new Date().toISOString();
+
+/* ============ storage (IndexedDB via minimal wrapper) ============ */
+let db;
+function idb_open(){
+  return new Promise((res,rej)=>{
+    const r = indexedDB.open('ol.wallet.v1',1);
+    r.onupgradeneeded = () => {
+      const d = r.result;
+      const t = d.createObjectStore('receipts',{keyPath:'rid'});
+      t.createIndex('by_issued','issued_at');
+      t.createIndex('by_issuer','issuer_id');
+    };
+    r.onsuccess = ()=>{ db=r.result; res(); };
+    r.onerror = ()=> rej(r.error);
+  });
 }
-async function fetchReceipt(u){
-  const raw = toRaw(u);
-  const res = await fetch(raw + (raw.includes('?')?'&':'?') + 'v=' + Date.now(), {cache:'no-store'});
-  if (!res.ok) throw new Error(`fetch failed (${res.status})`);
-  const txt = await res.text();
-  const rec = JSON.parse(txt);
-  rec._bytes = byteLen(txt);
-  return normalizeReceipt(rec, raw);
+function idb_put(store, obj){
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readwrite'); tx.onerror=()=>rej(tx.error);
+    tx.objectStore(store).put(obj); tx.oncomplete=()=>res();
+  });
+}
+function idb_get_all(store){
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readonly'); tx.onerror=()=>rej(tx.error);
+    const req = tx.objectStore(store).getAll(); req.onsuccess=()=>res(req.result);
+  });
+}
+function idb_clear(store){
+  return new Promise((res,rej)=>{
+    const tx=db.transaction(store,'readwrite'); tx.onerror=()=>rej(tx.error);
+    tx.objectStore(store).clear(); tx.oncomplete=()=>res();
+  });
 }
 
-/*** random generator (simulated) ***/
-function randBetween(a,b){ return a + Math.random()*(b-a); }
-function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-function makeRandom(){
-  const now = new Date().toISOString();
-  const bucket = Math.random();
-  let status, kRange, dRange, pRange;
-  if (bucket < 0.6){ status='green'; kRange=[0.05,0.50]; dRange=[0.00,0.30]; pRange=[0.80,0.98]; }
-  else if (bucket < 0.9){ status='amber'; kRange=[0.50,0.90]; dRange=[0.30,0.60]; pRange=[0.45,0.80]; }
-  else { status='red';   kRange=[0.90,1.20]; dRange=[0.60,1.00]; pRange=[0.10,0.45]; }
+/* ============ normalization ============ */
+function normalize(r){
+  const rid   = r.rid || r.id || crypto.randomUUID();
+  const issuer= r.issuer_id || r.issuer || r.signer || 'unknown';
+  const model = r.model?.family || r.model?.name || r.model?.id || r.model || '—';
+  const issued= r.issued_at || r.issued || r.run?.ts || r.time || r.date || todayISO();
+  const status= (r.attrs?.status || r.status || '').toString().toUpperCase() || 'CLEAN';
+  const kappa = num(r.signals?.kappa ?? r.kappa ?? r.κ ?? r.dials?.kappa);
+  const dhol  = num(r.signals?.dhol  ?? r.signals?.delta_hol ?? r.delta_hol ?? r.Δhol ?? r.dials?.delta_hol);
+  const phi   = num(r.signals?.phi_star ?? r.phi_star ?? r.dials?.phi_star);
+  const bytes = r.bytes ?? byteLen(JSON.stringify(r));
+  const ctr   = +r.ctr || 0;
+  const prev  = r.prev || null;
+  return {rid,issuer_id:issuer,model,issued_at:issued,badge:badge(status),kappa,dhol,phi,bytes,ctr,prev,raw:r};
+}
+function num(v){ const n = Number(v); return Number.isFinite(n)? n : null; }
+function badge(s){ if(/RED|RISK|BAD/i.test(s))return 'red'; if(/AMBER|WARN|CHECK/i.test(s))return 'amber'; return 'green'; }
+
+/* ============ rendering ============ */
+function renderReceipts(rows){
+  const body = $('#receiptsBody');
+  if (!rows.length){ body.innerHTML = `<tr><td colspan="8" class="note">Add or seed to begin.</td></tr>`; return; }
+  body.innerHTML = rows.slice().sort((a,b)=> (a.issued_at<b.issued_at?1:-1)).map(r=>`
+    <tr>
+      <td>${r.issued_at.replace('T',' ').replace('Z','')}</td>
+      <td>${r.issuer_id}</td>
+      <td>${r.model}</td>
+      <td><span class="chip ${r.badge==='green'?'ok':r.badge==='amber'?'warn':'bad'}">${r.badge.toUpperCase()}</span></td>
+      <td class="right">${fmt(r.kappa)}</td>
+      <td class="right">${fmt(r.dhol)}</td>
+      <td class="right">${fmt(r.phi)}</td>
+      <td class="right hide-sm">${r.bytes}</td>
+    </tr>
+  `).join('');
+}
+function fmt(v){ return (v==null)?'—':Number(v).toFixed(3); }
+
+function renderHealth(rows){
+  const since = new Date(Date.now()-7*24*3600*1000);
+  const byIssuer = new Map();
+  rows.forEach(r=>{
+    const t = new Date(r.issued_at);
+    if (isNaN(t)) return;
+    if (t < since) return;
+    const list = byIssuer.get(r.issuer_id) || [];
+    list.push(r); byIssuer.set(r.issuer_id, list);
+  });
+  const out = [];
+  for (const [issuer, list] of byIssuer){
+    const greens = list.filter(x=>x.badge==='green').length;
+    const greenRate = list.length? greens/list.length : 0;
+    const kP95 = percentile(list.map(x=>x.kappa).filter(isFinite), 0.95) ?? 1.0;
+    const dDaily = avg(list.filter(x=>xIsToday(x.issued_at)).map(x=>x.dhol).filter(isFinite));
+    const d7     = avg(list.map(x=>x.dhol).filter(isFinite));
+    const dTrend = clamp01(Math.max(0, (dDaily - d7)) / (d7||1e-9)); // up is bad
+    const phiFloor = Math.min(...list.map(x=>x.phi).filter(isFinite));
+    const health = Math.round(100*(0.5*greenRate + 0.2*(1-kP95) + 0.2*(1-dTrend) + 0.1*(isFinite(phiFloor)?phiFloor:0)));
+    out.push({issuer,window:`${list.length} rec / 7d`,health,greenRate,kP95,dTrend,phiFloor});
+  }
+  out.sort((a,b)=> b.health - a.health);
+  const body = $('#healthBody');
+  if (!out.length){ body.innerHTML = `<tr><td colspan="7" class="note">No data yet.</td></tr>`; return; }
+  body.innerHTML = out.map(x=>`
+    <tr>
+      <td>${x.issuer}</td><td class="hide-sm">${x.window}</td>
+      <td class="right"><b>${x.health}</b></td>
+      <td class="right">${(x.greenRate*100).toFixed(1)}%</td>
+      <td class="right">${x.kP95.toFixed(3)}</td>
+      <td class="right">${x.dTrend.toFixed(3)}</td>
+      <td class="right">${isFinite(x.phiFloor)?x.phiFloor.toFixed(3):'—'}</td>
+    </tr>
+  `).join('');
+}
+function avg(a){ return a.length? a.reduce((s,v)=>s+v,0)/a.length : 0; }
+function percentile(arr,p){
+  if (!arr.length) return null;
+  const a = arr.slice().sort((x,y)=>x-y);
+  const i = Math.min(a.length-1, Math.max(0, Math.floor(p*(a.length-1))));
+  return a[i];
+}
+function xIsToday(iso){
+  const d = new Date(iso), n = new Date();
+  return d.getUTCFullYear()===n.getUTCFullYear() && d.getUTCMonth()===n.getUTCMonth() && d.getUTCDate()===n.getUTCDate();
+}
+
+/* ============ importers ============ */
+async function addUrl(u){
+  const raw = toRaw(u);
+  const res = await fetch(raw, {cache:'no-store'});
+  if(!res.ok) throw new Error(`fetch ${res.status}`);
+  const txt = await res.text();
+  const obj = JSON.parse(txt);
+  await addReceipt(obj);
+}
+async function addReceipt(obj){
+  const n = normalize(obj);
+  await idb_put('receipts', n);
+  await refresh();
+}
+async function addRandom(n=1){
+  for (let i=0;i<n;i++){ await addReceipt(makeRandomReceipt()); }
+}
+function makeRandomReceipt(){
+  const bucket=Math.random();
+  let badge='green', k=[0.05,0.5], d=[0.00,0.30], p=[0.80,0.98];
+  if (bucket>0.6 && bucket<=0.9){ badge='amber'; k=[0.50,0.90]; d=[0.30,0.60]; p=[0.45,0.80]; }
+  if (bucket>0.9){ badge='red'; k=[0.90,1.20]; d=[0.60,1.00]; p=[0.10,0.45]; }
+  const rnd=(a,b)=> +(a + Math.random()*(b-a)).toFixed(3);
   return {
-    rid: crypto.randomUUID(),
-    issuer_id: pick(['lab.alpha','lab.beta','ops.team','sim.demo']),
-    issued_at: now,
-    model: pick(['demo-llm','op-llm','agent-x']),
-    badge: status,
-    kappa: +randBetween(...kRange).toFixed(3),
-    dhol:  +randBetween(...dRange).toFixed(3),
-    phi:   +randBetween(...pRange).toFixed(3),
-    bytes: Math.floor(randBetween(420, 780)),
-    url: null
+    receipt_version:"1.5-P",
+    issued_at: todayISO(),
+    issuer_id: ['labA','labB','opsX'][Math.floor(Math.random()*3)],
+    model:{family:['demo-llm','op-llm','agent-x'][Math.floor(Math.random()*3)]},
+    attrs:{status: badge.toUpperCase()},
+    precision:{train_dtype:"fp16",infer_dtype:"fp16"},
+    signals:{kappa:rnd(...k), dhol:rnd(...d), phi_star:rnd(...p)}
   };
 }
-
-/*** analytics (COLE-lite) ***/
-function withinDays(iso, days){
-  const d=parseISO(iso); if(!d) return false;
-  const now=Date.now(); return (now - d.getTime()) <= days*24*3600*1000;
-}
-function groupByIssuer(items){
-  const m=new Map();
-  for(const it of items){ if(!m.has(it.issuer_id)) m.set(it.issuer_id,[]); m.get(it.issuer_id).push(it); }
-  return m;
-}
-function dayKey(iso){ const d=parseISO(iso); if(!d) return 'NA'; return d.toISOString().slice(0,10); }
-function lastNDaysKeys(n){
-  const out=[]; const now=new Date();
-  for(let i=n-1;i>=0;i--){ const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i); out.push(d.toISOString().slice(0,10)); }
-  return out;
-}
-function healthScore(greenRate, k95, dAvg, phiFloor){
-  if(!isFinite(greenRate)) greenRate=0;
-  if(!isFinite(k95)) k95=1;
-  if(!isFinite(dAvg)) dAvg=1;
-  if(!isFinite(phiFloor)) phiFloor=0;
-  const score = 100*(0.5*greenRate + 0.2*(1-clamp(k95,0,1)) + 0.2*(1-clamp(dAvg,0,1)) + 0.1*clamp(phiFloor,0,1));
-  return Math.round(clamp(score,0,100));
-}
-function computeAnalytics(items){
-  const seven = items.filter(it=>withinDays(it.issued_at,7));
-  const dayKeys = lastNDaysKeys(7);
-
-  // Wallet-level
-  const greenRate = seven.length ? seven.filter(it=>it.badge==='green').length / seven.length : NaN;
-  const klist = seven.map(it=>it.kappa).filter(Number.isFinite);
-  const dlist = seven.map(it=>it.dhol ).filter(Number.isFinite);
-  const plist = seven.map(it=>it.phi  ).filter(Number.isFinite);
-  const k95 = p95(klist), dAvg = mean(dlist), phiFloor = (plist.length?Math.min(...plist):NaN);
-  const walletHealth = healthScore(greenRate, k95, dAvg, phiFloor);
-
-  // Incidents (24h red)
-  const incidents = items.filter(it=>withinDays(it.issued_at,1) && it.badge==='red').length;
-
-  // Issuer stats
-  const issuers = [];
-  for(const [issuer, arr] of groupByIssuer(seven)){
-    const k = arr.map(x=>x.kappa).filter(Number.isFinite);
-    const d = arr.map(x=>x.dhol ).filter(Number.isFinite);
-    const p = arr.map(x=>x.phi  ).filter(Number.isFinite);
-    const g = arr.filter(x=>x.badge==='green').length / (arr.length||1);
-    const row = {
-      issuer,
-      count: arr.length,
-      green: g,
-      k95: p95(k),
-      dAvg: mean(d),
-      pFloor: p.length?Math.min(...p):NaN,
-      trend: (()=>{ // daily green rate trend last 7d
-        const byDay = {};
-        dayKeys.forEach(dk=>byDay[dk]=[]);
-        arr.forEach(x=>{const dk=dayKey(x.issued_at); if(byDay[dk]) byDay[dk].push(x);});
-        return dayKeys.map(dk=>{
-          const L=byDay[dk].length||0;
-          return L? (byDay[dk].filter(z=>z.badge==='green').length/L) : 0;
-        });
-      })()
-    };
-    row.health = healthScore(row.green, row.k95, row.dAvg, row.pFloor);
-    issuers.push(row);
-  }
-
-  // Baselines for anomaly scan
-  const baseK = std(klist), meanK = mean(klist);
-  const baseD = std(dlist), meanD = mean(dlist);
-
-  // Anomalies in last 24h
-  const last24 = items.filter(it=>withinDays(it.issued_at,1));
-  const anoms=[];
-  for(const it of last24){
-    const flags=[];
-    if(isFinite(meanK) && isFinite(baseK) && baseK>0 && it.kappa > (meanK + 3*baseK)) flags.push(`κ ${it.kappa.toFixed(3)} > μ+3σ (${(meanK+3*baseK).toFixed(3)})`);
-    if(isFinite(meanD) && isFinite(baseD) && baseD>0 && it.dhol  > (meanD + 3*baseD)) flags.push(`Δhol ${it.dhol.toFixed(3)} > μ+3σ (${(meanD+3*baseD).toFixed(3)})`);
-    if(isFinite(it.phi) && it.phi < 0.70) flags.push(`Φ* ${it.phi.toFixed(3)} < 0.70`);
-    if(flags.length) anoms.push({it, flags});
-  }
-
-  // Prior-window green rate to detect drop (last 14–8d)
-  const prior7 = items.filter(it=>withinDays(it.issued_at,14) && !withinDays(it.issued_at,7));
-  const priorGreen = prior7.length ? prior7.filter(x=>x.badge==='green').length / prior7.length : NaN;
-  const drop = (isFinite(greenRate)&&isFinite(priorGreen)) ? (priorGreen-greenRate) : 0;
-  if(drop > 0.10) anoms.push({it:null, flags:[`Green rate drop vs prior: ${(drop*100).toFixed(1)}%`], pseudo:true});
-
-  // Weekly summary (short)
-  const sum = [];
-  if(seven.length===0){ sum.push('No activity in the last 7 days.'); }
-  else{
-    sum.push(`7-day: ${Math.round(seven.length)} receipts, green ${pct(greenRate)}, κ p95 ${isFinite(k95)?k95.toFixed(3):'—'}, Δhol avg ${isFinite(dAvg)?dAvg.toFixed(3):'—'}, Φ* floor ${isFinite(phiFloor)?phiFloor.toFixed(3):'—'}.`);
-    if(anoms.length){ sum.push(`Anomalies: ${anoms.length}. Top signals: ${anoms.slice(0,3).map(a=>a.flags[0]).join(' · ')}.`); }
-    if(issuers.length){ const worst=[...issuers].sort((a,b)=>a.health-b.health)[0]; sum.push(`Watchlist: ${worst.issuer} (health ${worst.health}).`); }
-  }
-
-  return {total: items.length, greenRate, k95, dAvg, phiFloor, walletHealth, incidents, issuers, anoms, summary: sum.join(' ')};
-}
-
-/*** UI rendering ***/
-function sparkline(vals){
-  const w=120,h=28; const max=1,min=0;
-  const pts = vals.map((v,i)=>{
-    const x = (i/(vals.length-1||1))*w;
-    const y = h - ((clamp(v,0,1)-min)/(max-min))*h;
-    return `${x.toFixed(1)},${y.toFixed(1)}`;
-  }).join(' ');
-  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>`;
-}
-function badgeChip(b){ const cls=b==='green'?'ok':b==='amber'?'warn':b==='red'?'bad':'neutral'; return `<span class="chip ${cls}">${b}</span>`; }
-
-function renderAll(){
-  const items = W.items||[];
-
-  // list
-  const listBox = byId('listBox');
-  if(!items.length){ listBox.textContent='No receipts yet.'; }
-  else{
-    listBox.innerHTML='';
-    items.slice().reverse().forEach(it=>{
-      const row = el('div','rowflex');
-      row.style.justifyContent='space-between';
-      const left = el('div','rowflex');
-      left.appendChild(el('div','', it.issuer_id));
-      left.appendChild(el('div','', '·'));
-      left.appendChild(el('div','', new Date(it.issued_at).toLocaleString()));
-      left.appendChild(el('div','', '·'));
-      const chip = document.createElement('span'); chip.innerHTML = badgeChip(it.badge); left.appendChild(chip);
-      const right = el('div','rowflex');
-      if (it.url){ const a=el('a','btn','Open'); a.href=it.url; a.target='_blank'; right.appendChild(a); }
-      listBox.appendChild(el('div','tile', '')).appendChild((()=>{const c=document.createElement('div'); c.appendChild(left); c.appendChild(document.createElement('div')).appendChild(right); return c;})());
-    });
-  }
-
-  // analytics
-  const A = computeAnalytics(items);
-  byId('kpiTotal').textContent = A.total;
-  byId('kpiGreen').textContent = isFinite(A.greenRate)?pct(A.greenRate):'—';
-  byId('kpiK95').textContent   = isFinite(A.k95)?A.k95.toFixed(3):'—';
-  byId('kpiDhol').textContent  = isFinite(A.dAvg)?A.dAvg.toFixed(3):'—';
-  byId('kpiPhi').textContent   = isFinite(A.phiFloor)?A.phiFloor.toFixed(3):'—';
-  byId('kpiHealth').textContent= isFinite(A.walletHealth)?A.walletHealth:'—';
-  byId('kpiInc').textContent   = A.incidents;
-  byId('kpiChains').textContent= A.issuers.length;
-
-  // issuer table
-  const tbody = byId('issuerTbl').querySelector('tbody');
-  tbody.innerHTML='';
-  if(!A.issuers.length){
-    const tr=document.createElement('tr'); const td=document.createElement('td'); td.colSpan=7; td.textContent='No 7-day data yet.'; tr.appendChild(td); tbody.appendChild(tr);
-  }else{
-    A.issuers.sort((a,b)=>b.health-a.health).forEach(r=>{
-      const tr=document.createElement('tr');
-      tr.innerHTML = `
-        <td>${r.issuer}</td>
-        <td>${r.health}</td>
-        <td>${pct(r.green)}</td>
-        <td>${isFinite(r.k95)?r.k95.toFixed(3):'—'}</td>
-        <td>${isFinite(r.dAvg)?r.dAvg.toFixed(3):'—'}</td>
-        <td>${isFinite(r.pFloor)?r.pFloor.toFixed(3):'—'}</td>
-        <td>${sparkline(r.trend)}</td>`;
-      tbody.appendChild(tr);
-    });
-  }
-
-  // anomalies
-  const anomBox = byId('anomBox');
-  if(!A.anoms.length){ anomBox.textContent='No anomalies detected in the last 24h.'; }
-  else{
-    anomBox.innerHTML='';
-    A.anoms.forEach(a=>{
-      const d = el('div','tile');
-      const head = a.it ? `${a.it.issuer_id} · ${new Date(a.it.issued_at).toLocaleString()} · ${a.it.kappa?.toFixed?.(3)??'—'}/${a.it.dhol?.toFixed?.(3)??'—'} κ/Δhol` : 'Aggregate';
-      d.appendChild(el('div','', head));
-      d.appendChild(el('div','note', 'Why: ' + a.flags.join(' · ')));
-      anomBox.appendChild(d);
-    });
-  }
-
-  // summary
-  byId('summaryBox').textContent = A.summary || '—';
-}
-
-/*** actions ***/
-async function addUrl(u){
+async function seedFromManifest(){
   try{
-    const r = await fetchReceipt(u);
-    W.items = W.items||[];
-    // de-dupe by url+rid
-    if (!W.items.some(x=>x.url===r.url && x.rid===r.rid)) W.items.push(r);
-    saveW(W);
-    renderAll();
-  }catch(e){ alert('Add failed: ' + (e.message||'error')); }
+    const res = await fetch('receipts/manifest.json?ts='+Date.now(), {cache:'no-store'});
+    if (!res.ok) throw new Error('manifest 404');
+    const list = await res.json();
+    const urls = Array.isArray(list)? list : (list.files||list.receipts||list.items||[]);
+    if(!urls || !urls.length) throw new Error('manifest empty');
+    for (const u of urls){ try{ await addUrl(u); }catch(e){} }
+  }catch(e){
+    alert('Seed failed: ' + e.message);
+  }
 }
-async function seedFeatured(){
-  for(const u of FEATURED){ try{ await addUrl(u); }catch{} }
+
+/* ============ UI wiring ============ */
+async function refresh(){
+  const rows = await idb_get_all('receipts');
+  renderReceipts(rows);
+  renderHealth(rows);
 }
-function addRandom(n=1){ for(let i=0;i<n;i++){ (W.items ||= []).push(makeRandom()); } saveW(W); renderAll(); }
-function clearAll(){ if(!confirm('Clear wallet?')) return; W={items:[]}; saveW(W); renderAll(); }
+let verifyOn = false;
+function wireUI(){
+  $('#btnAddUrl').addEventListener('click', async (e)=>{ e.preventDefault(); const u=$('#urlInput').value.trim(); if(!u) return; try{ await addUrl(u); $('#urlInput').value=''; }catch(err){ alert('Add URL failed'); } });
+  $('#btnAddJson').addEventListener('click', async (e)=>{ e.preventDefault(); const t=$('#jsonBox').value.trim(); if(!t) return; try{ const obj=JSON.parse(t); await addReceipt(obj); $('#jsonBox').value=''; }catch(err){ alert('JSON parse failed'); } });
+  $('#btnSeed').addEventListener('click', async (e)=>{ e.preventDefault(); await seedFromManifest(); });
+  $('#btnRand1').addEventListener('click', async (e)=>{ e.preventDefault(); await addRandom(1); });
+  $('#btnRand5').addEventListener('click', async (e)=>{ e.preventDefault(); await addRandom(5); });
+  $('#btnExport').addEventListener('click', async (e)=>{ e.preventDefault(); const rows=await idb_get_all('receipts'); const blob=new Blob(rows.map(r=>JSON.stringify(r.raw)+'\n'),{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='receipts.jsonl'; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),500); });
+  $('#btnClear').addEventListener('click', async (e)=>{ e.preventDefault(); if(!confirm('Clear all receipts?'))return; await idb_clear('receipts'); await refresh(); });
+  $('#btnVerify').addEventListener('click', (e)=>{ e.preventDefault(); verifyOn=!verifyOn; alert(verifyOn?'(beta) Signature checks ON (stub)':'Signature checks OFF'); });
+  // PWA affordances
+  let deferredPrompt=null;
+  window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredPrompt=e; });
+  $('#btnInstall').addEventListener('click', async (e)=>{ e.preventDefault(); if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt=null; } else { alert('Use “Add to Home Screen”'); } });
+  $('#btnOffline').addEventListener('click', (e)=>{ e.preventDefault(); alert(navigator.onLine?'Online (will work offline after first load)':'Offline ✔'); });
 
-/*** wire up ***/
-byId('addUrlBtn').addEventListener('click',()=>{ const u=byId('addUrl').value.trim(); if(!u) return; addUrl(u).then(()=>{ byId('addUrl').value=''; }); });
-byId('seedBtn').addEventListener('click',seedFeatured);
-byId('rand1Btn').addEventListener('click',()=>addRandom(1));
-byId('rand5Btn').addEventListener('click',()=>addRandom(5));
-byId('clearBtn').addEventListener('click',clearAll);
+  // Drag & drop JSON file support
+  document.addEventListener('dragover', e=>{ e.preventDefault(); });
+  document.addEventListener('drop', async e=>{
+    e.preventDefault();
+    const f = e.dataTransfer?.files?.[0]; if(!f) return;
+    const txt = await f.text(); try{ const obj=JSON.parse(txt); await addReceipt(obj); }catch{ alert('Dropped file is not valid JSON'); }
+  });
 
-/*** boot ***/
-renderAll();
+  // URL auto-import
+  const u = new URL(location.href).searchParams.get('u');
+  if (u) addUrl(u).catch(()=>{});
+}
+
+/* ============ boot ============ */
+(async function(){
+  await idb_open();
+  wireUI();
+  await refresh();
+  // Service worker (optional if you already have sw.js)
+  if ('serviceWorker' in navigator) {
+    try{ await navigator.serviceWorker.register('./sw.js'); }catch{}
+  }
+})();
 </script>
 </body>
 </html>
