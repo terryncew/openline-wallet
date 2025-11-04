@@ -1,0 +1,10 @@
+{
+  "receipt_version": "1.5-P",
+  "version": "OLR/1.5-P",
+  "issued_at": "2025-11-03T20:10:00Z",
+  "issuer_id": "service-x",
+  "attrs": {"status": "AMBER"},
+  "model": {"family": "agent-x"},
+  "precision": {"train_dtype": "fp16", "infer_dtype": "fp16"},
+  "signals": {"kappa": 0.78, "dhol": 0.46, "phi_star": 0.62}
+}
