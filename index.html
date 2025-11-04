@@ -2,211 +2,307 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>OpenLine Wallet · Mobile</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
+<title>OpenLine Wallet · Mobile</title>
 <style>
   :root{
-    --bg:#0a0c10; --ink:#e7ecf4; --muted:#97a3b6;
-    --line:#1b2230; --tile:#0f141c;
-    --ok:#1ea672; --warn:#b38b10; --bad:#d23d3d;
-    --chip:#121925; --chipline:#1b2536;
+    --bg:#0a0c10; --ink:#e7ecf4; --muted:#98a3b6; --line:#1b2230; --tile:#0f141c;
+    --ok:#1ea672; --warn:#b38b10; --bad:#d23d3d; --chip:#121925; --chipline:#1b2536;
   }
   *{box-sizing:border-box}
-  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,system-ui,Segoe UI,Inter,Roboto,Helvetica,Arial}
-  .wrap{max-width:680px;margin:0 auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0))}
-  h1{font-size:20px;margin:0 0 6px}
-  .sub{color:var(--muted);font-size:13px}
-  .section{margin:14px 0}
-  .tile{background:var(--tile);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:hidden}
-  .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-  .btn{display:inline-block;padding:10px 14px;border-radius:10px;border:1px solid #2a3a55;background:#182234;color:var(--ink);font-weight:600}
-  .note{color:var(--muted);font-size:12px;margin:6px 2px}
-  .mono{font-variant-numeric:tabular-nums}
-  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
-  .kpi{background:var(--chip);border:1px solid var(--chipline);border-radius:10px;padding:6px 8px}
-  .kpi .lab{color:var(--muted);font-size:11px}
-  .kpi .val{font-weight:600}
-  .action{padding:4px 10px;border-radius:999px;border:1px solid var(--chipline);font-size:12px}
-  .act-go{background:rgba(30,166,114,.15)}
-  .act-watch{background:rgba(179,139,16,.15)}
-  .act-brake{background:rgba(210,61,61,.15)}
-  /* compact issuer list */
-  .issuer{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px}
-  .insight{margin-top:6px;font-size:13px}
-  /* receipts list contained inside the tile */
-  .list{max-height:360px;overflow:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px}
-  .item{display:grid;grid-template-columns:1.2fr .8fr .8fr auto;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
-  .item:first-child{border-top:0}
-  .badge{justify-self:end;align-self:center;padding:4px 10px;border-radius:999px;border:1px solid var(--chipline);font-size:12px}
-  .b-ok{background:rgba(30,166,114,.15)}
-  .b-warn{background:rgba(179,139,16,.15)}
-  .b-bad{background:rgba(210,61,61,.15)}
-  /* keep everything inside the rounded tile on tiny screens */
-  @media (max-width:420px){
-    .item{grid-template-columns:1fr .8fr auto}
-    .hide-xs{display:none}
-  }
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,system-ui,Segoe UI,Inter,Roboto,Helvetica,Arial}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:420px;margin:0 auto;padding:12px calc(12px + env(safe-area-inset-right)); padding-left:calc(12px + env(safe-area-inset-left))}
+  header{display:flex;justify-content:space-between;align-items:center;margin:4px 0 10px}
+  h1{font-size:18px;margin:0}
+  .sub{color:var(--muted);font-size:12px}
+  .btn{display:inline-flex;gap:6px;align-items:center;padding:8px 12px;border-radius:10px;border:1px solid #2a3a55;background:#1e293b;color:var(--ink);font-weight:600}
+  .panel{background:var(--tile);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:hidden}
+  .panel + .panel{margin-top:12px}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+  .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--chipline);background:var(--chip);
+        padding:6px 10px;border-radius:999px;font-size:12px;line-height:1.0;white-space:nowrap}
+  .badge{padding:4px 10px;border-radius:999px;border:1px solid #2a2f36;font-weight:700;font-size:12px}
+  .b-ok{background:rgba(30,166,114,.15);border-color:rgba(30,166,114,.35)}
+  .b-warn{background:rgba(179,139,16,.15);border-color:rgba(179,139,16,.35)}
+  .b-bad{background:rgba(210,61,61,.15);border-color:rgba(210,61,61,.35)}
+  .muted{color:var(--muted)}
+  .small{font-size:12px}
+  .health{font-size:22px;font-weight:800}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
+  .kv{display:flex;justify-content:space-between;gap:8px;border:1px solid var(--line);background:#0d121a;border-radius:10px;padding:8px}
+  .kv b{font-variant-numeric:tabular-nums}
+  .opinion{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .list{display:flex;flex-direction:column;gap:8px}
+  .tile{border:1px solid var(--line);background:#0d121a;border-radius:12px;padding:10px}
+  .tile .row{align-items:center}
+  .issuer{font-weight:700}
+  .nowrap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .controls{display:flex;flex-wrap:wrap;gap:8px}
+  input{width:100%;background:#0d121a;border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px}
+  /* ensure nothing bleeds */
+  img,table,pre,code{max-width:100%}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="section">
-    <h1>OpenLine Wallet</h1>
-    <div class="sub">Mobile-first • everything fits inside the tile • opinionated analytics</div>
-  </div>
-
-  <!-- Controls -->
-  <div class="section tile">
-    <div class="row">
-      <div class="sub" id="stats">—</div>
-      <div>
-        <a class="btn" id="add5">+5</a>
-        <a class="btn" id="add20">+20</a>
-        <a class="btn" id="clr">Clear</a>
-      </div>
+  <header>
+    <div>
+      <h1>OpenLine Wallet</h1>
+      <div class="sub">Proof moves; data doesn’t.</div>
     </div>
-  </div>
+    <a class="btn" href="https://github.com/terryncew/openline-wallet" target="_blank" rel="noopener">Repo</a>
+  </header>
 
-  <!-- Issuer health (compact) -->
-  <div class="section tile">
+  <!-- TOP SUMMARY -->
+  <div class="panel" id="summary">
     <div class="row">
-      <div style="font-weight:700">Issuer health</div>
-      <div class="sub">Last 7 days</div>
+      <div class="small muted">7-day posture</div>
+      <div class="small"><span id="overallGreen">—</span> green • <span id="count">0</span> receipts</div>
     </div>
-    <div id="issuers"></div>
+    <div class="row" style="margin-top:6px">
+      <div class="small muted">Overall health</div>
+      <div class="health mono" id="overallHealth">—</div>
+    </div>
+    <div class="opinion" id="overallOpinion">Loading…</div>
   </div>
 
-  <!-- Receipts (contained) -->
-  <div class="section tile">
-    <div class="row">
-      <div style="font-weight:700">Receipts</div>
-      <div class="sub">Newest first</div>
+  <!-- CONTROLS -->
+  <div class="panel">
+    <div class="controls">
+      <a class="btn" id="addRand">Add Random</a>
+      <a class="btn" id="addRand5">Add ×5</a>
+      <a class="btn" id="exportJsonl">Export JSONL</a>
+      <a class="btn" id="clearAll">Clear</a>
     </div>
-    <div class="list" id="list"></div>
+    <div style="margin-top:8px" class="row">
+      <input id="addUrl" placeholder="Add receipt by URL (raw GitHub best)">
+      <a class="btn" id="addUrlBtn">Add</a>
+    </div>
+    <div class="small muted" id="sourceNote"></div>
   </div>
 
-  <div class="section sub">OpenLine · COLE · MIT.</div>
+  <!-- ISSUER CARDS -->
+  <div class="panel">
+    <div class="row"><div style="font-weight:700">Issuer health</div><div class="small muted">tap rows = compact</div></div>
+    <div id="issuerList" class="list" style="margin-top:8px"></div>
+  </div>
+
+  <!-- RECEIPTS -->
+  <div class="panel">
+    <div class="row"><div style="font-weight:700">Receipts</div><div class="small muted mono" id="recCount">0</div></div>
+    <div id="recList" class="list" style="margin-top:8px"></div>
+  </div>
+
+  <div class="sub" style="margin:10px 2px">OpenLine · COLE · MIT.</div>
 </div>
 
 <script>
-/* ===== utilities ===== */
-const clamp01=v=>Math.max(0,Math.min(1,v));
-const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
-const p95=a=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y);const i=Math.min(s.length-1,Math.floor(0.95*(s.length-1)));return s[i];};
-const trend=v=>{const n=v.length;if(n<2)return 0;const mx=avg(v),mt=(n-1)/2;let num=0,den=0;for(let t=0;t<n;t++){num+=(t-mt)*(v[t]-mx);den+=(t-mt)*(t-mt);}return den?num/den:0;};
-const fmt3=x=>Number.isFinite(x)?x.toFixed(3):'0.000';
-const pct=x=>(x*100).toFixed(1)+'%';
-const asBadge = s => s.match(/green|ok|clean/i) ? 'ok' : s.match(/amber|warn|check/i) ? 'warn' : 'bad';
+/* ---------- helpers ---------- */
+const byId = id => document.getElementById(id);
+const clamp01 = v => Math.max(0, Math.min(1, v));
+const pct = x => (x*100).toFixed(1)+'%';
+const chip = (txt, cls='') => `<span class="chip ${cls}">${txt}</span>`;
+const badge = s=>{
+  const k = (s||'').toLowerCase();
+  const c = k.includes('red')?'b-bad':k.includes('amber')||k.includes('warn')?'b-warn':k.includes('green')||k.includes('ok')?'b-ok':'';
+  return `<span class="badge ${c}">${(s||'').toUpperCase()}</span>`;
+};
+const byteLen = s => new TextEncoder().encode(s).length;
+const STATUS_GREEN = s => /^(green|clean|ok)$/i.test(String(s||''));
 
-/* ===== demo data ===== */
-let RECEIPTS=[];
-function rid(){return Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);}
-function pick(a){return a[Math.floor(Math.random()*a.length)];}
-function rb(a,b){return +(a+Math.random()*(b-a)).toFixed(3);}
-function sample(){
-  const now = new Date().toISOString();
-  const issuer = pick(['labA','labB','opsX']);
-  const model = pick(['agent-x','op-llm','demo-llm']);
-  const r = Math.random();
-  let badge,k,d,p;
-  if(r<0.6){badge='GREEN';k=rb(0.05,0.55);d=rb(0.00,0.30);p=rb(0.80,0.98);}
-  else if(r<0.9){badge='AMBER';k=rb(0.55,0.90);d=rb(0.30,0.60);p=rb(0.45,0.80);}
-  else{badge='RED';k=rb(0.90,1.20);d=rb(0.60,1.00);p=rb(0.10,0.45);}
-  return {rid:rid(),issued_at:now,issuer,model,attrs:{status:badge},signals:{kappa:k,dhol:d,phi_star:p}};
+/* ---------- normalizer ---------- */
+function normalize(r){
+  // tolerant mapping across your variants
+  const issuer = r.issuer || r.issuer_id || r.signer || r.org || 'unknown';
+  const model  = r.model?.family || r.model?.name || r.model?.id || r.model || '—';
+  const status = (r.attrs?.status || r.status || r.badge || '—').toString();
+  const ts = r.issued_at || r.issued || r.run?.ts || r.time || r.date || new Date().toISOString();
+  const kappa = r.signals?.kappa ?? r.kappa ?? r.κ ?? r.dials?.kappa ?? null;
+  const dhol  = r.signals?.dhol ?? r.signals?.delta_hol ?? r.delta_hol ?? r.Δhol ?? r.dials?.delta_hol ?? null;
+  const phi   = r.signals?.phi_star ?? r.phi_star ?? r.dials?.phi_star ?? null;
+  const version = r.version || r.receipt_version || r.sku || '—';
+  return {issuer, model, status, ts, kappa, dhol, phi, version};
 }
 
-/* ===== health + insight ===== */
-function groupByIssuer(list){
-  const m={}; for(const r of list){(m[r.issuer||'unknown']??=[]).push(r);} return m;
+/* ---------- health/opinion ---------- */
+function p95(arr){
+  if(!arr.length) return 0;
+  const a = [...arr].sort((x,y)=>x-y);
+  const idx = Math.min(a.length-1, Math.floor(0.95*(a.length-1)));
+  return a[idx];
 }
-function computeHealth(list){
-  const out=[];
-  const by = groupByIssuer(list);
-  for(const [issuer,rows] of Object.entries(by)){
-    const n = rows.length;
-    const green = rows.filter(r=>/green|ok|clean/i.test(r.attrs?.status||r.status)).length/n || 0;
-    const ks = rows.map(r=>r.signals?.kappa).filter(Number.isFinite);
-    const ds = rows.map(r=>r.signals?.dhol).filter(Number.isFinite);
-    const ps = rows.map(r=>r.signals?.phi_star).filter(Number.isFinite);
-    const k95 = clamp01(p95(ks));
-    const dTrend = clamp01(trend(ds));
-    const pFloor = clamp01(Math.min(...ps,1));
-    const health = Math.round(100*(0.5*green + 0.2*(1-k95) + 0.2*(1-dTrend) + 0.1*pFloor));
-    out.push({issuer,health,green,k95,dTrend,pFloor});
-  }
-  out.sort((a,b)=>b.health-a.health);
-  return out;
+function trend(arr){ // simple last-avg minus prior-avg
+  if(arr.length<4) return 0;
+  const mid = Math.floor(arr.length*0.7);
+  const a = arr.slice(0,mid).reduce((s,v)=>s+v,0)/mid;
+  const b = arr.slice(mid).reduce((s,v)=>s+v,0)/Math.max(1, arr.length-mid);
+  return b - a; // >0 rising drift
 }
-function classify(h){
-  if(h.k95>=0.95 || h.pFloor<0.15) return {tag:'BRAKE', cls:'act-brake', msg:`κ p95 ${fmt3(h.k95)}${h.pFloor<0.15?`, Φ* floor ${fmt3(h.pFloor)}`:''}. Cut traffic 50% & inspect reds.`};
-  if(h.dTrend>=0.15 || h.green<0.60) return {tag:'WATCH', cls:'act-watch', msg:`drift ↑ ${fmt3(h.dTrend)} or green ${pct(h.green)}. Add guardrails & sample prompts.`};
-  if(h.green>=0.85 && h.k95<0.60) return {tag:'GO', cls:'act-go', msg:`stable (green ${pct(h.green)}, κ p95 ${fmt3(h.k95)}). Safe to scale.`};
-  return {tag:'WATCH', cls:'act-watch', msg:`mixed posture. Hold steady; gather 24h more receipts.`};
+function healthScore({greenRate, k95, dTrend, phiFloor}){
+  // 100×(0.5×green + 0.2×(1−k95) + 0.2×(1−dTrend+) + 0.1×phiFloor)
+  const dPos = Math.max(0,dTrend); // only penalize upward drift
+  const s = 100*(0.5*greenRate + 0.2*(1-clamp01(k95)) + 0.2*(1-clamp01(dPos)) + 0.1*clamp01(phiFloor));
+  return Math.round(Math.max(0, Math.min(100, s)));
+}
+function opinion({greenRate, k95, dTrend, phiFloor}){
+  if(k95>=0.9) return "Brake: κ p95 high → reduce concurrency or roll back risky config.";
+  if(dTrend>0.2) return "Watch drift: Δhol rising → freeze data/weights; run quick A/B on prompts.";
+  if(greenRate<0.6) return "Underperforming: lift green rate; tighten guardrails or simplify chain.";
+  if(phiFloor<0.2) return "Coherence floor low: add checks or raise refusal thresholds.";
+  return "Stable: hold config; sample controls weekly.";
 }
 
-/* ===== render ===== */
-const $issuers = document.getElementById('issuers');
-const $list = document.getElementById('list');
-const $stats = document.getElementById('stats');
+/* ---------- store ---------- */
+const WALLET = {items:[]}; // in-memory for demo; page reload ok
 
+function addReceipt(obj){
+  const rec = obj.json || obj;
+  const n = normalize(rec);
+  const bytes = obj.bytes ?? byteLen(JSON.stringify(rec));
+  WALLET.items.push({...n, bytes});
+}
+
+/* ---------- UI ---------- */
 function render(){
-  // stats
-  const greens = RECEIPTS.filter(r=>/green|ok|clean/i.test(r.attrs?.status||r.status)).length;
-  $stats.textContent = RECEIPTS.length ? `Items ${RECEIPTS.length} · GREEN ${(greens/RECEIPTS.length*100|0)}%` : 'No items yet. Tap +5 or +20.';
+  const items = WALLET.items.slice().sort((a,b)=>b.ts.localeCompare(a.ts));
+  byId('recCount').textContent = String(items.length);
 
-  // issuers compact
-  const health = computeHealth(RECEIPTS);
-  $issuers.innerHTML='';
-  for(const h of health){
-    const action = classify(h);
-    const div = document.createElement('div');
-    div.className='issuer';
-    div.innerHTML = `
+  // receipts list (compact rows)
+  const rows = items.map(r=>{
+    return `<div class="tile">
       <div class="row">
-        <div style="font-weight:600">${h.issuer}</div>
-        <div class="action ${action.cls}">${action.tag}</div>
+        <div class="nowrap" style="max-width:52%">${new Date(r.ts).toISOString().replace('T',' ').slice(0,19)}</div>
+        <div>${badge(r.status)}</div>
       </div>
-      <div class="kpis mono">
-        <div class="kpi"><div class="lab">Health</div><div class="val">${h.health}</div></div>
-        <div class="kpi"><div class="lab">Green</div><div class="val">${pct(h.green)}</div></div>
-        <div class="kpi"><div class="lab">κ p95</div><div class="val">${fmt3(h.k95)}</div></div>
-        <div class="kpi"><div class="lab">Δhol trend</div><div class="val">${fmt3(h.dTrend)}</div></div>
-        <div class="kpi"><div class="lab">Φ* floor</div><div class="val">${fmt3(h.pFloor)}</div></div>
-        <div class="kpi hide-xs"><div class="lab">Reds last 50</div><div class="val">${countReds(h.issuer)}</div></div>
+      <div class="row small muted">
+        <div class="issuer nowrap" style="max-width:55%">${r.issuer}</div>
+        <div class="nowrap" style="max-width:45%">${r.model}</div>
       </div>
-      <div class="insight sub">• ${action.msg}</div>
-    `;
-    $issuers.appendChild(div);
+      <div class="row small" style="margin-top:6px">
+        ${chip(`κ ${isFinite(r.kappa)?r.kappa.toFixed(3):'—'}`)}
+        ${chip(`Δhol ${isFinite(r.dhol)?r.dhol.toFixed(3):'—'}`)}
+        ${chip(`Φ* ${isFinite(r.phi)?r.phi.toFixed(3):'—'}`)}
+      </div>
+    </div>`;
+  }).join('');
+  byId('recList').innerHTML = rows || `<div class="small muted">No receipts yet. Add random or URL above.</div>`;
+
+  // aggregate by issuer
+  const byIssuer = {};
+  for(const r of items){
+    const g = (byIssuer[r.issuer] ||= {issuer:r.issuer, total:0, greens:0, ks:[], ds:[], phis:[]});
+    g.total++; if(STATUS_GREEN(r.status)) g.greens++;
+    if(isFinite(r.kappa)) g.ks.push(r.kappa);
+    if(isFinite(r.dhol))  g.ds.push(r.dhol);
+    if(isFinite(r.phi))   g.phis.push(r.phi);
   }
+  const cards = Object.values(byIssuer).map(g=>{
+    const greenRate = g.total? g.greens/g.total : 0;
+    const k95 = p95(g.ks);
+    const dTrend = trend(g.ds);
+    const phiFloor = g.phis.length? Math.min(...g.phis) : 0;
+    const hs = healthScore({greenRate,k95,dTrend,phiFloor});
+    const talk = opinion({greenRate,k95,dTrend,phiFloor});
+    return `<div class="tile">
+      <div class="row">
+        <div class="issuer nowrap" style="max-width:55%">${g.issuer}</div>
+        <div class="health mono">${hs}</div>
+      </div>
+      <div class="grid">
+        <div class="kv small"><span class="muted">Green</span><b>${pct(greenRate)}</b></div>
+        <div class="kv small"><span class="muted">κ p95</span><b>${k95.toFixed(3)}</b></div>
+        <div class="kv small"><span class="muted">Δhol trend</span><b>${(dTrend>=0?'+':'')+dTrend.toFixed(3)}</b></div>
+        <div class="kv small"><span class="muted">Φ* floor</span><b>${phiFloor.toFixed(3)}</b></div>
+      </div>
+      <div class="opinion">${talk}</div>
+    </div>`;
+  }).sort((a,b)=>0).join('');
+  byId('issuerList').innerHTML = cards || `<div class="small muted">No issuers yet.</div>`;
 
-  // receipts compact list (contained)
-  $list.innerHTML='';
-  for(const r of RECEIPTS.slice(-120).reverse()){
-    const it = document.createElement('div');
-    it.className='item mono';
-    const b = asBadge(r.attrs?.status||r.status);
-    it.innerHTML = `
-      <div>${r.issued_at.replace('T',' ').replace('Z','')}</div>
-      <div>${r.issuer||'unknown'}</div>
-      <div class="hide-xs">${r.model||'—'}</div>
-      <div class="badge ${b==='ok'?'b-ok':b==='warn'?'b-warn':'b-bad'}">${r.attrs?.status||r.status||'—'}</div>
-    `;
-    $list.appendChild(it);
-  }
+  // overall
+  const total = items.length;
+  const greens = items.filter(x=>STATUS_GREEN(x.status)).length;
+  const overallGreen = total? greens/total : 0;
+  byId('overallGreen').textContent = pct(overallGreen);
+  byId('count').textContent = String(total);
+
+  // compute overall like a synthetic issuer
+  const ks = items.map(x=>x.kappa).filter(Number.isFinite);
+  const ds = items.map(x=>x.dhol).filter(Number.isFinite);
+  const phis = items.map(x=>x.phi).filter(Number.isFinite);
+  const overall = {
+    greenRate: overallGreen,
+    k95: p95(ks),
+    dTrend: trend(ds),
+    phiFloor: phis.length? Math.min(...phis) : 0
+  };
+  byId('overallHealth').textContent = String(healthScore(overall));
+  byId('overallOpinion').textContent = opinion(overall);
 }
-function countReds(issuer){
-  return RECEIPTS.filter(r=>r.issuer===issuer && /red|risk|bad/i.test(r.attrs?.status||r.status)).length;
+
+/* ---------- demo data & actions ---------- */
+function randBetween(a,b){ return a + Math.random()*(b-a); }
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+function makeRandom(){
+  const bucket = Math.random();
+  let status, kRange, dRange, pRange;
+  if (bucket < 0.6){ status='GREEN'; kRange=[0.05,0.50]; dRange=[0.00,0.30]; pRange=[0.80,0.98]; }
+  else if (bucket < 0.9){ status='AMBER'; kRange=[0.50,0.90]; dRange=[0.30,0.60]; pRange=[0.45,0.80]; }
+  else { status='RED';   kRange=[0.90,1.20]; dRange=[0.60,1.00]; pRange=[0.10,0.45]; }
+  const now = new Date().toISOString();
+  return {
+    version:"OLR/1.5-P", issued_at: now, attrs:{status},
+    issuer: pick(['labA','labB','opsX']),
+    model:{family: pick(['demo-llm','op-llm','agent-x'])},
+    signals:{
+      kappa:+randBetween(...kRange).toFixed(3),
+      dhol:+randBetween(...dRange).toFixed(3),
+      phi_star:+randBetween(...pRange).toFixed(3)
+    }
+  };
+}
+async function addUrl(u){
+  try{
+    const raw = (()=>{
+      try{
+        const url = new URL(u.trim());
+        if (url.hostname==='github.com'){
+          const p = url.pathname.split('/').filter(Boolean);
+          if (p[2]==='blob') return `https://raw.githubusercontent.com/${p[0]}/${p[1]}/${p[3]}/${p.slice(4).join('/')}`;
+        }
+      }catch{}
+      return u;
+    })();
+    const res = await fetch(raw + (raw.includes('?')?'&':'?')+'v='+Date.now(), {cache:'no-store'});
+    if(!res.ok) throw new Error('fetch failed');
+    const txt = await res.text();
+    addReceipt({json: JSON.parse(txt), bytes: byteLen(txt)});
+    render();
+  }catch{ alert('Add failed'); }
 }
 
-/* ===== wire up ===== */
-document.getElementById('add5').onclick = ()=>{for(let i=0;i<5;i++)RECEIPTS.push(sample());render();};
-document.getElementById('add20').onclick= ()=>{for(let i=0;i<20;i++)RECEIPTS.push(sample());render();};
-document.getElementById('clr').onclick  = ()=>{ if(confirm('Clear all receipts?')){RECEIPTS.length=0;render();} };
+/* ---------- wire up ---------- */
+byId('addRand').onclick = ()=>{ addReceipt(makeRandom()); render(); };
+byId('addRand5').onclick = ()=>{ for(let i=0;i<5;i++) addReceipt(makeRandom()); render(); };
+byId('exportJsonl').onclick = ()=>{
+  const lines = WALLET.items.map(x=>JSON.stringify(x)).join('\n');
+  const blob = new Blob([lines], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'receipts.jsonl'; a.click();
+};
+byId('clearAll').onclick = ()=>{ WALLET.items = []; render(); };
+byId('addUrlBtn').onclick = (e)=>{ e.preventDefault(); const u = byId('addUrl').value.trim(); if(!u) return; addUrl(u).then(()=>{ byId('addUrl').value=''; }); };
 
-/* seed a little so it’s not empty */
-for(let i=0;i<24;i++) RECEIPTS.push(sample());
-render();
+/* ---------- boot ---------- */
+(function boot(){
+  // seed a little so the page "speaks" immediately
+  for(let i=0;i<12;i++) addReceipt(makeRandom());
+  byId('sourceNote').textContent = 'Demo data in-memory. Add real URLs to mix.';
+  render();
+})();
 </script>
 </body>
 </html>
