@@ -17,16 +17,19 @@
   .wrap{max-width:420px;margin:0 auto;padding:16px}
   h1{font-size:22px;margin:0 0 6px}
   .sub{color:var(--muted);font-size:13px}
+
   .tile{background:var(--tile);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px;overflow:hidden}
-  .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .inline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .btn{display:inline-block;padding:10px 12px;border-radius:12px;border:1px solid var(--btnline);background:var(--btn);color:var(--btnink);font-weight:600}
   .btn.small{padding:7px 10px;font-weight:600}
+  input, textarea{width:100%;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px}
+  textarea{min-height:110px}
+
   .chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--chipline);background:var(--chip);padding:6px 10px;border-radius:999px;font-size:12px;line-height:1;height:26px}
   .pill{padding:4px 8px;border-radius:999px;border:1px solid var(--chipline);background:var(--chip);font-size:12px}
   .ok{background:rgba(22,163,74,.12);border-color:rgba(22,163,74,.35)}
   .warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35)}
   .bad{background:rgba(220,38,38,.12);border-color:rgba(220,38,38,.35)}
-  input{width:100%;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px}
   .kicker{color:var(--muted);font-size:12px;margin-bottom:6px}
   .row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
   .knum{font-size:34px;font-weight:800;letter-spacing:0.5px}
@@ -76,21 +79,30 @@
 
   <!-- ACTIONS -->
   <div class="tile">
-    <div class="inline" style="gap:8px;margin-bottom:8px">
+    <div class="inline" style="margin-bottom:8px">
       <a class="btn" id="addRand">Add Random</a>
       <a class="btn" id="addRand5">Add ×5</a>
       <a class="btn" id="exportJsonl">Export JSONL</a>
     </div>
-    <div class="inline" style="gap:8px;margin-bottom:8px">
+
+    <div class="inline" style="margin-bottom:8px">
       <input id="urlBox" placeholder="Add receipt by URL (raw GitHub best)">
       <a class="btn" id="addUrl">Add</a>
     </div>
-    <div class="inline" style="gap:8px">
+
+    <!-- NEW: paste JSON/JSONL & file picker -->
+    <div class="inline" style="margin-bottom:8px">
+      <textarea id="jsonBox" placeholder="Paste receipt JSON, an array of receipts, or JSONL (one per line)…"></textarea>
+    </div>
+    <div class="inline">
+      <a class="btn" id="addBox">Add JSON</a>
+      <input id="filePick" type="file" accept=".json,.jsonl,application/json" style="display:none">
+      <a class="btn" id="addFile">Import file</a>
       <a class="btn" id="clearAll">Clear</a>
       <a class="btn" id="exportPdf">Export PDF</a>
       <a class="btn" id="copySummary">Copy Summary</a>
     </div>
-    <div class="note tight">Demo data runs in-memory. Mix real URLs for realism.</div>
+    <div class="note tight">Demo data in-memory. Mix real URLs, paste JSON/JSONL, or import a file.</div>
   </div>
 
   <!-- ISSUER HEALTH -->
@@ -139,7 +151,7 @@ function makeRandomReceipt(){
   else { badge='RED'; kRange=[0.90,1.20]; dRange=[0.60,1.00]; pRange=[0.10,0.45]; }
   const pick = a => a[Math.floor(Math.random()*a.length)];
   const between=(a,b)=> a + Math.random()*(b-a);
-  return {
+  return canonicalize({
     rid: crypto.randomUUID(),
     issuer_id: pick(labs),
     model: pick(models),
@@ -151,27 +163,90 @@ function makeRandomReceipt(){
       phi_star:+between(...pRange).toFixed(3)
     },
     bytes: 512 + Math.floor(Math.random()*120)
-  };
+  }, null);
 }
 
 /* -------------------- store -------------------- */
 let RECEIPTS = [];
-
 function addReceipt(r){ RECEIPTS.push(r); }
+
+/* -------------------- NORMALIZATION -------------------- */
+/* Accept object, array of objects, or JSONL (string). Map loose shapes to canonical. */
+function canonicalize(obj, originalText){
+  const txtBytes = originalText ? new TextEncoder().encode(originalText).length : undefined;
+  const badge = ((obj.attrs?.status)||(obj.status)||(obj.badge)||'').toString().toUpperCase();
+  const k = obj.signals?.kappa ?? obj.kappa ?? obj.κ;
+  const d = obj.signals?.dhol  ?? obj.dhol  ?? obj.drift;
+  const p = obj.signals?.phi_star ?? obj.phi_star ?? obj.phi ?? obj['phi*'];
+
+  return {
+    rid: obj.rid || crypto.randomUUID(),
+    issuer_id: obj.issuer_id || obj.issuer || 'unknown',
+    model: obj.model || obj.model_family || '—',
+    issued_at: obj.issued_at || obj.when || nowISO(),
+    attrs: { status: badge || 'GREEN' },
+    signals: {
+      kappa: Number.isFinite(+k) ? +k : 0,
+      dhol:  Number.isFinite(+d) ? +d : 0,
+      phi_star: Number.isFinite(+p) ? +p : 0
+    },
+    bytes: obj.bytes ?? txtBytes ?? 0,
+    ctr: obj.ctr,
+    prev: obj.prev,
+    sig: obj.sig
+  };
+}
+
+function parseJsonish(text){
+  // Try JSON; if that fails, treat as JSONL
+  try{
+    const parsed = JSON.parse(text);
+    return Array.isArray(parsed) ? parsed.map(o=>canonicalize(o, JSON.stringify(o))) : [canonicalize(parsed, text)];
+  }catch{
+    // JSONL mode
+    const lines = text.split('\n').map(l=>l.trim()).filter(Boolean);
+    const out=[];
+    for (const line of lines){
+      try{ out.push(canonicalize(JSON.parse(line), line)); }catch{}
+    }
+    if (!out.length) throw new Error('No JSON/JSONL found');
+    return out;
+  }
+}
+
+/* -------------------- ingest paths -------------------- */
 function addRandom(n=1){ for(let i=0;i<n;i++) addReceipt(makeRandomReceipt()); renderAll(); }
+
 async function addByUrl(u){
   try{
     const raw = toRaw(u.trim());
     const res = await fetch(raw + (raw.includes('?')?'&':'?') + 'v=' + Date.now(), {cache:'no-store'});
-    const txt = await res.text(); const json = JSON.parse(txt);
-    json.bytes = new TextEncoder().encode(txt).length;
-    json.rid = json.rid || crypto.randomUUID();
-    json.issuer_id = json.issuer_id || 'unknown';
-    json.attrs = json.attrs || {status: (json.status||'').toUpperCase()};
-    json.signals = json.signals || {kappa: json.kappa, dhol: json.dhol, phi_star: json.phi||json.phi_star};
-    addReceipt(json); renderAll();
-  }catch{ alert('Add failed');}
+    const txt = await res.text();
+    const list = parseJsonish(txt);
+    list.forEach(addReceipt);
+    renderAll();
+  }catch(e){ alert('Add by URL failed.'); }
 }
+
+function addFromBox(){
+  const txt = $('#jsonBox').value.trim(); if(!txt) return;
+  try{
+    parseJsonish(txt).forEach(addReceipt);
+    $('#jsonBox').value='';
+    renderAll();
+  }catch(e){ alert('Could not parse JSON / JSONL.'); }
+}
+
+function addFromFile(file){
+  if (!file) return;
+  file.text().then(txt=>{
+    try{
+      parseJsonish(txt).forEach(addReceipt);
+      renderAll();
+    }catch{ alert('File did not contain valid JSON / JSONL.'); }
+  });
+}
+
 function toRaw(u){
   try{
     const url = new URL(u);
@@ -227,12 +302,12 @@ function slopeLast(arr){
   const ybar = ys.reduce((a,b)=>a+b,0)/n;
   let num=0, den=0;
   for(let i=0;i<n;i++){ num += (xs[i]-xbar)*(ys[i]-ybar); den += (xs[i]-xbar)**2; }
-  return den? num/den : 0; // rough trend; positive = rising drift
+  return den? num/den : 0; // positive = rising drift
 }
 function scoreHealth(green, k95, dTrend, phiFloor){
   const g = clamp(green,0,1);
-  const k = clamp(k95,0,1);         // treat ≥1 as 1
-  const d = clamp(dTrend,0,1);      // rising drift penalized
+  const k = clamp(k95,0,1);
+  const d = clamp(dTrend,0,1);
   const p = clamp(phiFloor,0,1);
   const s = 100*(0.5*g + 0.2*(1-k) + 0.2*(1-d) + 0.1*p);
   return Math.round(s);
@@ -248,7 +323,7 @@ function adviceFor(x){
 }
 function overallFrom(stats){
   if (!stats.length) return {score:0, txt:'—'};
-  const w = s => s.total; // weight by volume
+  const w = s => s.total;
   const sumW = stats.reduce((a,b)=>a+w(b),0);
   const score = Math.round(stats.reduce((a,s)=>a + s.health*w(s),0)/sumW);
   const green = (stats.reduce((a,s)=>a + s.green,0) / stats.reduce((a,s)=>a + s.total,0)) || 0;
@@ -361,18 +436,15 @@ function renderAll(){
 }
 
 /* -------------------- export / summary -------------------- */
-function asJsonl(arr){
-  return arr.map(o=>JSON.stringify(o)).join('\n');
-}
-function download(name, text, type='application/octet-stream'){
-  const blob = new Blob([text], {type}); const url = URL.createObjectURL(blob);
+function asJsonl(arr){ return arr.map(o=>JSON.stringify(o)).join('\n'); }
+function download(name, data, type='application/octet-stream'){
+  const blob = new Blob([data], {type}); const url = URL.createObjectURL(blob);
   const a=document.createElement('a'); a.href=url; a.download=name; document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(url); a.remove();},0);
 }
 function clipboard(text){ navigator.clipboard.writeText(text); }
 
 async function exportPdf(){
-  // lazy-load pdf-lib only when needed
   if (!window.PDFLib){
     await new Promise((res,rej)=>{
       const s=document.createElement('script');
@@ -380,9 +452,9 @@ async function exportPdf(){
       s.onload=res; s.onerror=rej; document.head.appendChild(s);
     });
   }
-  const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
+  const { PDFDocument, StandardFonts } = window.PDFLib;
   const pdfDoc = await PDFDocument.create();
-  const page = pdfDoc.addPage([612, 792]); // US Letter
+  const page = pdfDoc.addPage([612, 792]);
   const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const bold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
@@ -416,10 +488,10 @@ async function exportPdf(){
 /* -------------------- events -------------------- */
 $('#addRand').addEventListener('click', ()=> addRandom(1));
 $('#addRand5').addEventListener('click', ()=> addRandom(5));
-$('#addUrl').addEventListener('click', ()=> {
-  const u=$('#urlBox').value.trim(); if(!u) return;
-  addByUrl(u); $('#urlBox').value='';
-});
+$('#addUrl').addEventListener('click', ()=> { const u=$('#urlBox').value.trim(); if(!u) return; addByUrl(u); $('#urlBox').value=''; });
+$('#addBox').addEventListener('click', addFromBox);
+$('#addFile').addEventListener('click', ()=> $('#filePick').click());
+$('#filePick').addEventListener('change', e=> addFromFile(e.target.files?.[0]));
 $('#clearAll').addEventListener('click', ()=>{ if(!confirm('Clear all receipts?')) return; RECEIPTS=[]; renderAll(); });
 $('#exportJsonl').addEventListener('click', ()=> download(`receipts-${Date.now()}.jsonl`, asJsonl(RECEIPTS), 'application/jsonl'));
 $('#copySummary').addEventListener('click', ()=>{
@@ -441,18 +513,13 @@ $('#toggleDeep').addEventListener('click', ()=>{
   w.style.display = show?'block':'none';
   if (show) renderDeepTable(RECEIPTS);
 });
-/* drag-drop ingest */
+
+/* drag-drop (desktop bonus) */
 document.addEventListener('dragover', e=>{e.preventDefault();});
 document.addEventListener('drop', async e=>{
   e.preventDefault();
   const f = e.dataTransfer?.files?.[0]; if(!f) return;
-  const txt = await f.text(); const json = JSON.parse(txt);
-  json.bytes = new TextEncoder().encode(txt).length;
-  json.rid = json.rid || crypto.randomUUID();
-  json.issuer_id = json.issuer_id || 'unknown';
-  json.attrs = json.attrs || {status: (json.status||'').toUpperCase()};
-  json.signals = json.signals || {kappa: json.kappa, dhol: json.dhol, phi_star: json.phi||json.phi_star};
-  addReceipt(json); renderAll();
+  addFromFile(f);
 });
 
 /* seed & show */
