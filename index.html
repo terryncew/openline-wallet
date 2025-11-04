@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>OpenLine Wallet · Portable Proof</title>
+<title>OpenLine Wallet · Demo</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="OpenLine Wallet">
-<meta name="theme-color" content="#0a0c10">
+<meta name="color-scheme" content="dark light">
 <style>
   :root{--bg:#0a0c10;--ink:#e7ecf4;--muted:#97a3b6;--line:#1b2230;--tile:#0f141c;--btn:#1e293b;--btnink:#e7ecf4;--btnline:#2a3a55;--chip:#121925;--chipline:#1b2536;--ok:#1ea672;--warn:#b38b10;--bad:#d23d3d}
   *{box-sizing:border-box}
@@ -15,20 +12,31 @@
   a{color:inherit;text-decoration:none}
   .wrap{max-width:980px;margin:0 auto;padding:18px}
   header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
-  h1{font-size:20px;margin:2px 0 0} .sub{color:var(--muted);font-size:13px}
-  .section{margin:18px 0} h2{font-size:16px;margin:0 0 8px}
-  .tile{background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:12px}
+  header h1{font-size:20px;margin:2px 0 0}
+  .sub{color:var(--muted);font-size:13px}
+  .section{margin:18px 0}
+  h2{font-size:16px;margin:0 0 8px}
+  .hero,.tile{background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:12px}
+  .hero{padding:14px}
   .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .btn{display:inline-block;padding:8px 12px;border-radius:10px;border:1px solid var(--btnline);background:var(--btn);color:var(--btnink);font-weight:600}
+  .btn{display:inline-block;padding:8px 12px;border-radius:10px;border:1px solid var(--btnline);background:var(--btn);color:var(--btnink);font-weight:600;cursor:pointer}
+  button.btn{font:inherit}
+  .tile + .tile{margin-top:12px}
+  .card{border:1px solid var(--line);border-radius:10px;margin-top:10px;overflow:hidden}
+  .row{display:flex;gap:14px;border-top:1px solid var(--line)}
+  .row:first-child{border-top:0}
+  .left{min-width:120px;padding:10px 14px;color:var(--muted);font-weight:600}
+  .right{flex:1;padding:10px 14px}
   .chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--chipline);background:var(--chip);padding:6px 10px;border-radius:999px;font-size:12px;line-height:1;height:26px}
-  .ok{background:rgba(30,166,114,.15);border-color:rgba(30,166,114,.35)} .warn{background:rgba(179,139,16,.15);border-color:rgba(179,139,16,.35)} .bad{background:rgba(210,61,61,.15);border-color:rgba(210,61,61,.35)} .neutral{opacity:.85}
+  .ok{background:rgba(30,166,114,.15);border-color:rgba(30,166,114,.35)}
+  .warn{background:rgba(179,139,16,.15);border-color:rgba(179,139,16,.35)}
+  .bad{background:rgba(210,61,61,.15);border-color:rgba(210,61,61,.35)}
+  .neutral{opacity:.85}
   .note{color:var(--muted);font-size:12px;margin:8px 2px}
-  input,textarea{width:100%;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px}
-  textarea{min-height:84px;resize:vertical}
-  table{width:100%;border-collapse:collapse} th,td{border-top:1px solid var(--line);padding:8px 6px;text-align:left} th{color:var(--muted);font-weight:600}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-  .mono{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace}
-  @media (max-width:560px){ .hide-sm{display:none} }
+  input{width:100%;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px}
+  #diag{display:flex;gap:8px;align-items:center;margin-top:8px}
+  #diag .chip{height:auto;padding:6px 10px}
+  @media (max-width:560px){ .left{min-width:96px} }
 </style>
 </head>
 <body>
@@ -37,300 +45,395 @@
   <header>
     <div>
       <h1>OpenLine Wallet</h1>
-      <div class="sub">Verify · Store · Explain — all local</div>
+      <div class="sub">Portable proof · local-first · no servers</div>
+      <div id="diag">
+        <span id="diagStatus" class="chip ok">JS OK</span>
+        <span id="diagMsg" class="sub">Booting…</span>
+      </div>
     </div>
     <div class="inline">
-      <a class="btn" id="installBtn" href="#">Install</a>
-      <a class="btn" id="offlineBtn" href="#">Offline ready?</a>
+      <a class="btn" href="https://terryncew.github.io/openline-hub/">Back to Hub</a>
     </div>
   </header>
 
-  <div class="section tile">
-    <div class="inline">
-      <input id="urlBox" placeholder="Paste receipt URL (raw GitHub works) or drop a .json file below">
-      <a class="btn" id="addUrlBtn">Add URL</a>
-      <a class="btn" id="addPasteBtn">Add JSON (from box below)</a>
-      <a class="btn" id="seedBtn">Seed from manifest</a>
-      <a class="btn" id="rand1">Add Random</a>
-      <a class="btn" id="rand5">Add 5 Random</a>
-    </div>
-    <textarea id="pasteBox" class="mono" placeholder='Paste a single receipt JSON here...'></textarea>
-    <div class="note">Tip: <span class="mono">?u=&lt;url&gt;</span> auto-imports on open. Drag a JSON file anywhere on this page to ingest.</div>
+  <div class="section hero">
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px">Proof moves; data doesn’t.</div>
+    <div class="sub">5 tiles → seed a live wallet. Works offline. Buttons below always function, even if network fails.</div>
   </div>
 
+  <!-- FEATURED (3) -->
   <div class="section">
-    <h2>Issuer health</h2>
+    <h2>Featured receipts</h2>
+    <div id="feat1"></div>
+    <div id="feat2" style="margin-top:12px"></div>
+    <div id="feat3" style="margin-top:12px"></div>
+  </div>
+
+  <!-- LOCAL (2 only) -->
+  <div class="section">
+    <h2 id="localTitle">Local receipts (2)</h2>
+    <div class="note">From <code>receipts/manifest.json</code> or <code>docs/receipts/manifest.json</code>. Falls back to built-in samples.</div>
+    <div id="local"></div>
+  </div>
+
+  <!-- WALLET -->
+  <div class="section" id="wallet">
+    <h2>Wallet (demo pack)</h2>
     <div class="tile">
-      <div class="note">Score = 100×(0.5·green + 0.2·(1−κ_p95) + 0.2·(1−Δhol_trend) + 0.1·Φ*_floor). Window: last 7 days.</div>
-      <div id="health"></div>
+      <div class="note">LocalStorage only. Seeded from the 5 tiles above; if fetch fails, built-ins seed it anyway.</div>
+
+      <div class="inline" style="gap:8px;margin-bottom:8px">
+        <button class="btn" id="reseeder" type="button">Reset & Reseed</button>
+        <button class="btn" id="addRand" type="button">Add Random</button>
+        <button class="btn" id="addRand5" type="button">Add 5 Random</button>
+        <button class="btn" id="exportPackBtn" type="button">Copy pack.json</button>
+        <button class="btn" id="clearPackBtn" type="button">Clear pack</button>
+      </div>
+
+      <div class="inline" style="gap:8px;margin-bottom:8px">
+        <input id="addUrl" placeholder="Add receipt by URL (raw GitHub best)"/>
+        <button class="btn" id="addUrlBtn" type="button">Add</button>
+      </div>
+
+      <div id="packStats" class="note">—</div>
+      <div id="packList"></div>
     </div>
   </div>
 
   <div class="section">
-    <h2>Receipts</h2>
-    <div class="inline" style="margin-bottom:8px">
-      <a class="btn" id="exportBtn">Export JSONL</a>
-      <a class="btn" id="clearBtn">Clear all</a>
-      <label class="inline" style="gap:6px"><input type="checkbox" id="verifyToggle"> <span>Enable Ed25519 verify (beta)</span></label>
-    </div>
-    <div id="list" class="grid"></div>
+    <div class="sub">OpenLine · COLE · MIT.</div>
   </div>
-
-  <div class="section tile">
-    <div class="note">All data stays on-device (IndexedDB). No servers. Works offline after first load.</div>
-  </div>
-
 </div>
 
 <script>
-/* ---------- tiny utils ---------- */
-const $, $$ = (q,all)=> all?document.querySelectorAll(q):document.querySelector(q);
-const bytelength = s => new TextEncoder().encode(s).length;
-function toRaw(u){try{const url=new URL(u.trim()); if(url.hostname==='github.com'){const p=url.pathname.split('/').filter(Boolean); if(p[2]==='blob') return `https://raw.githubusercontent.com/${p[0]}/${p[1]}/${p[3]}/${p.slice(4).join('/')}`;} return u;}catch{return u}}
-const STATUS_GREEN = s => /^(green|clean|ok|coherent)$/i.test(String(s||''));
-const clamp01 = v => Math.max(0, Math.min(1, v));
-const p95 = arr => { if(!arr.length) return 0; const a=[...arr].sort((a,b)=>a-b); const i=Math.floor(0.95*(a.length-1)); return a[i]; };
-const mean = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
-
-/* ---------- IDB (no libraries) ---------- */
-const DB_NAME='olw-db', STORE='receipts';
-let db;
-function idbOpen(){
-  return new Promise((res,rej)=>{
-    const req = indexedDB.open(DB_NAME,1);
-    req.onupgradeneeded = e=>{
-      const d=e.target.result;
-      const s=d.createObjectStore(STORE,{keyPath:'rid'});
-      s.createIndex('issued_at','issued_at'); s.createIndex('issuer_id','issuer_id'); s.createIndex('badge','badge');
-    };
-    req.onsuccess = ()=>{db=req.result; res(db)};
-    req.onerror = ()=>rej(req.error);
-  });
-}
-async function idbPut(obj){ await idbOpen(); return new Promise((res,rej)=>{ const tx=db.transaction(STORE,'readwrite'); tx.objectStore(STORE).put(obj); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); })}
-async function idbAll(){ await idbOpen(); return new Promise((res,rej)=>{ const tx=db.transaction(STORE,'readonly'); const req=tx.objectStore(STORE).getAll(); req.onsuccess=()=>res(req.result||[]); req.onerror=()=>rej(req.error); });}
-async function idbClear(){ await idbOpen(); return new Promise((res,rej)=>{ const tx=db.transaction(STORE,'readwrite'); tx.objectStore(STORE).clear(); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); });}
-
-/* ---------- normalizer & checks ---------- */
-function normalize(r){
-  const v = r.version || r.receipt_version || r.receiptVersion || r.sku || '—';
-  const status = (r.attrs?.status || r.status || '').toString();
-  const model = r.model?.family || r.model?.name || r.model?.id || r.model || '—';
-  const issued = r.issued_at || r.issued || r.run?.ts || r.time || r.date || new Date().toISOString();
-  const issuer = r.issuer_id || r.issuer?.id || r.org?.id || model || 'default';
-  const kappa = r.signals?.kappa ?? r.kappa ?? r.κ ?? r.dials?.kappa ?? null;
-  const dhol  = r.signals?.dhol  ?? r.signals?.delta_hol ?? r.delta_hol ?? r.Δhol ?? r.dials?.delta_hol ?? null;
-  const phi   = r.signals?.phi_star ?? r.phi_star ?? r.dials?.phi_star ?? null;
-  const badge = (r.attrs?.status || r.status || '').toString().toLowerCase().includes('red') ? 'red'
-              : (r.attrs?.status || r.status || '').toString().toLowerCase().match(/(amber|warn|check)/) ? 'amber' : 'green';
-  const ctr = r.ctr ?? r.run?.ctr ?? null;
-  const prev = r.prev ?? r.run?.prev ?? null;
-  return {version:v,status,model,issued,issuer,kappa,dhol,phi,badge,ctr,prev};
-}
-function checkCaps(rec, bytes){
-  const cleanish = /^(clean|coherent|ok|green)$/i.test(rec.status||'');
-  const warnish  = /^(amber|warn|check|red|risk|bad)$/i.test(rec.status||'');
-  const errs=[];
-  if (!rec.status) errs.push('missing status');
-  if (cleanish && bytes>640) errs.push(`CLEAN exceeds 640B (${bytes})`);
-  if (warnish && bytes>800) errs.push(`${rec.status} exceeds 800B (${bytes})`);
-  return {ok:errs.length===0, errs};
-}
-function hashPrevPayload(obj){
-  // lightweight hash (not crypto) for chain demo; replace with true blake3/sha256 later
-  const s = JSON.stringify(obj);
-  let h=0; for(let i=0;i<s.length;i++){ h=((h<<5)-h)+s.charCodeAt(i); h|=0; }
-  return 'h'+(h>>>0).toString(16);
-}
-
-/* ---------- verify (lazy Ed25519) ---------- */
-let noble = null;
-async function ensureEd25519(){ if (noble) return noble; noble = await import('https://cdn.jsdelivr.net/npm/@noble/ed25519@2.1.0/esm/index.js'); return noble; }
-async function verifyIfPresent(r){
-  // Expect r.sig (base64), r.pub (base64), and r.payload (string) OR JCS canonical JSON in r.jcs
-  if (!$('#verifyToggle').checked) return {verified:false, reason:'verify disabled'};
-  if (!(r.sig && r.pub && (r.payload || r.jcs))) return {verified:false, reason:'no signature fields'};
-  const ed = await ensureEd25519();
-  try{
-    const sig = Uint8Array.from(atob(r.sig),c=>c.charCodeAt(0));
-    const pub = Uint8Array.from(atob(r.pub),c=>c.charCodeAt(0));
-    const data = new TextEncoder().encode(r.payload || r.jcs);
-    const ok = await ed.verify(sig, data, pub);
-    return {verified:!!ok, reason: ok?'ok':'bad signature'};
-  }catch(e){ return {verified:false, reason:'verify error'}; }
-}
-
-/* ---------- renderer ---------- */
-function chip(txt, cls='neutral'){ const s=document.createElement('span'); s.className='chip '+cls; s.textContent=txt; return s; }
-function tileFor(item){
-  const t=document.createElement('div'); t.className='tile';
-  const top=document.createElement('div'); top.className='inline'; top.style.justifyContent='space-between'; top.style.alignItems='center';
-  const left=document.createElement('div'); left.textContent=item.title || item.url || '(local)';
-  const right=document.createElement('div'); right.style.display='flex'; right.style.gap='8px';
-  right.appendChild(chip(item.badge, item.badge==='green'?'ok':item.badge==='amber'?'warn':'bad'));
-  right.appendChild(chip(item.version||'—'));
-  right.appendChild(chip('bytes '+(item.bytes??'—')));
-  top.appendChild(left); top.appendChild(right); t.appendChild(top);
-
-  const row=document.createElement('div'); row.className='inline'; row.style.gap='8px'; row.style.marginTop='8px';
-  const toTxt=(k,v)=> (typeof v==='number'&&Number.isFinite(v)) ? (k==='phi'?`${v.toFixed(3)} (${Math.round(clamp01(v)*5)}★)` : v.toFixed(3)) : (v==null?'—':String(v));
-  row.appendChild(chip(`κ ${toTxt('k', item.kappa)}`));
-  row.appendChild(chip(`Δhol ${toTxt('d', item.dhol)}`));
-  row.appendChild(chip(`Φ* ${toTxt('phi', item.phi)}`));
-  t.appendChild(row);
-
-  const meta=document.createElement('div'); meta.className='note mono';
-  meta.textContent = `issuer=${item.issuer} · model=${item.model||'—'} · issued=${item.issued}`;
-  t.appendChild(meta);
-
-  const btns=document.createElement('div'); btns.className='inline'; btns.style.marginTop='8px';
-  if (item.url){ const open=document.createElement('a'); open.className='btn'; open.textContent='Open'; open.href=item.url; open.target='_blank'; btns.appendChild(open); }
-  const rm=document.createElement('a'); rm.className='btn'; rm.textContent='Remove'; rm.href='#';
-  rm.onclick=(e)=>{e.preventDefault(); removeReceipt(item.rid);};
-  btns.appendChild(rm);
-  t.appendChild(btns);
-  return t;
-}
-function renderList(items){
-  const list=$('#list'); list.innerHTML='';
-  items.sort((a,b)=> (b.issued||'').localeCompare(a.issued||''));
-  items.forEach(it=> list.appendChild(tileFor(it)));
-}
-function renderHealth(items){
-  const byIssuer = {};
-  items.forEach(it=>{ (byIssuer[it.issuer] ||= []).push(it); });
-  const table=document.createElement('table');
-  table.innerHTML = `<thead><tr>
-    <th>Issuer</th><th>Score</th><th class="hide-sm">Green rate</th><th>κ p95</th><th class="hide-sm">Δhol avg</th><th class="hide-sm">Φ* floor</th><th class="hide-sm">N</th>
-  </tr></thead>`;
-  const tb=document.createElement('tbody');
-  const now=Date.now(), win=7*24*3600*1000;
-  Object.entries(byIssuer).forEach(([issuer,arr])=>{
-    const w = arr.filter(x => (new Date(x.issued)).getTime() > (now-win));
-    const n = w.length || arr.length;
-    const use = w.length? w : arr;
-    const green = use.filter(x=>x.badge==='green').length / (use.length||1);
-    const kappas = use.map(x=>Number(x.kappa)).filter(Number.isFinite);
-    const dhols  = use.map(x=>Number(x.dhol)).filter(Number.isFinite);
-    const phis   = use.map(x=>Number(x.phi)).filter(Number.isFinite);
-    const k95 = kappas.length ? p95(kappas) : 0;
-    const dAvg = dhols.length ? mean(dhols) : 0;
-    const phiFloor = phis.length ? Math.min(...phis) : 0;
-    const score = 100*(0.5*green + 0.2*(1-k95) + 0.2*(1-dAvg) + 0.1*phiFloor);
-    const tr=document.createElement('tr');
-    tr.innerHTML = `<td>${issuer}</td>
-      <td><b>${Math.max(0,Math.min(100,score)).toFixed(0)}</b></td>
-      <td class="hide-sm">${(green*100).toFixed(0)}%</td>
-      <td>${k95.toFixed(3)}</td>
-      <td class="hide-sm">${dAvg.toFixed(3)}</td>
-      <td class="hide-sm">${phiFloor.toFixed(3)}</td>
-      <td class="hide-sm">${n}</td>`;
-    tb.appendChild(tr);
-  });
-  table.appendChild(tb);
-  $('#health').innerHTML=''; $('#health').appendChild(table);
-}
-
-/* ---------- ingest ---------- */
-async function addReceiptFromUrl(u){
-  const raw=toRaw(u); const res=await fetch(raw,{cache:'no-store'}); if(!res.ok) throw new Error('fetch failed '+res.status);
-  const txt=await res.text(); const j=JSON.parse(txt);
-  await addReceiptCore(j, {url:raw, bytes:bytelength(txt)});
-}
-async function addReceiptFromText(txt){
-  const j=JSON.parse(txt); await addReceiptCore(j, {url:null, bytes:bytelength(JSON.stringify(j))});
-}
-async function addReceiptCore(j, meta){
-  const n = normalize(j);
-  const caps = checkCaps(n, meta.bytes);
-  const chain_ok = (n.ctr==null && n.prev==null) ? true : (typeof n.ctr==='number' && typeof n.prev==='string');
-  const sig = await verifyIfPresent(j);
-  const rid = j.rid || j.id || (n.issuer + ':' + (n.ctr??'x') + ':' + hashPrevPayload(j).slice(-6) + ':' + Math.random().toString(36).slice(2,8));
-  const rec = {
-    rid, issuer:n.issuer, model:n.model, version:n.version, issued:n.issued,
-    kappa: Number(n.kappa), dhol: Number(n.dhol), phi: Number(n.phi),
-    badge: (n.badge || (STATUS_GREEN(n.status)?'green':(String(n.status||'').match(/(amber|warn|check)/)?'amber':'red'))),
-    bytes: meta.bytes, url: meta.url, caps_ok:caps.ok, chain_ok, verified: sig.verified
-  };
-  await idbPut(rec);
-  const items = await idbAll(); renderList(items); renderHealth(items);
-}
-async function removeReceipt(rid){
-  await idbOpen();
-  await new Promise((res,rej)=>{ const tx=db.transaction(STORE,'readwrite'); tx.objectStore(STORE).delete(rid); tx.oncomplete=()=>res(); tx.onerror=()=>rej(tx.error); });
-  const items=await idbAll(); renderList(items); renderHealth(items);
-}
-
-/* ---------- seeders ---------- */
-async function seedFromManifest(){
-  // tries local repo first
-  const paths=['receipts/manifest.json','docs/receipts/manifest.json'];
-  for (const p of paths){
-    try{ const r=await fetch(p+'?v='+Date.now(),{cache:'no-store'}); if(!r.ok) continue; const list=await r.json();
-      const arr=Array.isArray(list)?list:(list.files||list.receipts||list.items||[]);
-      for (const u of arr){ try{ await addReceiptFromUrl(u); }catch{} }
-      return true;
-    }catch{}
+(function(){
+  /* ---------- diagnostics ---------- */
+  const diagStatus = () => document.getElementById('diagStatus');
+  const diagMsg = () => document.getElementById('diagMsg');
+  function setDiag(ok, msg){
+    const d = diagStatus(); if(!d) return;
+    d.className = 'chip ' + (ok?'ok':'bad');
+    d.textContent = ok ? 'JS OK' : 'JS Error';
+    const m = diagMsg(); if(m) m.textContent = msg || (ok?'Ready.':'See console.');
   }
-  alert('No manifest found in this repo.');
-  return false;
-}
-function randomReceipt(){
-  const now=new Date().toISOString();
-  const bucket=Math.random(); let status, kR, dR, pR;
-  if (bucket<0.6){ status='CLEAN'; kR=[0.05,0.50]; dR=[0.00,0.30]; pR=[0.80,0.98]; }
-  else if (bucket<0.9){ status='AMBER'; kR=[0.50,0.90]; dR=[0.30,0.60]; pR=[0.45,0.80]; }
-  else { status='RED'; kR=[0.90,1.20]; dR=[0.60,1.00]; pR=[0.10,0.45]; }
-  const pick=a=>a[Math.floor(Math.random()*a.length)];
-  const rec = {
-    receipt_version:"1.5-P", version:"OLR/1.5-P", issued_at: now,
-    issuer_id: pick(['agent-alpha','agent-beta','service-x','service-y']),
-    attrs:{status}, model:{family: pick(['demo-llm','op-llm','agent-x'])},
-    precision:{train_dtype:"fp16", infer_dtype:"fp16"},
-    signals:{ kappa:+(kR[0]+Math.random()*(kR[1]-kR[0])).toFixed(3),
-              dhol:+(dR[0]+Math.random()*(dR[1]-dR[0])).toFixed(3),
-              phi_star:+(pR[0]+Math.random()*(pR[1]-pR[0])).toFixed(3) }
-  };
-  return rec;
-}
+  try{ setDiag(true,'Booting…'); }catch(e){/* ignore */ }
 
-/* ---------- export ---------- */
-async function exportJSONL(){
-  const items=await idbAll();
-  const lines = items.map(x=>JSON.stringify(x)).join('\n');
-  const blob=new Blob([lines],{type:'application/json'}); const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url; a.download='receipts.jsonl'; a.click(); URL.revokeObjectURL(url);
-}
+  /* ---------- constants ---------- */
+  const FEATURED = [
+    { title: 'COLE-Coherence-Layer-Engine / receipt.mini.json',
+      sources: [
+        'https://raw.githubusercontent.com/terryncew/COLE-Coherence-Layer-Engine-/main/docs/receipt.mini.json',
+        'https://raw.githubusercontent.com/terryncew/COLE-Coherence-Layer-Engine/main/docs/receipt.mini.json'
+      ] },
+    { title: 'open-receipts / receipt.latest.json',
+      sources: [
+        'https://raw.githubusercontent.com/terryncew/open-receipts/main/docs/receipt.latest.json',
+        'https://github.com/terryncew/open-receipts/blob/main/docs/receipt.latest.json'
+      ] },
+    { title: 'openline-csm / receipt.latest.json',
+      sources: [
+        'https://raw.githubusercontent.com/terryncew/openline-csm/main/docs/receipt.latest.json',
+        'https://github.com/terryncew/openline-csm/blob/main/docs/receipt.latest.json'
+      ] },
+  ];
+  const MANIFEST_PATHS = ['receipts/manifest.json','docs/receipts/manifest.json'];
+  const LOCAL_LIMIT = 2;
+  const WALLET_KEY = 'ol.wallet.v4';
+  const SEEDED_KEY = 'ol.wallet.seeded.v4';
 
-/* ---------- boot ---------- */
-async function boot(){
-  await idbOpen();
-  const u=new URL(location.href).searchParams.get('u'); if(u){ try{ await addReceiptFromUrl(u); }catch{} }
-  renderList(await idbAll()); renderHealth(await idbAll());
-  if ('serviceWorker' in navigator){ try{ await navigator.serviceWorker.register('./sw.js'); }catch{} }
-}
-boot();
+  /* ---------- built-in fallback receipts (always available) ---------- */
+  const FALLBACKS = [
+    {version:"OLR/1.5-P",receipt_version:"1.5-P",issued_at:"2025-11-04T00:00:00Z",attrs:{status:"CLEAN"},model:{family:"demo-llm"},precision:{train_dtype:"fp16",infer_dtype:"fp16"},signals:{kappa:0.18,dhol:0.07,phi_star:0.93}},
+    {version:"OLR/1.5-P",receipt_version:"1.5-P",issued_at:"2025-11-04T00:10:00Z",attrs:{status:"AMBER"},model:{family:"agent-x"},precision:{train_dtype:"fp16",infer_dtype:"fp16"},signals:{kappa:0.72,dhol:0.41,phi_star:0.64}},
+    {version:"OLR/1.5-P",receipt_version:"1.5-P",issued_at:"2025-11-04T00:20:00Z",attrs:{status:"RED"},model:{family:"op-llm"},precision:{train_dtype:"fp16",infer_dtype:"fp16"},signals:{kappa:1.05,dhol:0.78,phi_star:0.32}}
+  ];
 
-/* ---------- wire up ---------- */
-$('#addUrlBtn').onclick = async ()=>{ const u=$('#urlBox').value.trim(); if(!u) return; try{ await addReceiptFromUrl(u); $('#urlBox').value=''; }catch(e){ alert('Add failed'); } };
-$('#addPasteBtn').onclick = async ()=>{ const t=$('#pasteBox').value.trim(); if(!t) return; try{ await addReceiptFromText(t); $('#pasteBox').value=''; }catch(e){ alert('Bad JSON'); } };
-$('#seedBtn').onclick = ()=> seedFromManifest();
-$('#rand1').onclick = async ()=>{ await addReceiptCore(randomReceipt(), {url:null, bytes:0}); };
-$('#rand5').onclick = async ()=>{ for(let i=0;i<5;i++) await addReceiptCore(randomReceipt(), {url:null, bytes:0}); };
-$('#exportBtn').onclick = exportJSONL;
-$('#clearBtn').onclick = async ()=>{ if(!confirm('Clear all receipts?')) return; await idbClear(); renderList([]); renderHealth([]); };
-$('#offlineBtn').onclick = ()=> navigator.serviceWorker?.controller ? alert('Offline ready ✅') : alert('Not cached yet — reload once');
-let deferredPrompt=null; window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault(); deferredPrompt=e;});
-$('#installBtn').onclick = async ()=>{ if(deferredPrompt){ deferredPrompt.prompt(); deferredPrompt=null; } else alert('Use “Add to Home Screen” in Safari share sheet'); };
+  /* ---------- utils ---------- */
+  const el=(t,c,txt)=>{const e=document.createElement(t); if(c) e.className=c; if(txt!=null) e.textContent=txt; return e;};
+  const byteLen = s => new TextEncoder().encode(s).length;
+  function toRaw(u){
+    try{
+      const url = new URL(u.trim());
+      if (url.hostname === 'github.com') {
+        const p = url.pathname.split('/').filter(Boolean);
+        if (p[2] === 'blob') return `https://raw.githubusercontent.com/${p[0]}/${p[1]}/${p[3]}/${p.slice(4).join('/')}`;
+      }
+      return u;
+    }catch{ return u; }
+  }
+  const STATUS_GREEN = s => /^(green|clean|ok)$/i.test(String(s||''));
+  const clamp01 = v => Math.max(0, Math.min(1, v));
 
-// drag & drop
-document.addEventListener('dragover', e=>{ e.preventDefault(); });
-document.addEventListener('drop', async e=>{
-  e.preventDefault();
-  const f=[...(e.dataTransfer?.files||[])].find(x=>x.type==='application/json' || x.name.endsWith('.json'));
-  if (!f) return;
-  const txt=await f.text(); await addReceiptFromText(txt);
-});
+  function normalize(r){
+    const v = r.version || r.receipt_version || r.receiptVersion || r.sku || '—';
+    const status = (r.attrs?.status || r.status || '').toString();
+    const model = r.model?.family || r.model?.name || r.model?.id || r.model || '—';
+    const issued = r.issued_at || r.issued || r.run?.ts || r.time || r.date || '—';
+    const prec = (()=>{ const tr=r.precision?.train_dtype||r.train_dtype||r.precision?.train; const inf=r.precision?.infer_dtype||r.infer_dtype||r.precision?.infer; return (tr||inf)?`${tr||'—'}/${inf||'—'}`:(r.precision||'—');})();
+    const claims = r.claims || r;
+    const point   = claims.point   ?? '—';
+    const because = claims.because ?? '—';
+    const but     = claims.but     ?? '—';
+    const so      = claims.so      ?? '—';
+    const kappa = r.signals?.kappa ?? r.kappa ?? r.κ ?? r.dials?.kappa ?? r.telem?.kappa_eff ?? null;
+    const dhol  = r.signals?.dhol  ?? r.signals?.delta_hol ?? r.delta_hol ?? r.Δhol ?? r.dials?.delta_hol ?? r.telem?.delta_hol ?? null;
+    const phi   = r.signals?.phi_star ?? r.phi_star ?? r.dials?.phi_star ?? null;
+    return {version:v,status,model,issued,prec,point,because,but,so,dials:{kappa,dhol,phi}};
+  }
+  function check(r, bytes){
+    const errs=[], version=r.version||r.receipt_version||r.receiptVersion, status=(r.attrs?.status||r.status||'').toLowerCase();
+    if(!version) errs.push('missing receipt_version/version');
+    if(!status)  errs.push('missing attrs.status/status');
+    const clean=/^(clean|coherent|ok|green)$/.test(status), warnish=/^(amber|warn|check|red|risk|bad)$/.test(status);
+    if (clean && bytes>640) errs.push(`CLEAN exceeds 640B (${bytes})`);
+    if (warnish && bytes>800) errs.push(`${status} exceeds 800B (${bytes})`);
+    return {ok:errs.length===0, errs, version:version||'—', status:status||'—', bytes};
+  }
+
+  function renderUniformTile(title, srcUrl, rec, bytes){
+    const n = normalize(rec);
+    const t = el('div','tile');
+    const head = el('div','inline'); head.style.justifyContent='space-between'; head.style.alignItems='center';
+    head.appendChild(el('div','', title));
+    const pills = el('div'); pills.style.display='flex'; pills.style.gap='8px';
+    const cls = n.status.match(/clean|ok|green/i)?'ok':n.status.match(/warn|amber|check/i)?'warn':n.status.match(/red|risk|bad/i)?'bad':'neutral';
+    pills.appendChild(el('span','chip '+cls, n.status || '—'));
+    pills.appendChild(el('span','chip neutral', n.version));
+    head.appendChild(pills);
+
+    const card = el('div','card');
+    const row=(k,v)=>{const r=el('div','row'); r.appendChild(el('div','left',k)); r.appendChild(el('div','right',v||'—')); return r;};
+    card.appendChild(row('MODEL',n.model));
+    card.appendChild(row('ISSUED',n.issued));
+    card.appendChild(row('PRECISION',n.prec));
+    card.appendChild(row('POINT',n.point));
+    card.appendChild(row('BECAUSE',n.because));
+    card.appendChild(row('BUT',n.but));
+    card.appendChild(row('SO',n.so));
+    const dialRow = el('div','inline'); dialRow.style.gap='8px'; dialRow.style.margin='10px 14px';
+    const toTxt=(k,v)=> typeof v==='number'&&Number.isFinite(v)?(k==='Φ*'?`${v.toFixed(3)} (${Math.round(clamp01(v)*5)}★)`:v.toFixed(3)):(v==null?'—':String(v));
+    dialRow.appendChild(el('span','chip neutral', `κ — ${toTxt('κ', n.dials.kappa)}`));
+    dialRow.appendChild(el('span','chip neutral', `Δhol — ${toTxt('Δhol', n.dials.dhol)}`));
+    dialRow.appendChild(el('span','chip neutral', `Φ* — ${toTxt('Φ*', n.dials.phi)}`));
+    card.appendChild(dialRow);
+
+    const footer = el('div','note', `source: ${srcUrl} · bytes=${bytes}`);
+    const btns = el('div','inline'); btns.style.marginTop='8px';
+    const copyUrl = el('button','btn','Copy URL'); copyUrl.type='button'; copyUrl.onclick=()=>{navigator.clipboard.writeText(srcUrl);};
+    const copyJson = el('button','btn','Copy JSON'); copyJson.type='button'; copyJson.onclick=()=>{navigator.clipboard.writeText(JSON.stringify(rec,null,2));};
+    btns.appendChild(copyUrl); btns.appendChild(copyJson);
+
+    t.appendChild(head); t.appendChild(card); t.appendChild(footer); t.appendChild(btns);
+    return t;
+  }
+
+  async function fetchJsonRaw(u){
+    const raw = toRaw(u);
+    const res = await fetch(raw + (raw.includes('?')?'&':'?') + 'v=' + Date.now(), {cache:'no-store'});
+    if (!res.ok) throw new Error(`fetch failed (${res.status})`);
+    const txt = await res.text(); return {json: JSON.parse(txt), bytes: byteLen(txt), url: raw};
+  }
+  async function fetchFirst(paths){
+    for (const p of paths){
+      try{ const res = await fetch(p + '?v=' + Date.now(), {cache:'no-store'});
+           if(res.ok) return {path:p, data: await res.json()}; }catch{}
+    }
+    return null;
+  }
+
+  async function loadFeatured(){
+    const ids = ['feat1','feat2','feat3'];
+    const out = [];
+    for (let i=0;i<FEATURED.length;i++){
+      const box = document.getElementById(ids[i]);
+      let loaded = null;
+      for (const src of FEATURED[i].sources){
+        try{ const r = await fetchJsonRaw(src); box.appendChild(renderUniformTile(FEATURED[i].title, r.url, r.json, r.bytes)); loaded = r; break; }
+        catch{}
+      }
+      if (!loaded) {
+        // fall back to built-in samples so tiles never blank
+        const fb = FALLBACKS[i % FALLBACKS.length];
+        const txt = JSON.stringify(fb); const bytes = byteLen(txt);
+        box.appendChild(renderUniformTile(FEATURED[i].title+' (demo)', '(built-in)', fb, bytes));
+        out.push({url:'(built-in)', json:fb, bytes});
+      } else out.push(loaded);
+    }
+    return out;
+  }
+
+  async function loadLocal(){
+    const target = document.getElementById('local'); const title = document.getElementById('localTitle');
+    const got = await fetchFirst(MANIFEST_PATHS);
+    if(!got){
+      title.textContent='Local receipts (fallback mode)';
+      // show two built-ins
+      for (let i=0;i<2;i++){
+        const fb = FALLBACKS[(i+1)%FALLBACKS.length];
+        const txt = JSON.stringify(fb); const bytes = byteLen(txt);
+        target.appendChild(renderUniformTile('demo-'+(i+1), '(built-in)', fb, bytes));
+        const spacer = document.createElement('div'); spacer.style.height='12px'; target.appendChild(spacer);
+      }
+      return [{url:'(built-in)',json:FALLBACKS[1],bytes:byteLen(JSON.stringify(FALLBACKS[1]))},
+              {url:'(built-in)',json:FALLBACKS[2],bytes:byteLen(JSON.stringify(FALLBACKS[2]))}];
+    }
+    title.textContent = `Local receipts (from ${got.path})`;
+    const listAll = Array.isArray(got.data) ? got.data : (got.data.files || got.data.receipts || got.data.items || []);
+    const list = listAll.slice(0, 2);
+    const out = [];
+    for (const file of list){
+      try{
+        const r = await fetchJsonRaw(file);
+        target.appendChild(renderUniformTile(file.split('/').slice(-1)[0], r.url, r.json, r.bytes));
+        const spacer = document.createElement('div'); spacer.style.height='12px'; target.appendChild(spacer);
+        out.push(r);
+      }catch(e){
+        const t = el('div','tile'); t.appendChild(el('div','note',`Failed to load ${file}`)); target.appendChild(t);
+      }
+    }
+    // if nothing loaded, fall back to demos
+    if(out.length===0){
+      for (let i=0;i<2;i++){
+        const fb = FALLBACKS[(i+1)%FALLBACKS.length];
+        const txt = JSON.stringify(fb); const bytes = byteLen(txt);
+        target.appendChild(renderUniformTile('demo-'+(i+1), '(built-in)', fb, bytes));
+        out.push({url:'(built-in)',json:fb,bytes});
+      }
+    }
+    return out;
+  }
+
+  /* ---------- wallet ---------- */
+  function loadWallet(){ try{ return JSON.parse(localStorage.getItem(WALLET_KEY)) || {items:[]}; }catch{ return {items:[]}; } }
+  function saveWallet(w){ try{ localStorage.setItem(WALLET_KEY, JSON.stringify(w)); }catch{} }
+
+  const exportPackBtn = document.getElementById('exportPackBtn');
+  const clearPackBtn  = document.getElementById('clearPackBtn');
+  const reseederBtn   = document.getElementById('reseeder');
+  const addUrlInput   = document.getElementById('addUrl');
+  const addUrlBtn     = document.getElementById('addUrlBtn');
+  const addRandBtn    = document.getElementById('addRand');
+  const addRand5Btn   = document.getElementById('addRand5');
+  const packStats     = document.getElementById('packStats');
+  const packList      = document.getElementById('packList');
+
+  let W = loadWallet();
+
+  function renderPack(){
+    const items = W.items || [];
+    const greens = items.filter(x=>STATUS_GREEN(x.status)).length;
+    const avg = arr => arr.length ? (arr.reduce((a,b)=>a+(Number.isFinite(b)?b:0),0)/arr.length) : 0;
+    const kList = items.map(x=>x.signals?.kappa).filter(Number.isFinite);
+    const dList = items.map(x=>x.signals?.dhol).filter(Number.isFinite);
+    const pList = items.map(x=>x.signals?.phi_star).filter(Number.isFinite);
+    packStats.textContent = items.length
+      ? `Items: ${items.length} · GREEN: ${(greens/items.length*100|0)}% · κ(avg): ${avg(kList).toFixed(3)} · Δhol(avg): ${avg(dList).toFixed(3)} · Φ*(avg): ${avg(pList).toFixed(3)}`
+      : 'No items yet. Reseed or Add Random to start.';
+    packList.innerHTML='';
+    items.forEach((it,idx)=>{
+      const tile = el('div','tile');
+      const head = el('div','inline'); head.style.justifyContent='space-between'; head.style.alignItems='center';
+      head.appendChild(el('div','', it.title || it.url || '(simulated)'));
+      const pills = el('div'); pills.style.display='flex'; pills.style.gap='8px';
+      const cls = it.status?.match(/green|clean|ok/i)?'ok':it.status?.match(/amber|warn|check/i)?'warn':it.status?.match(/red|risk|bad/i)?'bad':'neutral';
+      pills.appendChild(el('span','chip '+cls, it.status || '—'));
+      pills.appendChild(el('span','chip neutral', it.version || '—'));
+      pills.appendChild(el('span','chip neutral', `bytes ${it.bytes ?? '—'}`));
+      head.appendChild(pills);
+      tile.appendChild(head);
+
+      const row = el('div','inline'); row.style.gap='8px'; row.style.marginTop='8px';
+      const toTxt=(k,v)=> typeof v==='number'&&Number.isFinite(v)?(k==='Φ*'?`${v.toFixed(3)} (${Math.round(clamp01(v)*5)}★)`:v.toFixed(3)):(v==null?'—':String(v));
+      row.appendChild(el('span','chip neutral', `κ — ${toTxt('κ', it.signals?.kappa)}`));
+      row.appendChild(el('span','chip neutral', `Δhol — ${toTxt('Δhol', it.signals?.dhol)}`));
+      row.appendChild(el('span','chip neutral', `Φ* — ${toTxt('Φ*', it.signals?.phi_star)}`));
+      tile.appendChild(row);
+
+      const btns = el('div','inline'); btns.style.marginTop='8px';
+      if (it.url){ const open=el('a','btn','Open'); open.href=it.url; open.target='_blank'; btns.appendChild(open); }
+      const rm=el('button','btn','Remove'); rm.type='button'; rm.onclick=()=>{ W.items.splice(idx,1); saveWallet(W); renderPack(); };
+      btns.appendChild(rm);
+      tile.appendChild(btns);
+      packList.appendChild(tile);
+    });
+  }
+
+  function addObjToPack(obj){
+    const r = obj.json || obj;
+    const ck = check(r, obj.bytes ?? byteLen(JSON.stringify(r)));
+    const n  = normalize(r);
+    const item = {
+      title: (obj.url && obj.url.split('/').slice(-1)[0]) || r.title || 'receipt',
+      url: obj.url || null,
+      status: ck.status, version: ck.version, bytes: ck.bytes,
+      signals: { kappa: n.dials.kappa, dhol: n.dials.dhol, phi_star: n.dials.phi }
+    };
+    if (item.url){
+      const exists = (W.items||[]).some(x => x.url===item.url && x.bytes===item.bytes);
+      if (exists) return;
+    }
+    (W.items ||= []).push(item);
+  }
+  async function addUrlToPack(url){
+    const r = await fetchJsonRaw(url);
+    addObjToPack(r); saveWallet(W); renderPack();
+  }
+
+  function randBetween(a,b){ return a + Math.random()*(b-a); }
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function makeRandomReceipt(){
+    const now = new Date().toISOString();
+    const bucket = Math.random();
+    let status, kRange, dRange, pRange;
+    if (bucket < 0.6){ status='CLEAN'; kRange=[0.05,0.50]; dRange=[0.00,0.30]; pRange=[0.80,0.98]; }
+    else if (bucket < 0.9){ status='AMBER'; kRange=[0.50,0.90]; dRange=[0.30,0.60]; pRange=[0.45,0.80]; }
+    else { status='RED'; kRange=[0.90,1.20]; dRange=[0.60,1.00]; pRange=[0.10,0.45]; }
+    return {
+      receipt_version:"1.5-P", version:"OLR/1.5-P", issued_at: now,
+      attrs:{status}, model:{family: pick(['demo-llm','op-llm','agent-x'])},
+      precision:{train_dtype:"fp16", infer_dtype:"fp16"},
+      signals:{ kappa:+randBetween(...kRange).toFixed(3),
+                dhol:+randBetween(...dRange).toFixed(3),
+                phi_star:+randBetween(...pRange).toFixed(3) }
+    };
+  }
+  function addRandom(n=1){ for (let i=0;i<n;i++){ addObjToPack(makeRandomReceipt()); } saveWallet(W); renderPack(); }
+
+  async function boot(){
+    try{
+      if (!W || !Array.isArray(W.items)) W = {items:[]};
+      const feats = await loadFeatured();   // 3 tiles (with fallback)
+      const locals = await loadLocal();     // 2 tiles (with fallback)
+      const alreadySeeded = localStorage.getItem(SEEDED_KEY)==='1';
+      if (!alreadySeeded || (W.items||[]).length===0){
+        W.items = [];
+        [...feats, ...locals].forEach(addObjToPack);
+        saveWallet(W);
+        localStorage.setItem(SEEDED_KEY,'1');
+      }
+      renderPack();
+      setDiag(true,'Ready.');
+    }catch(e){
+      setDiag(false, 'Init failed — using built-ins.');
+      // Absolute fallback: seed with built-ins then render
+      W.items = [];
+      FALLBACKS.forEach(r=> addObjToPack({json:r,bytes:byteLen(JSON.stringify(r))}));
+      saveWallet(W); renderPack();
+      console.error(e);
+    }
+  }
+
+  /* bind after DOM is ready just in case */
+  window.addEventListener('DOMContentLoaded', ()=>{
+    document.getElementById('exportPackBtn')?.addEventListener('click',()=>{ navigator.clipboard.writeText(JSON.stringify(W,null,2)); alert('Pack JSON copied.'); });
+    document.getElementById('clearPackBtn')?.addEventListener('click',()=>{ if(!confirm('Clear demo pack?'))return; W.items=[]; saveWallet(W); renderPack(); });
+    document.getElementById('reseeder')?.addEventListener('click',()=>{ if(!confirm('Reset & reseed from tiles?'))return; localStorage.removeItem(SEEDED_KEY); W.items=[]; saveWallet(W); boot(); });
+    document.getElementById('addUrlBtn')?.addEventListener('click', async ()=>{ const u=(document.getElementById('addUrl').value||'').trim(); if(!u) return; try{ await addUrlToPack(u); document.getElementById('addUrl').value=''; }catch{ alert('Add failed'); } });
+    document.getElementById('addRand')?.addEventListener('click',()=> addRandom(1));
+    document.getElementById('addRand5')?.addEventListener('click',()=> addRandom(5));
+    boot();
+  });
+})();
 </script>
 </body>
 </html>
