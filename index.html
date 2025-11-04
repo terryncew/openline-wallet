@@ -2,292 +2,133 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>OpenLine Wallet</title>
+<title>OpenLine Wallet · Mobile</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="dark light">
 <style>
   :root{
     --bg:#0a0c10; --ink:#e7ecf4; --muted:#97a3b6;
     --line:#1b2230; --tile:#0f141c;
-    --btn:#182234; --btnink:#e7ecf4; --btnline:#2a3a55;
     --ok:#1ea672; --warn:#b38b10; --bad:#d23d3d;
+    --chip:#121925; --chipline:#1b2536;
   }
   *{box-sizing:border-box}
   html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,system-ui,Segoe UI,Inter,Roboto,Helvetica,Arial}
-  a{color:inherit;text-decoration:none}
-  .wrap{max-width:980px;margin:0 auto;padding:18px;padding-bottom:calc(18px + env(safe-area-inset-bottom,0))}
-  header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:12px}
-  header h1{font-size:20px;margin:2px 0 0}
+  .wrap{max-width:680px;margin:0 auto;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0))}
+  h1{font-size:20px;margin:0 0 6px}
   .sub{color:var(--muted);font-size:13px}
-  .section{margin:18px 0}
-  h2{font-size:16px;margin:0 0 8px}
-  .tile{background:var(--tile);border:1px solid var(--line);border-radius:12px;padding:12px;overflow:hidden}
-  .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .btn{display:inline-block;padding:10px 14px;border-radius:10px;border:1px solid var(--btnline);background:var(--btn);color:var(--btnink);font-weight:600}
-  .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px}
-  .chip{display:inline-block;min-width:64px;text-align:center;border-radius:999px;padding:4px 10px;font-size:12px;border:1px solid var(--line)}
-  .chip.ok{background:rgba(30,166,114,.15);border-color:rgba(30,166,114,.35)}
-  .chip.warn{background:rgba(179,139,16,.15);border-color:rgba(179,139,16,.35)}
-  .chip.bad{background:rgba(210,61,61,.15);border-color:rgba(210,61,61,.35)}
-  .note{color:var(--muted);font-size:12px;margin:8px 2px}
-
-  /* Table discipline */
-  .table-wrap{border:1px solid var(--line);border-radius:10px;overflow:hidden}
-  .table-scroller{overflow:auto;-webkit-overflow-scrolling:touch}
-  table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;min-width:560px}
-  th,td{padding:12px 14px;border-top:1px solid var(--line)}
-  thead th{position:sticky;top:0;background:var(--tile);z-index:1;border-top:0}
-  tbody tr:first-child td{border-top:0}
-  th{font-weight:600;color:var(--muted);text-align:left}
-  td.num,th.num{font-variant-numeric:tabular-nums;text-align:right}
-  .ellipsis{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-  /* Cards fallback for narrow screens */
-  @media (max-width:520px){
-    table{min-width:480px}
+  .section{margin:14px 0}
+  .tile{background:var(--tile);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:hidden}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .btn{display:inline-block;padding:10px 14px;border-radius:10px;border:1px solid #2a3a55;background:#182234;color:var(--ink);font-weight:600}
+  .note{color:var(--muted);font-size:12px;margin:6px 2px}
+  .mono{font-variant-numeric:tabular-nums}
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+  .kpi{background:var(--chip);border:1px solid var(--chipline);border-radius:10px;padding:6px 8px}
+  .kpi .lab{color:var(--muted);font-size:11px}
+  .kpi .val{font-weight:600}
+  .action{padding:4px 10px;border-radius:999px;border:1px solid var(--chipline);font-size:12px}
+  .act-go{background:rgba(30,166,114,.15)}
+  .act-watch{background:rgba(179,139,16,.15)}
+  .act-brake{background:rgba(210,61,61,.15)}
+  /* compact issuer list */
+  .issuer{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:10px}
+  .insight{margin-top:6px;font-size:13px}
+  /* receipts list contained inside the tile */
+  .list{max-height:360px;overflow:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px}
+  .item{display:grid;grid-template-columns:1.2fr .8fr .8fr auto;gap:8px;padding:10px 12px;border-top:1px solid var(--line)}
+  .item:first-child{border-top:0}
+  .badge{justify-self:end;align-self:center;padding:4px 10px;border-radius:999px;border:1px solid var(--chipline);font-size:12px}
+  .b-ok{background:rgba(30,166,114,.15)}
+  .b-warn{background:rgba(179,139,16,.15)}
+  .b-bad{background:rgba(210,61,61,.15)}
+  /* keep everything inside the rounded tile on tiny screens */
+  @media (max-width:420px){
+    .item{grid-template-columns:1fr .8fr auto}
+    .hide-xs{display:none}
   }
-
-  /* Badges inside cells */
-  .badge{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px}
-  .badge.ok{background:rgba(30,166,114,.15)}
-  .badge.warn{background:rgba(179,139,16,.15)}
-  .badge.bad{background:rgba(210,61,61,.15)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div>
-      <h1>OpenLine Wallet</h1>
-      <div class="sub">Portable proof · vendor-neutral · iPhone-friendly</div>
-    </div>
-    <div class="inline">
-      <a class="btn" href="https://terryncew.github.io/openline-hub/">Back to Hub</a>
-      <a class="btn" href="#wallet">Jump to Wallet</a>
-    </div>
-  </header>
+  <div class="section">
+    <h1>OpenLine Wallet</h1>
+    <div class="sub">Mobile-first • everything fits inside the tile • opinionated analytics</div>
+  </div>
 
+  <!-- Controls -->
   <div class="section tile">
-    <div style="font-size:18px;font-weight:700;margin-bottom:6px">Insights</div>
-    <div id="insights" class="sub">Load or simulate receipts to get triage calls.</div>
-    <div class="note">Heuristics: Brake if κ p95 ≥ 0.95 or Φ* floor &lt; 0.15. Watch if Δhol trend ↑ ≥ 0.15 or green &lt; 60%. Go if green ≥ 85% and κ p95 &lt; 0.6.</div>
-  </div>
-
-  <div class="section tile" id="controls">
-    <div class="inline" style="gap:8px;margin-bottom:10px">
-      <a class="btn" id="addRand5">Add 5 Random</a>
-      <a class="btn" id="addRand">Add 1 Random</a>
-      <a class="btn" id="clearAll">Clear all</a>
-      <a class="btn" id="exportJsonl">Export JSONL</a>
-    </div>
-    <div class="note" id="packStats">—</div>
-  </div>
-
-  <div class="section">
-    <h2>Issuer health</h2>
-    <div class="note">Score = 100×(0.5·green + 0.2·(1−κ_p95) + 0.2·(1−Δhol_trend) + 0.1·Φ* floor). Window: last 7 days.</div>
-    <div class="table-wrap">
-      <div class="table-scroller">
-        <table id="issuerTbl">
-          <thead>
-            <tr>
-              <th class="ellipsis">Issuer</th>
-              <th class="num">Health</th>
-              <th class="num">Green</th>
-              <th class="num">κ p95</th>
-              <th class="num">Δhol trend</th>
-              <th class="num">Φ* floor</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+    <div class="row">
+      <div class="sub" id="stats">—</div>
+      <div>
+        <a class="btn" id="add5">+5</a>
+        <a class="btn" id="add20">+20</a>
+        <a class="btn" id="clr">Clear</a>
       </div>
     </div>
   </div>
 
-  <div class="section">
-    <h2 id="wallet">Receipts</h2>
-    <div class="table-wrap">
-      <div class="table-scroller">
-        <table id="rcpTbl">
-          <thead>
-            <tr>
-              <th class="ellipsis">When</th>
-              <th class="ellipsis">Issuer</th>
-              <th class="ellipsis">Model</th>
-              <th class="ellipsis">Badge</th>
-              <th class="num">κ</th>
-              <th class="num">Δhol</th>
-              <th class="num">Φ*</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+  <!-- Issuer health (compact) -->
+  <div class="section tile">
+    <div class="row">
+      <div style="font-weight:700">Issuer health</div>
+      <div class="sub">Last 7 days</div>
     </div>
+    <div id="issuers"></div>
+  </div>
+
+  <!-- Receipts (contained) -->
+  <div class="section tile">
+    <div class="row">
+      <div style="font-weight:700">Receipts</div>
+      <div class="sub">Newest first</div>
+    </div>
+    <div class="list" id="list"></div>
   </div>
 
   <div class="section sub">OpenLine · COLE · MIT.</div>
 </div>
 
 <script>
-/* ------------------- helpers ------------------- */
-const clamp01 = v => Math.max(0, Math.min(1, v));
-const avg = a => a.length ? a.reduce((x,y)=>x+y,0)/a.length : 0;
-const p95 = a => {
-  if(!a.length) return 0;
-  const s = [...a].sort((x,y)=>x-y);
-  const i = Math.min(s.length-1, Math.floor(0.95*(s.length-1)));
-  return s[i];
-};
-const trend = vals => { // simple slope vs index in [0..n)
-  const n = vals.length; if(n<2) return 0;
-  const mx = avg(vals), mt = (n-1)/2;
-  let num=0, den=0;
-  for(let t=0;t<n;t++){ const y=vals[t]; num += (t-mt)*(y-mx); den += (t-mt)*(t-mt); }
-  return den? num/den : 0;
-};
-const asBadge = s => s.match(/green|ok|clean/i)?'ok':s.match(/amber|warn|check/i)?'warn':'bad';
-const fmtPct = x => (x*100).toFixed(1)+'%';
-const fmt3 = x => Number.isFinite(x)? x.toFixed(3) : '0.000';
+/* ===== utilities ===== */
+const clamp01=v=>Math.max(0,Math.min(1,v));
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:0;
+const p95=a=>{if(!a.length)return 0;const s=[...a].sort((x,y)=>x-y);const i=Math.min(s.length-1,Math.floor(0.95*(s.length-1)));return s[i];};
+const trend=v=>{const n=v.length;if(n<2)return 0;const mx=avg(v),mt=(n-1)/2;let num=0,den=0;for(let t=0;t<n;t++){num+=(t-mt)*(v[t]-mx);den+=(t-mt)*(t-mt);}return den?num/den:0;};
+const fmt3=x=>Number.isFinite(x)?x.toFixed(3):'0.000';
+const pct=x=>(x*100).toFixed(1)+'%';
+const asBadge = s => s.match(/green|ok|clean/i) ? 'ok' : s.match(/amber|warn|check/i) ? 'warn' : 'bad';
 
-/* ------------------- demo data ------------------- */
-let RECEIPTS = []; // append-only
-
-function makeRandomReceipt(){
+/* ===== demo data ===== */
+let RECEIPTS=[];
+function rid(){return Math.random().toString(36).slice(2)+Math.random().toString(36).slice(2);}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function rb(a,b){return +(a+Math.random()*(b-a)).toFixed(3);}
+function sample(){
   const now = new Date().toISOString();
   const issuer = pick(['labA','labB','opsX']);
-  const model  = pick(['agent-x','op-llm','demo-llm']);
-  const bucket = Math.random();
-  let badge, kRange, dRange, pRange;
-  if (bucket < 0.65){ badge='GREEN'; kRange=[0.05,0.55]; dRange=[0.00,0.30]; pRange=[0.80,0.98]; }
-  else if (bucket < 0.9){ badge='AMBER'; kRange=[0.55,0.90]; dRange=[0.30,0.60]; pRange=[0.45,0.80]; }
-  else { badge='RED'; kRange=[0.90,1.20]; dRange=[0.60,1.00]; pRange=[0.10,0.45]; }
-  return {
-    rid: cryptoRandomId(),
-    issued_at: now, issuer, model, bytes: 512,
-    attrs:{status:badge},
-    signals:{kappa:randBetween(...kRange), dhol:randBetween(...dRange), phi_star:randBetween(...pRange)}
-  };
-}
-function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
-function randBetween(a,b){ return +(a + Math.random()*(b-a)).toFixed(3); }
-function cryptoRandomId(){ return Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2); }
-
-/* ------------------- health & insights ------------------- */
-function computeIssuerHealth(receipts){
-  const byIssuer = {};
-  for(const r of receipts){
-    const iss = r.issuer || 'unknown';
-    (byIssuer[iss] ||= []).push(r);
-  }
-  const rows = [];
-  for(const [issuer, list] of Object.entries(byIssuer)){
-    const greens = list.filter(r=>/green|ok|clean/i.test(r.attrs?.status||r.status)).length;
-    const greenRate = list.length ? greens/list.length : 0;
-    const kSeries = list.map(r=>r.signals?.kappa).filter(Number.isFinite);
-    const dSeries = list.map(r=>r.signals?.dhol).filter(Number.isFinite);
-    const pSeries = list.map(r=>r.signals?.phi_star).filter(Number.isFinite);
-    const k95 = p95(kSeries);
-    const dTrend = clamp01(trend(dSeries)); // crude normalization on small ranges
-    const pFloor = Math.min(...pSeries, 0) || 0;
-
-    const health = Math.round(
-      100 * ( 0.5*greenRate + 0.2*(1 - clamp01(k95)) + 0.2*(1 - clamp01(dTrend)) + 0.1*clamp01(pFloor) )
-    );
-    rows.push({issuer, health, greenRate, k95, dTrend, pFloor});
-  }
-  rows.sort((a,b)=>b.health-a.health);
-  return rows;
+  const model = pick(['agent-x','op-llm','demo-llm']);
+  const r = Math.random();
+  let badge,k,d,p;
+  if(r<0.6){badge='GREEN';k=rb(0.05,0.55);d=rb(0.00,0.30);p=rb(0.80,0.98);}
+  else if(r<0.9){badge='AMBER';k=rb(0.55,0.90);d=rb(0.30,0.60);p=rb(0.45,0.80);}
+  else{badge='RED';k=rb(0.90,1.20);d=rb(0.60,1.00);p=rb(0.10,0.45);}
+  return {rid:rid(),issued_at:now,issuer,model,attrs:{status:badge},signals:{kappa:k,dhol:d,phi_star:p}};
 }
 
-function insightsFrom(rows){
-  if(!rows.length) return ['No data yet. Add receipts.'];
-
+/* ===== health + insight ===== */
+function groupByIssuer(list){
+  const m={}; for(const r of list){(m[r.issuer||'unknown']??=[]).push(r);} return m;
+}
+function computeHealth(list){
   const out=[];
-  for(const r of rows){
-    if (r.k95 >= 0.95 || r.pFloor < 0.15){
-      out.push(`🔴 BRAKE — ${r.issuer}: κ p95 ${r.k95.toFixed(3)}${r.pFloor<0.15?`, Φ* floor ${r.pFloor.toFixed(3)}`:''}. Slow deploys, inspect last 10 reds.`);
-      continue;
-    }
-    if (r.dTrend >= 0.15 || r.greenRate < 0.60){
-      out.push(`🟡 WATCH — ${r.issuer}: drift trending up (${r.dTrend.toFixed(3)}) or green low (${fmtPct(r.greenRate)}). Add guard-rails & sample prompts.`);
-      continue;
-    }
-    if (r.greenRate >= 0.85 && r.k95 < 0.60){
-      out.push(`🟢 GO — ${r.issuer}: stable (green ${fmtPct(r.greenRate)}, κ p95 ${r.k95.toFixed(3)}). Safe to scale traffic.`);
-      continue;
-    }
-  }
-  // pick top 3 signals
-  return out.slice(0,3);
-}
-
-/* ------------------- render ------------------- */
-const issuerBody = document.querySelector('#issuerTbl tbody');
-const rcpBody    = document.querySelector('#rcpTbl tbody');
-const packStats  = document.getElementById('packStats');
-const insightsEl = document.getElementById('insights');
-
-function renderAll(){
-  // receipts table
-  rcpBody.innerHTML = '';
-  for(const r of RECEIPTS.slice(-300).reverse()){
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="ellipsis">${r.issued_at.replace('T',' ').replace('Z','')}</td>
-      <td class="ellipsis">${r.issuer||'unknown'}</td>
-      <td class="ellipsis">${r.model||'—'}</td>
-      <td class="ellipsis"><span class="badge ${asBadge(r.attrs?.status||r.status)}">${r.attrs?.status||r.status||'—'}</span></td>
-      <td class="num">${fmt3(r.signals?.kappa)}</td>
-      <td class="num">${fmt3(r.signals?.dhol)}</td>
-      <td class="num">${fmt3(r.signals?.phi_star)}</td>
-    `;
-    rcpBody.appendChild(tr);
-  }
-
-  // issuer health
-  const rows = computeIssuerHealth(RECEIPTS);
-  issuerBody.innerHTML = '';
-  for(const r of rows){
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="ellipsis">${r.issuer}</td>
-      <td class="num">${r.health}</td>
-      <td class="num">${fmtPct(r.greenRate)}</td>
-      <td class="num">${fmt3(r.k95)}</td>
-      <td class="num">${fmt3(r.dTrend)}</td>
-      <td class="num">${fmt3(r.pFloor)}</td>
-    `;
-    issuerBody.appendChild(tr);
-  }
-
-  // stats + insights
-  const greens = RECEIPTS.filter(r=>/green|ok|clean/i.test(r.attrs?.status||r.status)).length;
-  packStats.textContent = RECEIPTS.length
-    ? `Items: ${RECEIPTS.length} · GREEN: ${(greens/Math.max(1,RECEIPTS.length)*100|0)}%`
-    : 'No items yet. Add Random to start.';
-  const insightLines = insightsFrom(rows);
-  insightsEl.innerHTML = insightLines.map(x=>`<div>${x}</div>`).join('');
-}
-
-/* ------------------- actions ------------------- */
-document.getElementById('addRand').onclick  = ()=>{ RECEIPTS.push(makeRandomReceipt()); renderAll(); };
-document.getElementById('addRand5').onclick = ()=>{ for(let i=0;i<5;i++) RECEIPTS.push(makeRandomReceipt()); renderAll(); };
-document.getElementById('clearAll').onclick = ()=>{ if(confirm('Clear all receipts?')){ RECEIPTS.length=0; renderAll(); } };
-document.getElementById('exportJsonl').onclick = ()=>{
-  const lines = RECEIPTS.map(r=>JSON.stringify(r));
-  const blob = new Blob([lines.join('\n')], {type:'application/json'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'receipts.jsonl';
-  a.click();
-  URL.revokeObjectURL(a.href);
-};
-
-/* seed a little so it’s not empty */
-for(let i=0;i<24;i++) RECEIPTS.push(makeRandomReceipt());
-renderAll();
-</script>
-</body>
-</html>
+  const by = groupByIssuer(list);
+  for(const [issuer,rows] of Object.entries(by)){
+    const n = rows.length;
+    const green = rows.filter(r=>/green|ok|clean/i.test(r.attrs?.status||r.status)).length/n || 0;
+    const ks = rows.map(r=>r.signals?.kappa).filter(Number.isFinite);
+    const ds = rows.map(r=>r.signals?.dhol).filter(Number.isFinite);
+    const ps = rows.map(r=>r.signals?.phi_star).filter(Number.isFinite);
+    const k95 = clamp01(p95(ks));
+    const dTrend = clamp01(trend(ds));
+    const pFloor = clamp01(Math.min(...ps,
