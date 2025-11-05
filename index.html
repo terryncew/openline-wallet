@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>OpenLine Wallet · Mobile</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="Content-free AI receipts wallet: ingest JSON/JSONL by URL, file, or paste; get posture, issuer health, and triage advice.">
+  <style>
+    :root{
+      --bg:#0a0c10; --ink:#e7ecf4; --muted:#9aa7ba; --line:#1b2230; --tile:#0f141c;
+      --btn:#1e293b; --btnink:#e7ecf4; --btnline:#2a3a55; --chip:#121925; --chipline:#1b2536;
+      --ok:#16a34a; --warn:#f59e0b; --bad:#dc2626;
+    }
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;background:var(--bg);color:var(--ink);
+      font:15px/1.5 -apple-system,system-ui,Segoe UI,Inter,Roboto,Helvetica,Arial;
+      -webkit-text-size-adjust:100%;
+    }
+    a{color:inherit;text-decoration:none}
+    .wrap{max-width:420px;margin:0 auto;padding:16px}
+    h1{font-size:22px;margin:0 0 6px}
+    .sub{color:var(--muted);font-size:13px}
+
+    .tile{background:var(--tile);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px;overflow:hidden}
+    .inline{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .btn{display:inline-block;padding:10px 12px;border-radius:12px;border:1px solid var(--btnline);background:var(--btn);color:var(--btnink);font-weight:600}
+    .btn.small{padding:7px 10px;font-weight:600}
+
+    input,textarea{width:100%;background:var(--tile);border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:10px}
+    textarea{min-height:90px}
+
+    .pill{padding:4px 8px;border-radius:999px;border:1px solid var(--chipline);background:var(--chip);font-size:12px}
+    .chip{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--chipline);background:var(--chip);padding:6px 10px;border-radius:999px;font-size:12px;line-height:1;height:26px}
+    .ok{background:rgba(22,163,74,.12);border-color:rgba(22,163,74,.35)}
+    .warn{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.35)}
+    .bad{background:rgba(220,38,38,.12);border-color:rgba(220,38,38,.35)}
+
+    .kicker{color:var(--muted);font-size:12px;margin-bottom:6px}
+    .row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+    .knum{font-size:34px;font-weight:800;letter-spacing:0.5px}
+    .note{color:var(--muted);font-size:12px}
+    .issuer{font-weight:700;margin-bottom:6px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .metric{border:1px solid var(--line);background:rgba(255,255,255,.01);border-radius:12px;padding:10px}
+    .mkey{color:var(--muted);font-size:12px}
+    .mval{font-weight:700;margin-top:2px}
+    .list{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+
+    .rcpt{border:1px solid var(--line);border-radius:14px;padding:10px}
+    .rcpt .h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .rcpt .subline{margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+    .center{display:flex;justify-content:space-between;align-items:center}
+    .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .tap{font-size:12px;color:var(--muted)}
+    .tight{margin-top:8px}
+    .ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;display:inline-block}
+    .danger{border-color:rgba(220,38,38,.35)}
+    .okay{border-color:rgba(22,163,74,.35)}
+
+    /* compact toggle for issuer cards */
+    .issuer-card.compact .grid{grid-template-columns:1fr 1fr}
+    .issuer-card.compact .metric{padding:8px}
+    .issuer-card.compact .knum{font-size:26px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="center">
+      <div>
+        <h1>OpenLine Wallet</h1>
+        <div class="sub">Proof moves; data doesn’t.</div>
+      </div>
+      <a class="btn small" href="https://github.com/terryncew/openline-wallet" target="_blank" rel="noopener">Repo</a>
+    </div>
+
+    <!-- Overall posture -->
+    <div class="tile" id="overall">
+      <div class="kicker" id="windowText">7-day posture</div>
+      <div class="row">
+        <div class="note" id="postureLine">—</div>
+        <div class="knum" id="overallScore">—</div>
+      </div>
+      <div class="tight" id="adviceLine" aria-live="polite">—</div>
+    </div>
+
+    <!-- Actions -->
+    <div class="tile">
+      <div class="inline" style="gap:8px;margin-bottom:8px">
+        <a class="btn" id="addRand">Add Random</a>
+        <a class="btn" id="addRand5">Add ×5</a>
+        <a class="btn" id="exportJsonl">Export JSONL</a>
+      </div>
+
+      <div class="inline" style="gap:8px;margin-bottom:8px">
+        <input id="urlBox" placeholder="Add receipt by URL (raw GitHub best)">
+        <a class="btn" id="addUrl">Add</a>
+      </div>
+
+      <div class="inline" style="gap:8px;margin-bottom:8px">
+        <input type="file" id="fileBox" accept=".json,.jsonl,application/json,text/plain">
+        <a class="btn" id="addFile">Import</a>
+      </div>
+
+      <div class="tight">
+        <textarea id="pasteBox" placeholder="Or paste JSON / JSONL here and press Paste →"></textarea>
+        <div class="inline" style="gap:8px;margin-top:8px">
+          <a class="btn" id="addPaste">Paste →</a>
+          <a class="btn" id="clearAll">Clear</a>
+          <a class="btn" id="exportPdf">Export PDF</a>
+          <a class="btn" id="copySummary">Copy Summary</a>
+        </div>
+      </div>
+
+      <div class="note tight">Demo data runs in-memory. Mix real URLs/files for realism.</div>
+    </div>
+
+    <!-- Issuer health -->
+    <div class="tile">
+      <div class="center">
+        <div style="font-weight:700">Issuer health</div>
+        <div class="tap">tap rows = compact</div>
+      </div>
+      <div id="issuerCards" class="list"></div>
+    </div>
+
+    <!-- Receipts -->
+    <div class="tile">
+      <div style="font-weight:700;margin-bottom:6px">Receipts</div>
+      <div id="receiptList" class="list"></div>
+
+      <div class="center tight">
+        <span class="note" id="receiptCount">—</span>
+        <a class="btn small" id="toggleDeep">Show deep table</a>
+      </div>
+
+      <div id="deepTableWrap" class="tight" style="display:none">
+        <div class="note">Nerd mode · horizontal scroll</div>
+        <div id="deepTable" class="tight" style="overflow-x:auto;border:1px solid var(--line);border-radius:12px"></div>
+      </div>
+    </div>
+
+    <div class="sub" style="margin:16px 0">OpenLine · COLE · MIT.</div>
+
+    <noscript>
+      <div class="tile" style="border-color:#dc2626">
+        <b>JavaScript required.</b> Add <code>wallet.js</code> next to this file for the wallet to run.
+      </div>
+    </noscript>
+  </div>
+
+  <!-- JS comes later; keep filename consistent -->
+  <script src="wallet.js" defer></script>
+</body>
+</html>
