@@ -1,5 +1,5 @@
 /* OpenLine Wallet — hardened runtime (paste/file/URL ingest + VKD/Obs) */
-/* MIT. No deps. Safe to drop into GH Pages. */
+/* Legacy 2025 viewer. Apache-2.0. Preserved in git history at 3486bb1. */
 
 (function(){
   "use strict";

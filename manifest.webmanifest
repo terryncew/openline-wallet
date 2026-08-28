@@ -1,6 +1,6 @@
 {
-  "name": "OpenLine Wallet",
-  "short_name": "OL Wallet",
+  "name": "OpenLine Wallet v0.1",
+  "short_name": "OpenLine",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0a0c10",
