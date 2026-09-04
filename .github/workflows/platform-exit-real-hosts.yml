@@ -1,0 +1,191 @@
+name: PLATFORM-EXIT-LIVE-001 — real hosts
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  claude-to-codex:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      WORKSPACE: ${{ runner.temp }}/platform-exit-live
+      CODEX_HOME: ${{ runner.temp }}/codex-home
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Require provider credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${OPENAI_API_KEY:-}" ]]; then
+            echo "::error::OPENAI_API_KEY repository secret is required."
+            exit 2
+          fi
+          if [[ -z "${ANTHROPIC_API_KEY:-}" && -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]]; then
+            echo "::error::Set ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN as a repository secret."
+            exit 2
+          fi
+
+      - name: Install OpenLine Wallet and pinned provider hosts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e ".[mcp]"
+          npm install -g @anthropic-ai/claude-code@2.1.260 @openai/codex@0.153.0
+          mkdir -p "$CODEX_HOME"
+          {
+            echo "claude=$(claude --version 2>&1 | head -1)"
+            echo "codex=$(codex --version 2>&1 | head -1)"
+            python - <<'PY'
+          import importlib.metadata
+          print("mcp=" + importlib.metadata.version("mcp"))
+          print("openline-wallet=" + importlib.metadata.version("openline-wallet"))
+          PY
+          } | tee "${RUNNER_TEMP}/host-versions.txt"
+
+      - name: Prepare user-owned authority and receiver
+        shell: bash
+        run: |
+          set -euo pipefail
+          openline-wallet-platform-exit prepare "$WORKSPACE"
+          bash -lc "$(cat "$WORKSPACE/start-gate.txt")" \
+            >"${RUNNER_TEMP}/receiver-gate.log" 2>&1 &
+          echo "$!" > "${RUNNER_TEMP}/receiver-gate.pid"
+          python - <<'PY'
+          import time
+          from urllib.request import urlopen
+          for _ in range(50):
+              try:
+                  with urlopen("http://127.0.0.1:8765/health", timeout=1) as r:
+                      if r.status == 200:
+                          raise SystemExit(0)
+              except Exception:
+                  time.sleep(0.1)
+          raise SystemExit("receiver Gate did not become healthy")
+          PY
+
+      - name: Claude before switch — must call Wallet MCP tool
+        shell: bash
+        run: |
+          set -euo pipefail
+          claude -p \
+            --mcp-config "$WORKSPACE/claude-mcp.json" \
+            --allowedTools "mcp__openline_wallet__deploy_staging" \
+            --max-turns 3 \
+            --output-format json \
+            "Call the openline_wallet deploy_staging tool exactly once with release claude-before. Do not use any other tool. Report the tool result." \
+            | tee "${RUNNER_TEMP}/claude-before.json"
+
+          # This fails closed unless the real Claude host earned an ALLOWED receiver receipt.
+          openline-wallet-platform-exit switch "$WORKSPACE"
+
+      - name: Claude after switch — old authority must stop
+        shell: bash
+        run: |
+          set -euo pipefail
+          claude -p \
+            --mcp-config "$WORKSPACE/claude-mcp.json" \
+            --allowedTools "mcp__openline_wallet__deploy_staging" \
+            --max-turns 3 \
+            --output-format json \
+            "Call the openline_wallet deploy_staging tool exactly once with release claude-after. Do not use any other tool. Report the tool result, even if the receiver refuses it." \
+            | tee "${RUNNER_TEMP}/claude-after.json"
+
+      - name: Configure Codex with the same receiver path
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp "$WORKSPACE/codex-mcp.toml" "$CODEX_HOME/config.toml"
+          cat "$CODEX_HOME/config.toml"
+
+      - name: Codex after switch — current authority must continue
+        shell: bash
+        run: |
+          set -euo pipefail
+          codex exec \
+            --ephemeral \
+            --skip-git-repo-check \
+            --sandbox read-only \
+            "Call the openline_wallet MCP tool deploy_staging exactly once with release codex-after. Do not use shell commands or edit files. Report the tool result." \
+            2>&1 | tee "${RUNNER_TEMP}/codex-after.log"
+
+      - name: Verify provider replacement
+        shell: bash
+        run: |
+          set -euo pipefail
+          openline-wallet-platform-exit verify "$WORKSPACE" --json \
+            | tee "${RUNNER_TEMP}/platform-exit-result.json"
+
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+
+          result = json.loads(Path(os.environ["RUNNER_TEMP"], "platform-exit-result.json").read_text())
+          expected = "PLATFORM_EXIT_LIVE_CONTINUITY_ENFORCED"
+          if result.get("verdict") != expected:
+              raise SystemExit(f"expected {expected}, got {result.get('verdict')}")
+          checks = result.get("checks", {})
+          failed = [name for name, value in checks.items() if value is not True]
+          if failed:
+              raise SystemExit("failed checks: " + ", ".join(failed))
+          print(expected)
+          PY
+
+      - name: Freeze non-secret evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="${RUNNER_TEMP}/platform-exit-public-evidence"
+          mkdir -p "$OUT/receiver/receipts"
+
+          for f in \
+            "${RUNNER_TEMP}/host-versions.txt" \
+            "${RUNNER_TEMP}/claude-before.json" \
+            "${RUNNER_TEMP}/claude-after.json" \
+            "${RUNNER_TEMP}/codex-after.log" \
+            "${RUNNER_TEMP}/receiver-gate.log" \
+            "${RUNNER_TEMP}/platform-exit-result.json"
+          do
+            if [[ -f "$f" ]]; then cp "$f" "$OUT/"; fi
+          done
+
+          if [[ -f "$WORKSPACE/current.olw" ]]; then
+            cp "$WORKSPACE/current.olw" "$OUT/current.olw"
+          fi
+          if [[ -f "$WORKSPACE/receiver/effects.json" ]]; then
+            cp "$WORKSPACE/receiver/effects.json" "$OUT/receiver/effects.json"
+          fi
+          if [[ -d "$WORKSPACE/receiver/receipts" ]]; then
+            cp "$WORKSPACE/receiver/receipts/"*.json "$OUT/receiver/receipts/" 2>/dev/null || true
+          fi
+
+          # Never upload Wallet or subject private keys.
+          if find "$OUT" -type f \( -name '*.key' -o -name 'root.key' -o -name 'epoch.key' \) | grep -q .; then
+            echo "::error::private key entered public evidence directory"
+            exit 3
+          fi
+
+          (cd "$OUT" && sha256sum $(find . -type f -print | sort) > SHA256SUMS.txt)
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: platform-exit-live-001-real-hosts
+          path: ${{ runner.temp }}/platform-exit-public-evidence
+          if-no-files-found: error
+          retention-days: 30
