@@ -1,0 +1,21 @@
+{
+  "action": "deploy:staging",
+  "decided_at": "2026-09-04T05:36:13.205912Z",
+  "decision": "ALLOWED",
+  "decision_authority": "RECEIVER_GATE",
+  "gate_id": "platform-exit-live-receiver",
+  "gate_public_key": "05e3ef2b886b8976b3e10489b44a5e043050a6f64dc9a41898bd02e924be0c3e",
+  "mandate_id": "mandate-codex",
+  "payload_hash": "b56e338223e02b66c788fdb9273363b781ea3d2fe2cf3a385f21bf9eaa4f3981",
+  "presentation_hash": "b33fd261cbe6a6f6fa0880d66b220f695d5f4d07b3f2b4b03408d5fdbd8149b0",
+  "principal_id": "openline:principal:5f1c4d930b8b7f6dbc880ce6bc45e73d9f1c47979994ae091f512bb1b8d257af",
+  "reason_codes": [],
+  "schema": "openline.gate.action_receipt.v1",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "05e3ef2b886b8976b3e10489b44a5e043050a6f64dc9a41898bd02e924be0c3e",
+    "value": "004a388c3f8fc66971285eac6fde0ae5435427e746d373c731c11b21d0c13a22fcb607e427785fc497618117ceae7585e6c27954cec0173fd63a652ca4067c0b"
+  },
+  "subject_id": "provider-codex",
+  "wallet_policy_authority": "NONE"
+}

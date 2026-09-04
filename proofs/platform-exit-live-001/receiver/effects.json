@@ -1,0 +1,24 @@
+[
+  {
+    "action": "deploy:staging",
+    "decided_at": "2026-09-04T05:35:52.267174Z",
+    "gate_id": "platform-exit-live-receiver",
+    "mandate_id": "mandate-claude",
+    "principal_id": "openline:principal:5f1c4d930b8b7f6dbc880ce6bc45e73d9f1c47979994ae091f512bb1b8d257af",
+    "receipt_hash": "37ec6bc1336a051c4bffa8113b8d8b2b077d6ecc5ababe286e88620556f3d675",
+    "release": "claude-before",
+    "schema": "openline.platform_exit_live.effect.v1",
+    "subject_id": "provider-claude"
+  },
+  {
+    "action": "deploy:staging",
+    "decided_at": "2026-09-04T05:36:13.205912Z",
+    "gate_id": "platform-exit-live-receiver",
+    "mandate_id": "mandate-codex",
+    "principal_id": "openline:principal:5f1c4d930b8b7f6dbc880ce6bc45e73d9f1c47979994ae091f512bb1b8d257af",
+    "receipt_hash": "ce9a099cbe0fc7dea6d3fdd09cf0436dc12a79ab70210874394879c93ca075eb",
+    "release": "codex-after",
+    "schema": "openline.platform_exit_live.effect.v1",
+    "subject_id": "provider-codex"
+  }
+]

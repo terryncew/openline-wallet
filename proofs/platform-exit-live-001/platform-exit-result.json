@@ -1,0 +1,41 @@
+{
+  "authority": {
+    "decision_authority": "RECEIVER_GATE",
+    "wallet_policy_authority": "NONE"
+  },
+  "checks": {
+    "claude_effect_recorded": true,
+    "claude_post_switch_stopped": true,
+    "claude_pre_switch_allowed": true,
+    "codex_effect_recorded": true,
+    "codex_post_switch_allowed": true,
+    "denied_attempt_produced_no_effect": true,
+    "old_mandate_is_revoked": true,
+    "provider_a_receipt_preserved_in_wallet": true,
+    "receiver_gate_owns_decision": true,
+    "successor_mandate_is_active": true,
+    "wallet_has_no_policy_authority": true
+  },
+  "claim_boundary": {
+    "ci_only": "CI proves the MCP transport, subject-key separation, receiver effect gate, and provider-switch state machine without claiming Claude or Codex host compatibility.",
+    "earned_if_real_hosts_were_used": "Provider replacement preserved user-owned authority history while the superseded provider lost execution standing.",
+    "unearned": [
+      "provider credential portability",
+      "production key custody",
+      "durable Gate restart recovery",
+      "cross-machine revocation propagation",
+      "production deployment safety"
+    ]
+  },
+  "experiment_id": "PLATFORM-EXIT-LIVE-001",
+  "observed": {
+    "claude_allowed": 1,
+    "claude_stopped_revoked": 1,
+    "codex_allowed": 1,
+    "effects": 2,
+    "receipts": 3,
+    "wallet_head_sequence": 3
+  },
+  "schema": "openline.platform_exit_live.result.v1",
+  "verdict": "PLATFORM_EXIT_LIVE_CONTINUITY_ENFORCED"
+}

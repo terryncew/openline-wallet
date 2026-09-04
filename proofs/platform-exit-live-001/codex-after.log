@@ -1,0 +1,44 @@
+Reading additional input from stdin...
+OpenAI Codex v0.153.0
+--------
+workdir: /home/runner/work/openline-wallet/openline-wallet
+model: gpt-5.6-sol
+provider: openai
+approval: never
+sandbox: read-only
+reasoning effort: none
+reasoning summaries: none
+session id: 01a06aea-c608-7481-a39a-227bec86acca
+--------
+user
+Call the openline_wallet MCP tool deploy_staging exactly once with release codex-after. Do not use shell commands or edit files. Report the tool result.
+warning: Codex could not find bubblewrap on PATH. Install bubblewrap with your OS package manager. See the sandbox prerequisites: https://developers.openai.com/codex/concepts/sandboxing#prerequisites. Codex will use the bundled bubblewrap in the meantime.
+codex
+I’ll invoke the staging deployment once with release `codex-after`, then report its result verbatim.
+mcp: openline_wallet/deploy_staging started
+mcp: openline_wallet/deploy_staging (completed)
+codex
+```json
+{
+  "provider": "codex",
+  "decision": "ALLOWED",
+  "reason_codes": [],
+  "effect_applied": true,
+  "release": "codex-after",
+  "gate_id": "platform-exit-live-receiver",
+  "receipt_hash": "ce9a099cbe0fc7dea6d3fdd09cf0436dc12a79ab70210874394879c93ca075eb"
+}
+```
+tokens used
+12,180
+```json
+{
+  "provider": "codex",
+  "decision": "ALLOWED",
+  "reason_codes": [],
+  "effect_applied": true,
+  "release": "codex-after",
+  "gate_id": "platform-exit-live-receiver",
+  "receipt_hash": "ce9a099cbe0fc7dea6d3fdd09cf0436dc12a79ab70210874394879c93ca075eb"
+}
+```
