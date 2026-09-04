@@ -114,6 +114,17 @@ class PlatformExitLiveAcceptanceTests(unittest.IsolatedAsyncioTestCase):
                 self.assertNotIn(claude_secret, configs)
                 self.assertNotIn(codex_secret, configs)
 
+                # The real Codex host is non-interactive in CI. Its config must
+                # allow only the intended MCP tool and pre-approve only that tool;
+                # the receiver Gate still owns whether the effect is allowed.
+                codex_config = (workspace / "codex-mcp.toml").read_text()
+                self.assertIn('enabled_tools = ["deploy_staging"]', codex_config)
+                self.assertIn(
+                    "[mcp_servers.openline_wallet.tools.deploy_staging]",
+                    codex_config,
+                )
+                self.assertIn('approval_mode = "approve"', codex_config)
+
                 bundle = strict_json_load(workspace / "current.olw")
                 self.assertTrue(
                     any(
