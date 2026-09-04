@@ -33,6 +33,27 @@ The old permission still has a valid signature. Platform B stops it because the 
 
 That distinction is the point: **a record can be genuine and still be too old to use.**
 
+### Put ordinary MCP hosts on the same authority
+
+The core demo above does not depend on a model vendor. `PLATFORM-EXIT-LIVE-001`
+adds one stdio MCP tool and a receiver-owned localhost Gate so two different
+AI hosts can use the same user-owned authority history without sharing provider
+credentials.
+
+```bash
+python -m pip install -e ".[mcp]"
+openline-wallet-platform-exit prepare platform-exit-live
+```
+
+The prepared workspace contains separate Claude and Codex MCP host configs.
+Claude can act before the switch; after the operator switches the mandate,
+the old Claude subject is stopped and Codex can continue against the same
+Wallet history.
+
+See [`PLATFORM_EXIT_LIVE_001.md`](PLATFORM_EXIT_LIVE_001.md). A deterministic
+MCP acceptance test ships in CI. The stronger Claude-to-Codex compatibility
+claim is intentionally reserved for a real-host run.
+
 ## Basic CLI
 
 Create a wallet:
