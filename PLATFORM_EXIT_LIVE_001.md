@@ -3,14 +3,14 @@
 This is the MCP compatibility layer above the already-frozen `PLATFORM-EXIT-001`
 Wallet/Gate acceptance contract.
 
-The core proof already establishes that current authority can move between
-independent receiver contexts, old signed authority can remain authentic while
-losing standing, and the Receiver Gate owns the execution decision.
+The core proof establishes that current authority can move between independent
+receiver contexts, old signed authority can remain authentic while losing
+standing, and the Receiver Gate owns the execution decision.
 
-This experiment asks the product question:
+This experiment asks the narrower product question:
 
-> Can the user replace the AI provider without transferring the first
-> provider's credentials or giving either provider control of authority?
+> Can one user replace the AI host without transferring the first provider's
+> credentials or giving either provider control of authority?
 
 ## Architecture
 
@@ -61,10 +61,58 @@ The fixed sequence is:
 6. Codex calls through its separate MCP sidecar and is `ALLOWED`.
 7. The final Wallet bundle contains the pre-switch receiver receipt and the same user principal history.
 
-CI earns the transport/authority split. It does **not** earn the claim that
-Claude Code and Codex themselves successfully consumed the server.
+The deterministic CI test earns the transport/authority split by itself. The
+real-host result below separately demonstrates that the pinned Claude Code and
+Codex hosts consumed the MCP path successfully.
 
-## Real-host run
+## Frozen real-host result
+
+Successful GitHub Actions run:
+
+```text
+Experiment     PLATFORM-EXIT-LIVE-001
+Run            33841050124
+Head           711ced888befc6ed9f64dd22cc30e9a14f7b5cb1
+Claude Code    2.1.260
+Codex CLI      0.153.0
+MCP            2.1.1
+
+Claude before  ALLOWED
+Claude after   STOPPED / MANDATE_REVOKED
+Codex after    ALLOWED
+
+Effects        2
+Receipts       3
+Wallet head    3
+Verdict        PLATFORM_EXIT_LIVE_CONTINUITY_ENFORCED
+```
+
+The receiver recorded exactly the two permitted effects: `claude-before` and
+`codex-after`. The denied `claude-after` attempt produced a signed STOPPED
+receipt and no effect.
+
+The final verifier also confirmed:
+
+- the old Claude mandate is revoked;
+- the successor Codex mandate is active;
+- the pre-switch Claude receipt remains in Wallet history;
+- the Wallet has no policy authority;
+- decision authority remains `RECEIVER_GATE`.
+
+The non-secret evidence uploaded by that run is frozen in
+[`proofs/platform-exit-live-001/`](proofs/platform-exit-live-001/).
+
+Artifact SHA-256:
+
+```text
+281ae549b31f7a9f4ec940395da488d2b6fa5eb12a9c9bb70471dcc314532203
+```
+
+The directory includes the exact result JSON, host logs, final Wallet bundle,
+effect ledger, three signed receiver receipts, and the artifact's internal
+`SHA256SUMS.txt`. Private Wallet and subject keys are not included.
+
+## Reproduce the live path
 
 Prepare a disposable workspace:
 
@@ -89,38 +137,21 @@ Those files point both hosts at the same `current.olw` but give each a distinct
 subject key and mandate ID.
 
 Use Claude with the generated MCP config and ask it to call `deploy_staging`
-once with a release name such as `claude-before`.
-
-Then switch the authority:
+once. Then switch the authority:
 
 ```bash
 openline-wallet-platform-exit switch platform-exit-live
 ```
 
-Without restarting or changing the old Claude sidecar, ask it to call the tool
-again. It should receive:
-
-```text
-STOPPED / MANDATE_REVOKED
-```
-
-Configure Codex with the generated TOML block and ask it to call
-`deploy_staging` once. It should be `ALLOWED`.
+Without changing the old Claude sidecar, ask it to call the tool again. The
+receiver should return `STOPPED / MANDATE_REVOKED`. Configure Codex with the
+generated TOML and ask it to call `deploy_staging` once. It should be
+`ALLOWED`.
 
 Finally:
 
 ```bash
 openline-wallet-platform-exit verify platform-exit-live
-```
-
-A real-provider pass is:
-
-```text
-Claude before  ALLOWED
-Claude after   STOPPED / MANDATE_REVOKED
-Codex after    ALLOWED
-Verdict        PLATFORM_EXIT_LIVE_CONTINUITY_ENFORCED
-Boundary       Wallet owns continuity. Gate owns consequences.
 ```
 
 ## Falsifiers
@@ -134,16 +165,25 @@ The live claim fails if any of these happen:
 - The MCP worker can issue, revoke, or redefine its own Wallet mandate.
 - The Wallet itself produces an execution authorization without the Receiver Gate.
 
+None of those falsifiers occurred in run `33841050124`.
+
 ## Claim boundary
 
-If the deterministic test passes, we have proved an MCP transport path that
-preserves the existing Wallet/Gate authority split.
+The real-host run earns this statement for the tested configuration:
 
-Only an actual Claude -> Codex host run earns the public statement:
+> A real Claude host acted before the switch, the same Claude authority was
+> stopped after revocation, and a real Codex host continued under the successor
+> mandate while user-owned authority history remained intact.
+
+A shorter public rendering is:
 
 > I changed the AI. I didn't have to give up the permissions and history that belonged to me.
 
-Still unearned: production key custody, provider credential portability,
-durable Gate restart recovery, cross-machine revocation propagation, and
-production deployment safety. The receiver effect here is intentionally a safe
-local staging ledger, not real infrastructure.
+Do not widen this into a general provider-portability claim. The demonstrated
+configuration is one owner, one continuously running localhost Receiver Gate,
+two pinned real AI hosts, and an intentionally safe staging-effect ledger.
+
+Still unearned: provider credential portability, production key custody,
+durable Gate restart recovery, cross-machine revocation propagation,
+production deployment safety, multi-party federation, and public-network
+coordination.
