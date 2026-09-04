@@ -151,6 +151,10 @@ def _write_host_configs(workspace: Path, state: dict[str, Any]) -> None:
         "[mcp_servers.openline_wallet]\n"
         f"command = {json.dumps(python)}\n"
         f"args = [{quoted_args}]\n"
+        'enabled_tools = ["deploy_staging"]\n'
+        "\n"
+        "[mcp_servers.openline_wallet.tools.deploy_staging]\n"
+        'approval_mode = "approve"\n'
     )
     (workspace / "codex-mcp.toml").write_text(codex_toml, encoding="utf-8")
 

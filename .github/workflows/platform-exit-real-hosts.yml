@@ -124,6 +124,65 @@ jobs:
           printenv OPENAI_API_KEY | codex login --with-api-key
           codex login status
 
+      - name: Preflight Codex authority path
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os
+          import tomllib
+          from pathlib import Path
+          from urllib.request import urlopen
+
+          from openline_wallet.canonical import strict_json_load
+          from openline_wallet.wallet import verify_bundle
+
+          codex_home = Path(os.environ["CODEX_HOME"])
+          workspace = Path(os.environ["WORKSPACE"])
+          config = tomllib.loads((codex_home / "config.toml").read_text())
+          server = config["mcp_servers"]["openline_wallet"]
+
+          if server.get("enabled_tools") != ["deploy_staging"]:
+              raise SystemExit("Codex MCP allow-list is not exactly deploy_staging")
+          approval = server.get("tools", {}).get("deploy_staging", {}).get("approval_mode")
+          if approval != "approve":
+              raise SystemExit(f"Codex deploy_staging approval mode is {approval!r}, expected 'approve'")
+
+          args = server.get("args", [])
+          def arg_value(flag):
+              try:
+                  return args[args.index(flag) + 1]
+              except (ValueError, IndexError):
+                  raise SystemExit(f"Codex MCP config missing {flag}")
+
+          bundle_path = Path(arg_value("--bundle"))
+          key_path = Path(arg_value("--subject-key"))
+          if bundle_path != workspace / "current.olw" or not bundle_path.is_file():
+              raise SystemExit("Codex MCP bundle path is missing or unexpected")
+          if key_path != workspace / "subjects" / "codex.key" or not key_path.is_file():
+              raise SystemExit("Codex subject key path is missing or unexpected")
+
+          bundle = strict_json_load(bundle_path)
+          _verified, timeline = verify_bundle(bundle)
+          claude = timeline.mandates.get("mandate-claude", {})
+          codex = timeline.mandates.get("mandate-codex", {})
+          if claude.get("status") != "REVOKED":
+              raise SystemExit("Claude mandate is not revoked before Codex handoff")
+          if codex.get("status") != "ACTIVE":
+              raise SystemExit("Codex mandate is not active before Codex handoff")
+          if codex.get("subject_id") != "provider-codex":
+              raise SystemExit("Codex mandate subject binding is wrong")
+          if codex.get("scopes") != ["deploy:staging"]:
+              raise SystemExit("Codex mandate scope is not exactly deploy:staging")
+
+          with urlopen("http://127.0.0.1:8765/health", timeout=2) as response:
+              if response.status != 200:
+                  raise SystemExit("Receiver Gate is not healthy before Codex handoff")
+
+          print("Codex preflight: PASS")
+          PY
+          codex mcp list
+
       - name: Codex after switch — current authority must continue
         shell: bash
         run: |
@@ -134,6 +193,43 @@ jobs:
             --sandbox read-only \
             "Call the openline_wallet MCP tool deploy_staging exactly once with release codex-after. Do not use shell commands or edit files. Report the tool result." \
             2>&1 | tee "${RUNNER_TEMP}/codex-after.log"
+
+      - name: Require Codex receiver consequence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          workspace = Path(os.environ["WORKSPACE"])
+          receipts_dir = workspace / "receiver" / "receipts"
+          receipts = []
+          for path in receipts_dir.glob("*.json"):
+              receipts.append(json.loads(path.read_text()))
+          effects_path = workspace / "receiver" / "effects.json"
+          effects = json.loads(effects_path.read_text()) if effects_path.exists() else []
+
+          allowed = [
+              r for r in receipts
+              if r.get("subject_id") == "provider-codex"
+              and r.get("decision") == "ALLOWED"
+              and r.get("action") == "deploy:staging"
+          ]
+          applied = [
+              e for e in effects
+              if e.get("subject_id") == "provider-codex"
+              and e.get("release") == "codex-after"
+          ]
+          if not allowed:
+              log = Path(os.environ["RUNNER_TEMP"], "codex-after.log")
+              tail = "\n".join(log.read_text(errors="replace").splitlines()[-30:]) if log.exists() else "<no Codex log>"
+              raise SystemExit("Codex exited without an ALLOWED receiver receipt.\n" + tail)
+          if len(applied) != 1:
+              raise SystemExit(f"expected exactly one codex-after effect, found {len(applied)}")
+          print("Codex receiver consequence: PASS")
+          PY
 
       - name: Verify provider replacement
         shell: bash
