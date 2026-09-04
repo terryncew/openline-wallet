@@ -117,6 +117,13 @@ jobs:
           cp "$WORKSPACE/codex-mcp.toml" "$CODEX_HOME/config.toml"
           cat "$CODEX_HOME/config.toml"
 
+      - name: Authenticate Codex with OpenAI API key
+        shell: bash
+        run: |
+          set -euo pipefail
+          printenv OPENAI_API_KEY | codex login --with-api-key
+          codex login status
+
       - name: Codex after switch — current authority must continue
         shell: bash
         run: |
