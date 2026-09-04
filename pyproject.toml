@@ -20,8 +20,14 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
 ]
 
+[project.optional-dependencies]
+mcp = ["mcp>=2,<3"]
+
 [project.scripts]
 openline-wallet = "openline_wallet.cli:main"
+openline-wallet-gate = "openline_wallet.gate_http:main"
+openline-wallet-mcp = "openline_wallet.mcp_bridge:main"
+openline-wallet-platform-exit = "openline_wallet.platform_exit_live:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
