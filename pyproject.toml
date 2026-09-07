@@ -1,36 +1,18 @@
 [build-system]
-requires = ["setuptools>=69"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "openline-wallet"
-version = "0.1.0"
-description = "User-owned authority continuity for AI agents"
+name = "openline-agent-watchdog"
+version = "0.3.0"
+description = "Observation-driven loop and budget advice for completed agent attempts."
 readme = "README.md"
-requires-python = ">=3.11"
-license = {file = "LICENSE"}
-authors = [{name = "Terrynce White"}]
-dependencies = ["cryptography>=41"]
-classifiers = [
-  "Development Status :: 3 - Alpha",
-  "License :: OSI Approved :: Apache Software License",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+  {name = "Terrynce White"}
 ]
-
-[project.optional-dependencies]
-mcp = ["mcp>=2,<3"]
-
-[project.scripts]
-openline-wallet = "openline_wallet.cli:main"
-openline-wallet-gate = "openline_wallet.gate_http:main"
-openline-wallet-mcp = "openline_wallet.mcp_bridge:main"
-openline-wallet-platform-exit = "openline_wallet.platform_exit_live:main"
+dependencies = ["numpy>=1.21"]
 
 [tool.setuptools]
-package-dir = {"" = "src"}
-
-[tool.setuptools.packages.find]
-where = ["src"]
+packages = ["agent_watchdog"]

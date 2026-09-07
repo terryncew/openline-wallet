@@ -1,0 +1,51 @@
+{
+  "airlock_integration": "DEFERRED",
+  "base_commit": "eb313155eaa5f08bdcc1cdc371f2487c3fa67876",
+  "claim_boundary": "Standalone, in-memory advisor over completed attempts and trusted external observations. No continuous worker visibility, autonomous execution, durable recovery, or live-agent safety claim.",
+  "experiment_id": "WATCHDOG-001",
+  "local_verification": {
+    "interpreter": "Python 3.13.5",
+    "result": "PASS",
+    "syntax": "3.9\u20133.13 parsed",
+    "tests": 35,
+    "wheel": "built and isolated-import verified"
+  },
+  "negative_control": {
+    "actions": [
+      "pytest test_a.py",
+      "pytest test_b.py",
+      "pytest test_c.py",
+      "pytest test_d.py",
+      "pytest test_e.py"
+    ],
+    "original": {
+      "freshness": 0.2,
+      "recommendation": "KILL RUN",
+      "status": "RED"
+    },
+    "repaired_action_only": {
+      "reason": "INSUFFICIENT_PROGRESS_EVIDENCE",
+      "status": "UNKNOWN"
+    }
+  },
+  "original_core_git_blob": "8bf6e2bc740ef8939f80b1ac1d25df2363b0b975",
+  "paired_falsifier": {
+    "productive_sweep": "5 verified advances; no loop stop",
+    "stalled_sequence": "5 verified non-progressing attempts; RED/OBSERVED_STAGNATION",
+    "superficial_changes": "do not reset allowance",
+    "unknown_observations": "do not establish stagnation or reset allowance"
+  },
+  "remote_ci": "NOT_RUN_ON_THIS_PATCH",
+  "source_sha256": {
+    ".github/workflows/ci.yml": "b9e7dcc095d647a3ac21a5e70f6e7ddb5fd5e547ecb8541c72684583ca9071f9",
+    "README.md": "d38da528d9dca29d1aab8e53c655268c6034f3554dbb4bcd596874799eb6488b",
+    "agent_watchdog/__init__.py": "fd462127f3523ffe02c84acd13e2da990f6d4a662a8247bc97e42766eede27fb",
+    "agent_watchdog/core.py": "91cbb14312b31bc29190715112d56be85147481eefbd58477d56b17b7d5544d6",
+    "proofs/watchdog-001/legacy-core.py": "bbf910996059a4ea1dbc3ed1b1ee342bad2cbe6bace705c9755581f49556fed0",
+    "pyproject.toml": "20faa7db4bb685a4352e9d822cde28fd3963d067ac3a05359aab9cd0ae3ff217",
+    "tests/test_watchdog.py": "f6117621a65c536346f88f7256f7a4f1e25d5877f2a78c441020503924f4a693",
+    "tests/test_watchdog_boundaries.py": "af0f3dfb6a4eed1e20d9fd8b2cc6618c1fd89311c01aea6a19fae0768598a0b7"
+  },
+  "verdict": "CONTROLLED_PAIRED_REGRESSION_PASSED",
+  "wallet_and_provider_changes": "NONE"
+}
