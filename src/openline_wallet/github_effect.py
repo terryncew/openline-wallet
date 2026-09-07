@@ -18,6 +18,7 @@ from urllib.parse import quote, unquote
 import os
 import re
 import sqlite3
+from time import monotonic, sleep
 
 from .canonical import canonical_json, strict_json_loads
 from .clock import as_utc, isoformat, utc_now
@@ -227,6 +228,36 @@ def _merge_parents(client: GitHubClient, target: MergeTarget, sha: str) -> dict[
     return {"sha": sha, "parents": parents, "base_drift": parents[0] != target.base_sha}
 
 
+def _settled_merge(client: GitHubClient, target: MergeTarget, *,
+                   expected_sha: str | None = None, wait_seconds: float = 10.0
+                   ) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Read-only, bounded reconciliation of GitHub's terminal PR and commit.
+
+    A successful PUT can precede visibility of merge_commit_sha on GET /pulls.
+    The missing value is never guessed, and an accepted SHA must match the PR.
+    A timeout or contradictory observation remains uncertain. No mutation occurs.
+    """
+    if expected_sha is not None:
+        _sha(expected_sha)
+    deadline = monotonic() + wait_seconds
+    while True:
+        after = _snapshot(client.pr(target), target)
+        _require(after["head_sha"] == target.head_sha,
+                 "GITHUB_MERGE_NOT_RECONCILED")
+        observed = after["merge_commit_sha"]
+        if after["merged"] is True and after["state"] == "closed" and observed is not None:
+            _require(expected_sha is None or observed == expected_sha,
+                     "GITHUB_MERGE_NOT_RECONCILED")
+            commit = _merge_parents(client, target, observed)
+            return after, commit
+        # A conflicting or unmerged terminal state is not a transient success.
+        if after["state"] == "closed" and after["merged"] is False:
+            raise WalletError("GITHUB_MERGE_NOT_RECONCILED")
+        if monotonic() >= deadline:
+            raise WalletError("GITHUB_MERGE_NOT_RECONCILED")
+        sleep(min(0.2, max(0.0, deadline - monotonic())))
+
+
 class GitHubMergeReceiver:
     """One fixed target, one Gate, and one durable single-writer journal.
 
@@ -410,10 +441,8 @@ class GitHubMergeReceiver:
                          and _SHA.fullmatch(response["sha"]) is not None, "GITHUB_MERGE_RESPONSE_INVALID")
                 row["response"] = {"merged": True, "sha": response["sha"]}
                 self._store(row)
-                after = _snapshot(self.client.pr(self.target), self.target)
-                _require(after["merged"] is True and after["state"] == "closed" and after["head_sha"] == self.target.head_sha
-                         and after["merge_commit_sha"] == response["sha"], "GITHUB_MERGE_NOT_RECONCILED")
-                commit = _merge_parents(self.client, self.target, response["sha"])
+                after, commit = _settled_merge(self.client, self.target,
+                                                expected_sha=response["sha"])
                 row["after"], row["merge_commit"] = after, commit
                 effect = sign_record({"schema": EFFECT_SCHEMA, "gate_id": self.gate.gate_id,
                     "gate_public_key": self.gate.public_key, "principal_id": row["admission"]["principal_id"],
@@ -454,7 +483,10 @@ class GitHubMergeReceiver:
                     after = _snapshot(self.client.pr(self.target), self.target)
                     row["after"] = after
                     if after["merged"] is True and after["state"] == "closed" and after["head_sha"] == self.target.head_sha:
-                        commit = _merge_parents(self.client, self.target, after["merge_commit_sha"])
+                        expected = row["response"]["sha"] if row.get("response") else None
+                        after, commit = _settled_merge(self.client, self.target,
+                                                       expected_sha=expected)
+                        row["after"] = after
                         row["merge_commit"] = commit
                         row["status"] = "OBSERVED_MERGED_UNATTRIBUTED"
                     else:

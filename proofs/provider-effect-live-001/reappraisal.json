@@ -1,0 +1,59 @@
+{
+  "attempt": 7,
+  "claim_limit": "The real merge and held-ack revocation ordering are observed. The original receiver did not issue the required Arm B signed effect and closure receipts. Complete live provider closure is not proved.",
+  "current_base_commit": "96056fe1b0fbf1c781626122ef6c6bafc2085757",
+  "experiment_id": "PROVIDER-EFFECT-LIVE-001",
+  "external_read_observations": {
+    "base_branch_points_to_merge": true,
+    "commit_parents_match_target": true,
+    "commit_url": "https://github.com/terryncew/openline-provider-sandbox/commit/826dccd653f35743f4b0e25a02ed3c6c8ed321e0",
+    "merge_commit_matches_response": true,
+    "pr_merged": true,
+    "pr_url": "https://github.com/terryncew/openline-provider-sandbox/pull/9",
+    "scope": "Public GitHub reads; not a receiver-signed closure or independent cryptographic provider attestation."
+  },
+  "full_upstream_ci": "PENDING",
+  "live_repair_validation": "NOT_RUN",
+  "local_provider_tests": 32,
+  "new_effect_authority": "NONE",
+  "original_artifact_id": 10033308298,
+  "original_artifact_sha256": "e9758ccb69755cbb90e89b20f9795572dfe56cbe4f4150786598f84ac730ef32",
+  "original_core_blob": "49ad11c22f751e6f1c15dd4ead05a66b5872f1c9",
+  "original_evidence_unchanged": true,
+  "original_preregistration_sha256": "c62672067d667bf245fea438a5a53cd8c2a3ee7a061eb7ffd15b38e4c3ef985f",
+  "original_run_head": "c49b46ea3f0483f39cc4e3800c9b08e8f441859b",
+  "original_run_id": 34163238256,
+  "original_run_url": "https://github.com/terryncew/openline-provider-sandbox/actions/runs/34163238256",
+  "original_verdict": "INCONCLUSIVE",
+  "reappraised_verdict": "LIVE_GITHUB_MERGE_OBSERVED_CLOSURE_UNRESOLVED",
+  "repair": "Bounded read-only settling of terminal PR and exact merge commit; preserve durable uncertainty on timeout, mismatch, or invalid parents. Never retry the mutation.",
+  "repaired_core_sha256": "98d097d39cad624eee095c5b6a485853553a3eb5e339e87acdce2aa971aeb022",
+  "root_cause": "GitHub returned merged=true with a transient null merge_commit_sha immediately after a successful merge PUT. The original receiver treated the missing value as unresolved, and its read-only reconciliation attempted to validate null as a SHA.",
+  "schema": "openline.wallet.provider_live_reappraisal.v1",
+  "source_commit": "c35e7f427a26cddfc4e7d300a74b84aacc0ea64e",
+  "target": {
+    "base_ref": "olp-test-34163238256-base",
+    "head_sha": "38ab17c71b8ef0b7ed02d02e1ad328b358695d94",
+    "initial_base_sha": "c49b46ea3f0483f39cc4e3800c9b08e8f441859b",
+    "merge_parents": [
+      "c49b46ea3f0483f39cc4e3800c9b08e8f441859b",
+      "38ab17c71b8ef0b7ed02d02e1ad328b358695d94"
+    ],
+    "merge_sha": "826dccd653f35743f4b0e25a02ed3c6c8ed321e0",
+    "merged_at": "2026-09-07T21:29:02Z",
+    "pr": 9,
+    "repository": "terryncew/openline-provider-sandbox",
+    "repository_id": 1360489534
+  },
+  "verified_original_evidence": {
+    "archive_hashes": "PASS",
+    "arm_b_signed_closure": "ABSENT",
+    "arm_b_signed_effect_receipt": "ABSENT",
+    "held_ack_timing": "PASS",
+    "merge_requests": 1,
+    "pre_dispatch_merge_requests": 0,
+    "revoked_wallet_history": "PASS",
+    "signed_gate_records": "PASS",
+    "signed_result": "PASS"
+  }
+}
