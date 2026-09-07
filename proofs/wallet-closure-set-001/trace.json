@@ -1,0 +1,77 @@
+[
+  {
+    "event": "grant_admitted",
+    "observed_at": "2026-09-07T04:03:45.855087Z",
+    "receivers": 3,
+    "sequence": 1
+  },
+  {
+    "event": "prior_effect_committed",
+    "gate_id": "receiver-1",
+    "observed_at": "2026-09-07T04:03:45.860769Z",
+    "sequence": 2
+  },
+  {
+    "event": "inflight_effect_held_at_ledger",
+    "gate_id": "receiver-2",
+    "observed_at": "2026-09-07T04:03:45.866196Z",
+    "sequence": 3
+  },
+  {
+    "event": "revocation_signed",
+    "head_hash": "93c88c05ed6e34241565ca7c90307c78ddf0f9e059098405fade13261f1540dd",
+    "observed_at": "2026-09-07T04:03:45.870862Z",
+    "sequence": 4
+  },
+  {
+    "closure_status": "AUTHORIZATION_ADMITTED_ONLY",
+    "event": "two_receivers_admitted_revocation",
+    "observed_at": "2026-09-07T04:03:45.873132Z",
+    "sequence": 5
+  },
+  {
+    "event": "two_of_three_incomplete",
+    "observed_at": "2026-09-07T04:03:45.890655Z",
+    "sequence": 6,
+    "verified_receivers": 2
+  },
+  {
+    "event": "closure_waits_for_actual_frontier",
+    "observed_at": "2026-09-07T04:03:46.091509Z",
+    "sequence": 7
+  },
+  {
+    "event": "inflight_effect_completed_before_closure",
+    "observed_at": "2026-09-07T04:03:46.093596Z",
+    "receipt_hash": "b551eaa278d9d2c65bb925474616783728f78e1c38a0f1fb626af174ba2d0b49",
+    "sequence": 8
+  },
+  {
+    "event": "third_receiver_closed",
+    "gate_id": "receiver-2",
+    "observed_at": "2026-09-07T04:03:46.097006Z",
+    "sequence": 9
+  },
+  {
+    "event": "set_closure_verified",
+    "observed_at": "2026-09-07T04:03:46.102216Z",
+    "required_receivers": 3,
+    "sequence": 10
+  },
+  {
+    "event": "all_post_closure_actions_stopped",
+    "observed_at": "2026-09-07T04:03:46.109174Z",
+    "sequence": 11
+  },
+  {
+    "attacks": 4,
+    "event": "relay_attacks_rejected",
+    "observed_at": "2026-09-07T04:03:46.127459Z",
+    "sequence": 12
+  },
+  {
+    "event": "unreachable_member_remains_incomplete",
+    "observed_at": "2026-09-07T04:03:46.133217Z",
+    "sequence": 13
+  }
+]

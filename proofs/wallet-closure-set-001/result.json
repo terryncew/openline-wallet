@@ -1,0 +1,68 @@
+{
+  "auditor_public_key": "32a87fc754ec4940749e58f585e2482445eadcf1f10eedea60835f1b800cd843",
+  "base_commit": "a8633858a04d33c0e2930214d7c93105f67a3398",
+  "checks": {
+    "all_signed_closures_required": true,
+    "distinct_receiver_keys": true,
+    "inflight_frontier_drained_before_closure": true,
+    "missing_forged_duplicate_replay_rejected": true,
+    "prior_effect_preserved": true,
+    "rejected_actions_preserve_wallet_receipts": true,
+    "three_independent_processes": true,
+    "two_of_three_never_closes": true,
+    "unreachable_member_fails_closed": true,
+    "zero_post_closure_effects": true
+  },
+  "claim_boundary": "Three isolated local staging receivers with pinned keys, one fixed signed membership, and a cooperating final ledger frontier. No arbitrary provider, durable restart recovery, or open-world closure claim.",
+  "evidence_sha256": {
+    "forged-witness.json": "a1556f093fbc301c83d37ab79aa58353e1a61431197a0bb43bc527bb06035b95",
+    "fresh-request.json": "59bfc59c85668a54bd75b779991879f3ecc3921e8a86fcaf4e57cd3905401191",
+    "grant-bundle.json": "4dc0f90c0c66df51c1e39bcd6e22f5f444bb2a798cee5b3e28da656a74bb00b7",
+    "inflight-result.json": "f2f888839d4a1a5686297c24c7894221f5512334c2e80eb0ee0f9a1e5d8e5b86",
+    "ledgers.json": "51a07a2022ae7490652d8eb8e8401209d205c67f8bf3cf1eebfc9f67891c1e0f",
+    "membership.json": "e9b1287987b08eb8431540eb30cfd2995b00f0fdf6545e323947af7982b62ef2",
+    "negative-controls.json": "6fd671f6164757ab001dacb4b349bc5634d44f6621e05361a39507b1be75a0b1",
+    "partial.json": "80b8eb4cb469521d7177f30d22a12cc71d51eac515270ac4c138073648e9e143",
+    "post-closure.json": "8b1dd259268c695ec90542fda857b0b585da790f35d5e55d3fc6cf40395a7c89",
+    "prior-result.json": "86d8f1d7271c63e9f7967b336ace0b331843511c639eae76f88df11b7a24a0ba",
+    "report.json": "ada131a908ea8a81e00e65fe365f8e8f874eef14824cf3da274d1d815e123021",
+    "request.json": "0e0fc3c159c7141611a1f0218fb97abfd4238028b6d02b19d232ca743a82bd76",
+    "revoked-bundle.json": "56fd4b131ab47b866961b56f0d625090dc03c1bad7323b315e64bbb971fffc3e",
+    "trace.json": "5bcf363edd7f6c9e5829cca81c40b7c1498688693313e576ede77ab7d4db0f87",
+    "wallet-final.json": "c9b9972fd7f8fec2163b35494be231d8da47c5a051ec3446411a1d5e6e507e0b",
+    "witnesses.json": "041db05a98998c1255961cf814889d0d69560ca19b48eb3525610a038da1272c"
+  },
+  "experiment_id": "WALLET-CLOSURE-SET-001",
+  "observed": {
+    "effects_after_closure": 0,
+    "effects_before_or_during_closure": 2,
+    "missing_member_status": "CLOSURE_INCOMPLETE",
+    "receivers": 3,
+    "verified_receivers": 3,
+    "wallet_receipts": 7
+  },
+  "payload_hash": "ea2a35cbb29b4abb8e3b740e21b7cab8be12127ef9f97e989800b772ed515adc",
+  "schema": "openline.wallet.experiment_result.v1",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "32a87fc754ec4940749e58f585e2482445eadcf1f10eedea60835f1b800cd843",
+    "value": "3147b0350ef2304d8cb5844932f996a1af2f6b1c021802e2533c1807e5bbfae92732a3a444c6f35be2d43922152c5a1cf8efd1216b4e130b2658216eeade2408"
+  },
+  "source_sha256": {
+    ".github/workflows/ci.yml": "7ba759dc0d724a0f6871712d892e45fa13171952fbf2f58182d2e657d8310a7f",
+    "proofs/wallet-closure-set-001/reproduce.py": "8c96b30d90fad2ab2290551b47a08657e74e4747a9e53a3ebbd2524eaf204ca7",
+    "proofs/wallet-closure-set-001/verify.py": "f0acf71336ad5f60866f2dd3cc6d21a5bd2e7b1e95952c51cee3b6346395fd33",
+    "proofs/wallet-closure-set-001/worker.py": "c92fbd61cadfcd4c0d1c1b8e06896fe9bb84a6c45a7e8fb2e6d5c0130eb5dea6",
+    "src/openline_wallet/canonical.py": "e65358ba903fb9f61efc712d7399ca8d6b67fc2cd5124608a01667b9294ab80e",
+    "src/openline_wallet/clock.py": "a5cc889461244afb4dc113fc3ec53b24f0603b58639a62427b05ed1e709bc88e",
+    "src/openline_wallet/closure_set.py": "7c789cb11030c80d9bee88ba05373e3fac72b49baebf2200d0c8b955dc89eb94",
+    "src/openline_wallet/crypto.py": "7e403665427496ec363507079796bfd35d3eec3b2e0e702a45e9e8bf241d87a4",
+    "src/openline_wallet/effect_closure.py": "c06d88bbbabc10802ad6060354b20da14631962a1f3978e570e28cf7a7fcd2fc",
+    "src/openline_wallet/gate_http.py": "77018f3b7439692b823cfe2c7f4d736992af2e95e9145449679194dd9b70f3b5",
+    "src/openline_wallet/receiver.py": "421b8419ac68faddfc48f5b5f3f1991cc9e04a88ce5bfe2c259f7bd62f83b97f",
+    "src/openline_wallet/storage.py": "92c0b6645e2f4719890a2f3bcc577aa458641ade9440a4f06c837dc2d69a2539",
+    "src/openline_wallet/wallet.py": "3bb6d97644df8cae92d9da90b9b6bc26f3de5bdb004bffb6edb095c00b0b32f9",
+    "tests/test_closure_set.py": "974dbbd96a96d8446ca91daddc1f2b158ce28c7cc0a489145a5d7ff309254071"
+  },
+  "verdict": "FIXED_SET_LOCAL_CLOSURE_ENFORCED"
+}

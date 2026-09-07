@@ -1,0 +1,99 @@
+{
+  "admission_receipt": {
+    "action": "deploy:staging",
+    "decided_at": "2026-09-07T04:03:45.857893Z",
+    "decision": "ALLOWED",
+    "decision_authority": "RECEIVER_GATE",
+    "gate_id": "receiver-1",
+    "gate_public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+    "mandate_id": "grant-a",
+    "payload_hash": "06febc64df7597664f2fdd221b4a583add764d63df19fbf32c5e73f90cfd9a8c",
+    "presentation_hash": "eca38e60c16e07264f4b5b5d83aa187690b82480396f404e9d450688dfd11bd8",
+    "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+    "reason_codes": [],
+    "schema": "openline.gate.action_receipt.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+      "value": "5666b20d530af33d1af5999b8e6b32a02b9e9060ed12064ae43d20485d46c3d87228493e6717c5556046e462ba56229a8408ffbbc683b0710eb809df460fd907"
+    },
+    "subject_id": "agent-a",
+    "wallet_policy_authority": "NONE"
+  },
+  "admission_receipt_hash": "a966171ff70a5ada30375be0b6015bf253e5eb95963a156a77f44b9ba3ddf562",
+  "decision": "ALLOWED",
+  "effect_applied": true,
+  "effect_receipt": {
+    "action": "deploy:staging",
+    "admission_receipt_hash": "a966171ff70a5ada30375be0b6015bf253e5eb95963a156a77f44b9ba3ddf562",
+    "completed_at": "2026-09-07T04:03:45.860340Z",
+    "decision": "ALLOWED",
+    "decision_authority": "RECEIVER_GATE",
+    "effect_applied": true,
+    "effect_id": "423942b85e52ca68c6bfdd9fb9aa578169e4c6fa249cbdaf6839076a1d6500ae",
+    "frontier_receipt_hash": "954b4a8f8309c8f651d482c851cee6d3afe909091058f820e40b82da43c21155",
+    "gate_id": "receiver-1",
+    "gate_public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+    "mandate_id": "grant-a",
+    "payload_hash": "bfe295efecaa301c401dd1fae816691d59848187f3a82ce51ecfbc7478c103b9",
+    "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+    "reason_codes": [],
+    "release": "prior-effect",
+    "schema": "openline.wallet.effect_receipt.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+      "value": "fdd97b56285930c18ad8a4c412a359c2925160f0cfc988e094a0af3339906e2be2e6ad9f3b74a705681d816f5d4437ca3ca8c113f9729d5f8c14866fc070b004"
+    },
+    "subject_id": "agent-a",
+    "wallet_policy_authority": "NONE"
+  },
+  "effect_receipt_hash": "205e624d52795419bcc290c8a2c56384be4959c436c583d698fd39b8ae03af06",
+  "frontier_receipt": {
+    "action": "deploy:staging",
+    "decided_at": "2026-09-07T04:03:45.859682Z",
+    "decision": "ALLOWED",
+    "decision_authority": "RECEIVER_GATE",
+    "gate_id": "receiver-1",
+    "gate_public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+    "mandate_id": "grant-a",
+    "payload_hash": "ab8aeaa75a9f78e3f39825765c84b320d77b786934a456eb5b9605b902c1c160",
+    "presentation_hash": "eca38e60c16e07264f4b5b5d83aa187690b82480396f404e9d450688dfd11bd8",
+    "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+    "reason_codes": [],
+    "schema": "openline.gate.action_receipt.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+      "value": "60c5ffc5c1b600370ca6d43f319db18631e5e6a7862455d03a07c86187bb13203335be0a902b7b9ce50da5317c9b20689db7e506e0f5cf620694e9c0b1a3e108"
+    },
+    "subject_id": "agent-a",
+    "wallet_policy_authority": "NONE"
+  },
+  "frontier_receipt_hash": "954b4a8f8309c8f651d482c851cee6d3afe909091058f820e40b82da43c21155",
+  "gate_id": "receiver-1",
+  "reason_codes": [],
+  "receipt": {
+    "action": "deploy:staging",
+    "decided_at": "2026-09-07T04:03:45.859682Z",
+    "decision": "ALLOWED",
+    "decision_authority": "RECEIVER_GATE",
+    "gate_id": "receiver-1",
+    "gate_public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+    "mandate_id": "grant-a",
+    "payload_hash": "ab8aeaa75a9f78e3f39825765c84b320d77b786934a456eb5b9605b902c1c160",
+    "presentation_hash": "eca38e60c16e07264f4b5b5d83aa187690b82480396f404e9d450688dfd11bd8",
+    "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+    "reason_codes": [],
+    "schema": "openline.gate.action_receipt.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+      "value": "60c5ffc5c1b600370ca6d43f319db18631e5e6a7862455d03a07c86187bb13203335be0a902b7b9ce50da5317c9b20689db7e506e0f5cf620694e9c0b1a3e108"
+    },
+    "subject_id": "agent-a",
+    "wallet_policy_authority": "NONE"
+  },
+  "receipt_hash": "954b4a8f8309c8f651d482c851cee6d3afe909091058f820e40b82da43c21155",
+  "release": "prior-effect"
+}
