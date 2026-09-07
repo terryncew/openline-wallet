@@ -1,0 +1,80 @@
+name: Try Airlock on a real repository
+description: Apply for a small, supervised pilot using your own coding agent.
+title: "[Pilot] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We are looking for developers with a real task and a repository they maintain. The first pilot is one bounded run. Please do not share secrets, private code, or customer data here. Read the [pilot guide](https://github.com/terryncew/openline-airlock/blob/main/docs/PILOT.md) before applying.
+  - type: input
+    id: repo
+    attributes:
+      label: Repository
+      description: Public URL, or say "private" and describe the language and build system.
+      placeholder: https://github.com/owner/repo
+    validations:
+      required: true
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agent you already use
+      options:
+        - Claude Code
+        - Codex
+        - Aider
+        - OpenCode
+        - Hermes
+        - Other / not yet installed
+    validations:
+      required: true
+  - type: textarea
+    id: task
+    attributes:
+      label: One task you would delegate
+      description: Describe a real, small task, not a hypothetical benchmark.
+      placeholder: Fix a bug, address an issue, or make a measured improvement.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: What would count as a correct result?
+      description: Existing tests, maintainer constraints, or an observable outcome. It is fine if this is not fully encoded yet.
+    validations:
+      required: true
+  - type: dropdown
+    id: checks
+    attributes:
+      label: Current repository checks
+      options:
+        - Meaningful checks pass at the starting commit
+        - Checks exist but the baseline is failing
+        - Checks are incomplete or missing
+        - I am not sure
+    validations:
+      required: true
+  - type: textarea
+    id: blocker
+    attributes:
+      label: What stops you from delegating this today?
+      description: Review burden, trust, cost, setup, missing constraints, or something else.
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Contact preference
+      description: Optional. GitHub replies are the default; do not post private contact details.
+      placeholder: Reply here / contact me through my public profile
+    validations:
+      required: false
+  - type: checkboxes
+    id: consent
+    attributes:
+      label: Pilot boundaries
+      options:
+        - label: I understand that this is an experimental pilot, not a hosted service or production safety guarantee.
+          required: true
+        - label: I will not post credentials, private source code, or customer data in this issue.
+          required: true
