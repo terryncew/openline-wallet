@@ -24,25 +24,27 @@ jobs:
         run: python -m pip install -e ".[mcp]"
       - name: Test
         run: python -m unittest discover -s tests -v
-      - name: Verify frozen predecessor evidence
-        run: python proofs/provider-effect-001/verify_prior.py --output historical-artifacts/reappraisal.json
-      - name: Upload historical diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: historical-evidence-${{ matrix.python-version }}
-          path: historical-artifacts/
-          if-no-files-found: warn
-      - name: PROVIDER-EFFECT-001
+      - name: WALLET-EFFECT-CLOSURE-001
         run: |
-          python proofs/provider-effect-001/reproduce.py --output provider-effect-artifacts
-          python proofs/provider-effect-001/verify.py provider-effect-artifacts
-      - name: Upload provider-effect diagnostics
+          python proofs/wallet-effect-closure-001/reproduce.py --output effect-closure-artifacts
+          python proofs/wallet-effect-closure-001/verify.py effect-closure-artifacts
+      - name: Upload effect-closure diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: provider-effect-${{ matrix.python-version }}
-          path: provider-effect-artifacts/
+          name: effect-closure-${{ matrix.python-version }}
+          path: effect-closure-artifacts/
+          if-no-files-found: warn
+      - name: WALLET-CLOSURE-SET-001
+        run: |
+          python proofs/wallet-closure-set-001/reproduce.py --output closure-set-artifacts
+          python proofs/wallet-closure-set-001/verify.py closure-set-artifacts
+      - name: Upload closure-set diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: closure-set-${{ matrix.python-version }}
+          path: closure-set-artifacts/
           if-no-files-found: warn
       - name: PLATFORM-EXIT-001
         run: |

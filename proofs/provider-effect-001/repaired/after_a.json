@@ -1,0 +1,11 @@
+{
+  "base_ref": "olp-test-base",
+  "base_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "merge_commit_sha": null,
+  "merged": false,
+  "number": 7,
+  "repository": "example/provider-effect-sandbox",
+  "repository_id": 12345,
+  "state": "open"
+}

@@ -1,0 +1,111 @@
+{
+  "admission_receipt": {
+    "action": "github:merge:e526e6ccfece32522601a6fc373a5bf23132e87dc8a66e2f3c9fb990b3d96a1b",
+    "decided_at": "2026-09-07T04:35:12.914915Z",
+    "decision": "ALLOWED",
+    "decision_authority": "RECEIVER_GATE",
+    "gate_id": "provider-effect-b",
+    "gate_public_key": "b03adea3ead560685553e1de34492a0d156e1667b240a713f7d864e1d540dad6",
+    "mandate_id": "grant-b",
+    "payload_hash": "243069d2496913cbd6e29f4b8f7e742c7f355a1458d5d0057f45cf6f5997bd1b",
+    "presentation_hash": "6ee12ef4d01c0c599925025e274f6f6be4c94cbe86eaa117be826bc4e058be07",
+    "principal_id": "openline:principal:0de930c27444f6c2ea9be3f746110fbbe66bc10a63c7d69a2a370f2dbb29457b",
+    "reason_codes": [],
+    "schema": "openline.gate.action_receipt.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "b03adea3ead560685553e1de34492a0d156e1667b240a713f7d864e1d540dad6",
+      "value": "f307df4b07cf1d9e2582107f4481ac1408b35d6cdd7c0d596576e511a800c294290096fb2a3e54ade213480160abe75a0ce8b90c5bfa0dd86bca326f8e281b00"
+    },
+    "subject_id": "agent-b",
+    "wallet_policy_authority": "NONE"
+  },
+  "decision": "ALLOWED",
+  "effect_applied": true,
+  "effect_receipt": {
+    "action": "github:merge:e526e6ccfece32522601a6fc373a5bf23132e87dc8a66e2f3c9fb990b3d96a1b",
+    "admission_receipt_hash": "430f24711904406a20f2cd5ab82b4e23a2f8a0324618a70b1243b28db5de2827",
+    "after": {
+      "base_ref": "olp-test-base",
+      "base_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "merge_commit_sha": "cccccccccccccccccccccccccccccccccccccccc",
+      "merged": true,
+      "number": 7,
+      "repository": "example/provider-effect-sandbox",
+      "repository_id": 12345,
+      "state": "closed"
+    },
+    "attempt_id": "gh_cbb4842b56889e174bc7743db70e450ecfbb183e9e5bbadd",
+    "before": {
+      "base_ref": "olp-test-base",
+      "base_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "merge_commit_sha": null,
+      "merged": false,
+      "number": 7,
+      "repository": "example/provider-effect-sandbox",
+      "repository_id": 12345,
+      "state": "open"
+    },
+    "confirmed_at": "2026-09-07T04:35:13.030965Z",
+    "decision_authority": "RECEIVER_GATE",
+    "frontier_receipt_hash": "e6819c2fba5725d0566cb6167226defcd2d46cc4960cf27fb53314c6edb96030",
+    "gate_id": "provider-effect-b",
+    "gate_public_key": "b03adea3ead560685553e1de34492a0d156e1667b240a713f7d864e1d540dad6",
+    "mandate_id": "grant-b",
+    "merge_commit": {
+      "base_drift": false,
+      "parents": [
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      ],
+      "sha": "cccccccccccccccccccccccccccccccccccccccc"
+    },
+    "merge_commit_sha": "cccccccccccccccccccccccccccccccccccccccc",
+    "payload_hash": "af486667f9b5582a61ef0e104a111873250d5c05188a2b0c07c906091d2106ad",
+    "principal_id": "openline:principal:0de930c27444f6c2ea9be3f746110fbbe66bc10a63c7d69a2a370f2dbb29457b",
+    "schema": "openline.wallet.github_merge_effect.v1",
+    "scope": "GITHUB_PR_MERGE_ONLY",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "b03adea3ead560685553e1de34492a0d156e1667b240a713f7d864e1d540dad6",
+      "value": "3e59dcb93b93220ee3cfa94d1cd4813705a348822554fcb8d3cdc5863ffee0aa67f7bfcb09527650341e461dc19b13167cafef9e343f4e95525a3306325bf407"
+    },
+    "status": "MERGE_CONFIRMED",
+    "subject_id": "agent-b",
+    "target": {
+      "action": "github:merge:e526e6ccfece32522601a6fc373a5bf23132e87dc8a66e2f3c9fb990b3d96a1b",
+      "base_ref": "olp-test-base",
+      "base_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "number": 7,
+      "repository": "example/provider-effect-sandbox",
+      "repository_id": 12345,
+      "schema": "openline.wallet.github_merge_action.v1"
+    },
+    "wallet_policy_authority": "NONE"
+  },
+  "reason_codes": [],
+  "receipt": {
+    "action": "github:merge:e526e6ccfece32522601a6fc373a5bf23132e87dc8a66e2f3c9fb990b3d96a1b",
+    "decided_at": "2026-09-07T04:35:12.917305Z",
+    "decision": "ALLOWED",
+    "decision_authority": "RECEIVER_GATE",
+    "gate_id": "provider-effect-b",
+    "gate_public_key": "b03adea3ead560685553e1de34492a0d156e1667b240a713f7d864e1d540dad6",
+    "mandate_id": "grant-b",
+    "payload_hash": "0732387f09b40b4c0fd172ced097d95dad419bc7669acba963b2520397e03d67",
+    "presentation_hash": "6ee12ef4d01c0c599925025e274f6f6be4c94cbe86eaa117be826bc4e058be07",
+    "principal_id": "openline:principal:0de930c27444f6c2ea9be3f746110fbbe66bc10a63c7d69a2a370f2dbb29457b",
+    "reason_codes": [],
+    "schema": "openline.gate.action_receipt.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "b03adea3ead560685553e1de34492a0d156e1667b240a713f7d864e1d540dad6",
+      "value": "92279702195f94ebc9938b23719a6e6ed50e7af6100943bb9c46809a51e12530dbe76bb178dd4243e84a75cad549102f5628790f73ef6602df66643ac52fc606"
+    },
+    "subject_id": "agent-b",
+    "wallet_policy_authority": "NONE"
+  }
+}
