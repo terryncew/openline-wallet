@@ -1,0 +1,38 @@
+{
+  "effect_authority": "NONE",
+  "errors": [],
+  "evaluated_at": "2026-09-07T04:03:46.097305Z",
+  "head_hash": "93c88c05ed6e34241565ca7c90307c78ddf0f9e059098405fade13261f1540dd",
+  "head_sequence": 2,
+  "mandate_id": "grant-a",
+  "manifest_hash": "78bb1e22a345990109f5860a31fde5ee5406b77cd8aa4b06dbe71806dc26d973",
+  "missing": [],
+  "payload_hash": "96b572ec00cdb86994f98462689887492e194152ab478c27e48e1c1b37346330",
+  "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+  "request_hash": "24d4160fef99721593e7d0a5ebad0d9c57d3a644089c746cfdf7caf5fc66b114",
+  "required_receivers": 3,
+  "schema": "openline.wallet.closure_set.v1",
+  "scope": "FIXED_RECEIVER_SET",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "32a87fc754ec4940749e58f585e2482445eadcf1f10eedea60835f1b800cd843",
+    "value": "a7740b0fbf6bb3220f1b51afc1869230e2d75156128308a4ce37fef28f85c5341617e09bcc2e7c799384e3c9e1ba29d8fe2c914124cb80b774250a09735e1c05"
+  },
+  "status": "EFFECT_CLOSED",
+  "verified_receivers": 3,
+  "wallet_policy_authority": "NONE",
+  "witness_hashes": [
+    {
+      "gate_id": "receiver-0",
+      "witness_hash": "8291f87c5971b6aa2fc035c9581c9572c62b7e58fb8ea3824d3fa6206fcad007"
+    },
+    {
+      "gate_id": "receiver-1",
+      "witness_hash": "5dc59b372ef9aeac6d8082ded4c9628203281f6a24fe19e01beea7704d851994"
+    },
+    {
+      "gate_id": "receiver-2",
+      "witness_hash": "4497bb283ee2c09552d31b2ed8e959e78bcd5174ddc71e48ab8a62e9fa1d9907"
+    }
+  ]
+}

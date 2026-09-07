@@ -1,0 +1,21 @@
+{
+  "bundle_hash": "d6079a7a641ef34f9b84e34a9c6c264753e91030d51024198a8ca010d8f7cad2",
+  "expires_at": "2026-09-07T04:05:45.869950Z",
+  "head_hash": "93c88c05ed6e34241565ca7c90307c78ddf0f9e059098405fade13261f1540dd",
+  "head_sequence": 2,
+  "issued_at": "2026-09-07T04:03:45.869950Z",
+  "mandate_id": "grant-a",
+  "manifest_hash": "78bb1e22a345990109f5860a31fde5ee5406b77cd8aa4b06dbe71806dc26d973",
+  "nonce": "request_fb078d148e9c344372e4c49cbf374e1b",
+  "payload_hash": "7ff04f8fd9a7a86fdce389452ba483da0896b23ae8481b60eb3727c70079a8ff",
+  "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+  "revocation_hash": "93c88c05ed6e34241565ca7c90307c78ddf0f9e059098405fade13261f1540dd",
+  "revocation_sequence": 2,
+  "schema": "openline.wallet.closure_request.v1",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "9191fb53ef6ac253b2ec40ce7143efef0d707f1fb9fcb8e7af412b563127bafe",
+    "value": "d6817de1d5c343cbe898c9796278ecc16256d3bc41dd179e1f01a93b578cc9d7227e4f0c735bf294efc14e1b76e882a9e966fc4abb82d44f7395751d950c390f"
+  },
+  "wallet_policy_authority": "NONE"
+}

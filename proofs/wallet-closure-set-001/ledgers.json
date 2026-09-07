@@ -1,0 +1,29 @@
+{
+  "receiver-0": [],
+  "receiver-1": [
+    {
+      "action": "deploy:staging",
+      "decided_at": "2026-09-07T04:03:45.859682Z",
+      "gate_id": "receiver-1",
+      "mandate_id": "grant-a",
+      "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+      "receipt_hash": "954b4a8f8309c8f651d482c851cee6d3afe909091058f820e40b82da43c21155",
+      "release": "prior-effect",
+      "schema": "openline.platform_exit_live.effect.v1",
+      "subject_id": "agent-a"
+    }
+  ],
+  "receiver-2": [
+    {
+      "action": "deploy:staging",
+      "decided_at": "2026-09-07T04:03:45.865430Z",
+      "gate_id": "receiver-2",
+      "mandate_id": "grant-a",
+      "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+      "receipt_hash": "b551eaa278d9d2c65bb925474616783728f78e1c38a0f1fb626af174ba2d0b49",
+      "release": "inflight",
+      "schema": "openline.platform_exit_live.effect.v1",
+      "subject_id": "agent-a"
+    }
+  ]
+}

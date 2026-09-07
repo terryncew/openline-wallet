@@ -1,0 +1,30 @@
+{
+  "expires_at": "2026-09-07T04:13:45.850998Z",
+  "issued_at": "2026-09-07T04:03:45.850998Z",
+  "mandate_id": "grant-a",
+  "members": [
+    {
+      "gate_id": "receiver-0",
+      "gate_public_key": "d017584df4027a0472d4ef80d06f0349ab2208f36f8a822015730b42566d8fae"
+    },
+    {
+      "gate_id": "receiver-1",
+      "gate_public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2"
+    },
+    {
+      "gate_id": "receiver-2",
+      "gate_public_key": "3ba4cfb469bd708aedbb13c2f1d12d2ea534edacb4659f5a44aadce49e0c49bd"
+    }
+  ],
+  "payload_hash": "989aa88ba4854d702a4f93c81ce1fea8a2e72f8c5906f7e51cc6b226abcf0f07",
+  "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+  "root_public_key": "9191fb53ef6ac253b2ec40ce7143efef0d707f1fb9fcb8e7af412b563127bafe",
+  "schema": "openline.wallet.closure_membership.v1",
+  "scope": "RECEIVER_LOCAL_STAGING_LEDGER",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "9191fb53ef6ac253b2ec40ce7143efef0d707f1fb9fcb8e7af412b563127bafe",
+    "value": "8adb41207ae7f38f7db729ab6fc495f9fd30424063425a25bd8ae1e15c89bb0c3a4013d0e6b0d72cbd9f225b732c40d2cd4c066f9c3f2618cf4cf7193ccc5507"
+  },
+  "wallet_policy_authority": "NONE"
+}

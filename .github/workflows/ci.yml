@@ -35,6 +35,17 @@ jobs:
           name: effect-closure-${{ matrix.python-version }}
           path: effect-closure-artifacts/
           if-no-files-found: warn
+      - name: WALLET-CLOSURE-SET-001
+        run: |
+          python proofs/wallet-closure-set-001/reproduce.py --output closure-set-artifacts
+          python proofs/wallet-closure-set-001/verify.py closure-set-artifacts
+      - name: Upload closure-set diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: closure-set-${{ matrix.python-version }}
+          path: closure-set-artifacts/
+          if-no-files-found: warn
       - name: PLATFORM-EXIT-001
         run: |
           python -m openline_wallet demo-platform-exit --output platform-exit-artifacts

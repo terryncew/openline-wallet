@@ -1,0 +1,119 @@
+[
+  {
+    "gate_id": "receiver-0",
+    "gate_public_key": "d017584df4027a0472d4ef80d06f0349ab2208f36f8a822015730b42566d8fae",
+    "local_closure": {
+      "active_frontiers": 0,
+      "closed_at": "2026-09-07T04:03:45.873695Z",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "receiver-0",
+      "gate_public_key": "d017584df4027a0472d4ef80d06f0349ab2208f36f8a822015730b42566d8fae",
+      "head_hash": "93c88c05ed6e34241565ca7c90307c78ddf0f9e059098405fade13261f1540dd",
+      "head_sequence": 2,
+      "mandate_id": "grant-a",
+      "payload_hash": "10c7861de63a359328b23b162a866d19d0854f4f3ae3ce0c07351e738b6c2607",
+      "pending_fenced": 1,
+      "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+      "schema": "openline.wallet.effect_closure.v1",
+      "scope": "RECEIVER_LOCAL_STAGING_LEDGER",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "d017584df4027a0472d4ef80d06f0349ab2208f36f8a822015730b42566d8fae",
+        "value": "2ce4afb2afb6c29b4b3b8fed256f60657ee4e2a237fa6090445f18910c30a3991c94f303ed0bebe52b02e85824e136571b7fbe5b107ad996f45481dab2264901"
+      },
+      "status": "EFFECT_CLOSED",
+      "wallet_policy_authority": "NONE"
+    },
+    "mandate_id": "grant-a",
+    "manifest_hash": "78bb1e22a345990109f5860a31fde5ee5406b77cd8aa4b06dbe71806dc26d973",
+    "observed_at": "2026-09-07T04:03:45.873695Z",
+    "payload_hash": "7363b81702a5f90992c6480a1ba2226765976cd4e4aef8d8da94d82f226f8ed9",
+    "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+    "request_hash": "24d4160fef99721593e7d0a5ebad0d9c57d3a644089c746cfdf7caf5fc66b114",
+    "schema": "openline.wallet.closure_witness.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "d017584df4027a0472d4ef80d06f0349ab2208f36f8a822015730b42566d8fae",
+      "value": "574cb6101722b8755f320226a07270687c032cf825d8914dd38f36336dd57e486a1304904937f5a24254cdecd36f38e02460991204b9890d52c84e77d3e0c10c"
+    },
+    "wallet_policy_authority": "NONE"
+  },
+  {
+    "gate_id": "receiver-1",
+    "gate_public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+    "local_closure": {
+      "active_frontiers": 0,
+      "closed_at": "2026-09-07T04:03:45.884948Z",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "receiver-1",
+      "gate_public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+      "head_hash": "93c88c05ed6e34241565ca7c90307c78ddf0f9e059098405fade13261f1540dd",
+      "head_sequence": 2,
+      "mandate_id": "grant-a",
+      "payload_hash": "31855fa4043acfe4389ec00bd18fd87dbfbd97aee9892cbe522471adf5724012",
+      "pending_fenced": 1,
+      "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+      "schema": "openline.wallet.effect_closure.v1",
+      "scope": "RECEIVER_LOCAL_STAGING_LEDGER",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+        "value": "cd7a8342cbd7cd2c3ce56daf601820f98447960be78f570ed38fec01312c70ec520e02f7bdf636dca45075160d0b23ae18acd410b237d8f2c2cb3dddd059610a"
+      },
+      "status": "EFFECT_CLOSED",
+      "wallet_policy_authority": "NONE"
+    },
+    "mandate_id": "grant-a",
+    "manifest_hash": "78bb1e22a345990109f5860a31fde5ee5406b77cd8aa4b06dbe71806dc26d973",
+    "observed_at": "2026-09-07T04:03:45.884948Z",
+    "payload_hash": "2e4d19722cb3fa1b738de03b9ef9ea652b716a280dfae3079a5e5ca29abd2a0b",
+    "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+    "request_hash": "24d4160fef99721593e7d0a5ebad0d9c57d3a644089c746cfdf7caf5fc66b114",
+    "schema": "openline.wallet.closure_witness.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "ff82662517ebb1ea838514e195f66fd765c5ab8c7038147429999022bb3fbeb2",
+      "value": "d9970e2f3c837fccf0602af68245de06671e221440c3fc92b78fa3a523324a222aeef431a9be8f5a6f9ae4ab5e4830f769ef67f50e9c3be7e6545a816a587b0b"
+    },
+    "wallet_policy_authority": "NONE"
+  },
+  {
+    "gate_id": "receiver-2",
+    "gate_public_key": "3ba4cfb469bd708aedbb13c2f1d12d2ea534edacb4659f5a44aadce49e0c49bd",
+    "local_closure": {
+      "active_frontiers": 0,
+      "closed_at": "2026-09-07T04:03:46.093520Z",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "receiver-2",
+      "gate_public_key": "3ba4cfb469bd708aedbb13c2f1d12d2ea534edacb4659f5a44aadce49e0c49bd",
+      "head_hash": "93c88c05ed6e34241565ca7c90307c78ddf0f9e059098405fade13261f1540dd",
+      "head_sequence": 2,
+      "mandate_id": "grant-a",
+      "payload_hash": "9c82cb116fa1b7564272a2fca776341545c71e7f127f1954b7bad35516c78f99",
+      "pending_fenced": 0,
+      "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+      "schema": "openline.wallet.effect_closure.v1",
+      "scope": "RECEIVER_LOCAL_STAGING_LEDGER",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3ba4cfb469bd708aedbb13c2f1d12d2ea534edacb4659f5a44aadce49e0c49bd",
+        "value": "cb97b99ea0ebaacb43e92e62afaa1bbe1d1605527e594718e37eed4571fb64e7ec21917be270179e05735deeed86a537b4ac7274d9eff6c5f44e98ee1123600a"
+      },
+      "status": "EFFECT_CLOSED",
+      "wallet_policy_authority": "NONE"
+    },
+    "mandate_id": "grant-a",
+    "manifest_hash": "78bb1e22a345990109f5860a31fde5ee5406b77cd8aa4b06dbe71806dc26d973",
+    "observed_at": "2026-09-07T04:03:46.093520Z",
+    "payload_hash": "06fed86afaf3e206b736504f412d35a952e314cb6a68c922718f8657ba0c3e52",
+    "principal_id": "openline:principal:267c259996a4b342f328744553a99ff0369aa3e8c6122d567dd6e9cc02a79a08",
+    "request_hash": "24d4160fef99721593e7d0a5ebad0d9c57d3a644089c746cfdf7caf5fc66b114",
+    "schema": "openline.wallet.closure_witness.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "3ba4cfb469bd708aedbb13c2f1d12d2ea534edacb4659f5a44aadce49e0c49bd",
+      "value": "498becc91a1a9c9114ff72cf6b088973d9aeb03e3a898087f5b73c2797ab818847fd6493ef366e2d49b34bce508f54d49dc444eaafde912f45266fe243b02701"
+    },
+    "wallet_policy_authority": "NONE"
+  }
+]
