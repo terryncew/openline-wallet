@@ -1,0 +1,13 @@
+[
+  {
+    "action": "deploy:staging",
+    "decided_at": "2026-09-06T12:00:02Z",
+    "gate_id": "baseline-receiver",
+    "mandate_id": "grant-a",
+    "principal_id": "openline:principal:d200ac6cc237fadf1d38e4ad18813ad3ddfbde04c90665f9f4120b08a43c9b7d",
+    "receipt_hash": "d545974973cfa544e2afaf4af53ee67fd45b47612071a8e10d892a8c72dcb93b",
+    "release": "baseline-held",
+    "schema": "openline.platform_exit_live.effect.v1",
+    "subject_id": "agent-a"
+  }
+]

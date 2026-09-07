@@ -1,0 +1,45 @@
+{
+  "base_commit": "9df63798c0f520e9d6c8dc85dd293ebdeaa9c11f",
+  "baseline": {
+    "closure_certificate": false,
+    "effects_after_newer_revocation_admission": 1,
+    "interpretation": "Upstream admission is insufficient; the old API did not claim effect closure."
+  },
+  "candidate_source_sha256": {
+    "src/openline_wallet/effect_closure.py": "c06d88bbbabc10802ad6060354b20da14631962a1f3978e570e28cf7a7fcd2fc",
+    "src/openline_wallet/gate_http.py": "77018f3b7439692b823cfe2c7f4d736992af2e95e9145449679194dd9b70f3b5"
+  },
+  "checks": {
+    "baseline_late_effect_reproduced": true,
+    "held_action_fenced": true,
+    "original_admission_preserved": true,
+    "revocation_closure_signed": true,
+    "wallet_receipt_schema_preserved": true,
+    "zero_post_closure_effects": true
+  },
+  "ci_status": "PENDING_REMOTE_RUN",
+  "claim_boundary": "One receiver-owned process and its local staging ledger. No external provider queue, multi-receiver closure, or production recovery claim.",
+  "experiment_id": "WALLET-EFFECT-CLOSURE-001",
+  "patched": {
+    "effects_after_signed_closure": 0,
+    "final_reason": [
+      "MANDATE_REVOKED"
+    ],
+    "pending_fenced": 1,
+    "wallet_receipts": 1
+  },
+  "payload_hash": "14c20944a8e252e38379d689208a780c84181f139153154ae8862f1f6fe603d2",
+  "schema": "openline.wallet.effect_closure_experiment.v1",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "f1073938cf4ef344655191b225934b4ab76f6f325539ab691a52414251f64134",
+    "value": "bc420b6e0fdf5ce5581892cf3a8e1d7f2ba379e9e5f9d10bc86f296082a1ad950609c4d376a339f798e713c48418a65e2a823375d0087f54f1bade8dd958f304"
+  },
+  "source_git_blobs": {
+    "gate_http.py": "192006de121e9ee02f7384861e71a0011607735f",
+    "receiver.py": "0844f8e08c12e036f601810a3f9a30c56076ca7e",
+    "wallet.py": "bfced3324554cb7f3b12b1b1aa373a57bc63881b"
+  },
+  "verdict": "LOCAL_EFFECT_CLOSURE_ENFORCED",
+  "verification": "Self-attested disposable test key; not an independent witness."
+}

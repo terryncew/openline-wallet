@@ -1,0 +1,22 @@
+{
+  "active_frontiers": 0,
+  "closed_at": "2026-09-06T12:00:04Z",
+  "decision_authority": "RECEIVER_GATE",
+  "gate_id": "effect-closure-receiver",
+  "gate_public_key": "f68872d0a79c32729999c2c9b2cab12bbaf348cdea20bfb434a433789beffe81",
+  "head_hash": "d2ee2b8b360728f430d8adeba2fdfbd471b7546bab3757b3e861507034cadee6",
+  "head_sequence": 2,
+  "mandate_id": "grant-a",
+  "payload_hash": "d919c41214f2a9f37966fe9e12a20463e934825aff279cfde18131f50ca07707",
+  "pending_fenced": 1,
+  "principal_id": "openline:principal:d96893d6cebd8be6d2aac6b845133be56f9f8c078ffc74db5af59fbffc42d6ba",
+  "schema": "openline.wallet.effect_closure.v1",
+  "scope": "RECEIVER_LOCAL_STAGING_LEDGER",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "f68872d0a79c32729999c2c9b2cab12bbaf348cdea20bfb434a433789beffe81",
+    "value": "8c647f5559357526153725fa54fd7ae61c30410c480db2c27e1bc890dbeada81fbdb404e82bdf316522351dfca634c415f12596166e6b0b9618d1003077a6102"
+  },
+  "status": "EFFECT_CLOSED",
+  "wallet_policy_authority": "NONE"
+}

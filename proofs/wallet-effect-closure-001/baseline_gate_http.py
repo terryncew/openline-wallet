@@ -1,86 +1,127 @@
-"""Development-only localhost receiver with a serialized effect frontier.
+"""Receiver-owned localhost Gate for PLATFORM-EXIT-LIVE-001.
 
-Admission, authority closure, and the actual local ledger effect share one
-serialization domain. This does not claim closure for external provider queues.
+This is deliberately a development-only receiver. It keeps authorization
+decision state in memory, writes signed receipts to disk, and applies one safe
+demo effect only after ReferenceGate returns ALLOWED.
 """
+
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 from pathlib import Path
 import re
-from typing import Any, Callable, Mapping
+import socket
+from typing import Any, Mapping
 
 from .canonical import pretty_json
-from .effect_closure import EffectClosure, EffectGate
+from .crypto import record_hash
 from .errors import WalletError
+from .receiver import ReferenceGate
+from .storage import atomic_write_json
+
 
 _MAX_BODY_BYTES = 2 * 1024 * 1024
 _RELEASE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$")
 _LOOPBACK_HOSTS = {"127.0.0.1", "::1", "localhost"}
 
 
+def _read_json(path: Path, default: Any) -> Any:
+    if not path.exists():
+        return default
+    try:
+        return json.loads(path.read_text(encoding="ascii"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise WalletError("RECEIVER_STATE_READ_FAILED", str(exc)) from exc
+
+
 @dataclass
 class ReceiverRuntime:
-    gate: EffectGate
+    gate: ReferenceGate
     ledger_path: Path
     receipts_dir: Path
-    _effects: EffectClosure = field(init=False, repr=False)
-    # A test-only seam. It runs outside the frontier lock, so a revocation can
-    # actually overtake admitted work. Never expose this as a remote control.
-    before_effect: Callable[[str], None] | None = field(default=None, repr=False)
-
-    def __post_init__(self) -> None:
-        if not isinstance(self.gate, EffectGate):
-            raise WalletError("EFFECT_GATE_REQUIRED")
-        self._effects = EffectClosure(self.gate, Path(self.ledger_path), Path(self.receipts_dir))
 
     @classmethod
-    def create(cls, *, gate_id: str, principal_id: str, root_public_key: str,
-               ledger_path: str | Path, receipts_dir: str | Path) -> "ReceiverRuntime":
-        gate = EffectGate(gate_id)
+    def create(
+        cls,
+        *,
+        gate_id: str,
+        principal_id: str,
+        root_public_key: str,
+        ledger_path: str | Path,
+        receipts_dir: str | Path,
+    ) -> "ReceiverRuntime":
+        gate = ReferenceGate(gate_id)
         gate.pin_principal(principal_id, root_public_key)
-        return cls(gate, Path(ledger_path), Path(receipts_dir))
-
-    def shutdown(self) -> None:
-        self._effects.shutdown()
+        runtime = cls(gate, Path(ledger_path), Path(receipts_dir))
+        runtime.receipts_dir.mkdir(parents=True, exist_ok=True)
+        return runtime
 
     def admit(self, bundle: Mapping[str, Any]) -> dict[str, Any]:
-        result = self.gate.admit_bundle(bundle)
-        return {**result, "closure_status": "AUTHORIZATION_ADMITTED_ONLY"}
-
-    def close(self, bundle: Mapping[str, Any], mandate_id: str) -> dict[str, Any]:
-        return self._effects.close(bundle, mandate_id)
+        return self.gate.admit_bundle(bundle)
 
     def challenge(self, body: Mapping[str, Any]) -> dict[str, Any]:
+        principal_id = str(body.get("principal_id", ""))
+        subject_id = str(body.get("subject_id", ""))
+        action = str(body.get("action", ""))
         token = self.gate.issue_challenge(
-            principal_id=str(body.get("principal_id", "")),
-            subject_id=str(body.get("subject_id", "")),
-            action=str(body.get("action", "")),
+            principal_id=principal_id,
+            subject_id=subject_id,
+            action=action,
         )
         return {"challenge": token, "gate_id": self.gate.gate_id}
 
-    def prepare(self, body: Mapping[str, Any]) -> dict[str, Any]:
+    def execute(self, body: Mapping[str, Any]) -> dict[str, Any]:
         presentation = body.get("presentation")
-        return self._effects.prepare(
+        action = str(body.get("action", ""))
+        release = str(body.get("release", ""))
+        if _RELEASE.fullmatch(release) is None:
+            raise WalletError("RELEASE_ID_INVALID")
+
+        receipt = self.gate.evaluate(
             presentation if isinstance(presentation, Mapping) else {},
-            action=str(body.get("action", "")), release=str(body.get("release", "")),
+            expected_action=action,
+        )
+        receipt_hash = record_hash(receipt)
+        atomic_write_json(
+            self.receipts_dir / f"{receipt_hash}.json",
+            receipt,
+            mode=0o644,
         )
 
-    def finish(self, ticket: str, *, action: str, release: str) -> dict[str, Any]:
-        return self._effects.finish(ticket, action=action, release=release)
+        effect_applied = False
+        if receipt["decision"] == "ALLOWED":
+            if action != "deploy:staging":
+                raise WalletError("RECEIVER_EFFECT_UNSUPPORTED", action)
+            ledger = _read_json(self.ledger_path, [])
+            if not isinstance(ledger, list):
+                raise WalletError("RECEIVER_LEDGER_INVALID")
+            effect = {
+                "schema": "openline.platform_exit_live.effect.v1",
+                "action": action,
+                "release": release,
+                "principal_id": receipt["principal_id"],
+                "subject_id": receipt["subject_id"],
+                "mandate_id": receipt["mandate_id"],
+                "gate_id": receipt["gate_id"],
+                "receipt_hash": receipt_hash,
+                "decided_at": receipt["decided_at"],
+            }
+            ledger.append(effect)
+            atomic_write_json(self.ledger_path, ledger, mode=0o644)
+            effect_applied = True
 
-    def execute(self, body: Mapping[str, Any]) -> dict[str, Any]:
-        prepared = self.prepare(body)
-        if prepared["decision"] != "PREPARED":
-            return prepared
-        ticket = prepared["ticket"]
-        if self.before_effect is not None:
-            self.before_effect(ticket)
-        return self.finish(ticket, action=str(body.get("action", "")),
-                           release=str(body.get("release", "")))
+        return {
+            "decision": receipt["decision"],
+            "reason_codes": list(receipt["reason_codes"]),
+            "effect_applied": effect_applied,
+            "release": release,
+            "gate_id": receipt["gate_id"],
+            "receipt_hash": receipt_hash,
+            "receipt": receipt,
+        }
 
 
 class _Handler(BaseHTTPRequestHandler):
@@ -128,11 +169,6 @@ class _Handler(BaseHTTPRequestHandler):
                 if not isinstance(bundle, Mapping):
                     raise WalletError("BUNDLE_REQUIRED")
                 result = self.runtime.admit(bundle)
-            elif self.path == "/close":
-                bundle = body.get("bundle")
-                if not isinstance(bundle, Mapping):
-                    raise WalletError("BUNDLE_REQUIRED")
-                result = self.runtime.close(bundle, str(body.get("mandate_id", "")))
             elif self.path == "/challenge":
                 result = self.runtime.challenge(body)
             elif self.path == "/execute":
@@ -153,15 +189,13 @@ class _Handler(BaseHTTPRequestHandler):
 class GateHTTPServer(ThreadingHTTPServer):
     runtime: ReceiverRuntime
 
-    def server_close(self) -> None:
-        try:
-            super().server_close()
-        finally:
-            self.runtime.shutdown()
 
-
-def build_http_server(*, runtime: ReceiverRuntime, host: str = "127.0.0.1",
-                      port: int = 8765) -> GateHTTPServer:
+def build_http_server(
+    *,
+    runtime: ReceiverRuntime,
+    host: str = "127.0.0.1",
+    port: int = 8765,
+) -> GateHTTPServer:
     if host not in _LOOPBACK_HOSTS:
         raise WalletError("DEMO_GATE_MUST_BE_LOOPBACK", host)
     server = GateHTTPServer((host, port), _Handler)
@@ -187,8 +221,10 @@ def _parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     runtime = ReceiverRuntime.create(
-        gate_id=args.gate_id, principal_id=args.principal_id,
-        root_public_key=args.root_public_key, ledger_path=args.ledger,
+        gate_id=args.gate_id,
+        principal_id=args.principal_id,
+        root_public_key=args.root_public_key,
+        ledger_path=args.ledger,
         receipts_dir=args.receipts,
     )
     server = build_http_server(runtime=runtime, host=args.host, port=args.port)
