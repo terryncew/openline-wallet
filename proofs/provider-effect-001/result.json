@@ -1,0 +1,63 @@
+{
+  "base_commit": "ec385ce2c0cdc253d5e634d1963f254203205e30",
+  "checks": {
+    "exact_head_merge_reconciled": true,
+    "held_acknowledgement_drained": true,
+    "one_mutation_no_retry": true,
+    "prefrontier_rejected_without_put": true,
+    "real_http_json_path_exercised": true,
+    "receiver_closure_signed": true,
+    "unsafe_late_merge_reproduced": true
+  },
+  "claim_boundary": "Controlled loopback HTTP and exact disposable PR state. Real GitHub merge pending. No external queue, other-writer, exact-base CAS, or production recovery claim.",
+  "completed_at": "2026-09-07T04:35:13.538372Z",
+  "errors": [],
+  "evidence_sha256": {
+    "repaired/admission_a.json": "ce5b9fed0da899f892434cfc7d9f10b076455031bd379c7e9767a206a69e6c62",
+    "repaired/admission_b.json": "0941eeb976a57f12ad9b22ce0feaf8c77699071c377521bc3230fe032f51d1d8",
+    "repaired/after_a.json": "7a6533c24b501cb1e2e41d053f0322471d4663ae2401cc7092bc8763d63c32f5",
+    "repaired/after_b.json": "1d89e110ef286b2c6f661a3f56fb87539dc955064379d5d240be6007bf190f84",
+    "repaired/base_commit.json": "3b5fb1c62a0704f8039136ec66521a856d4852e46010535818a31c6acb289015",
+    "repaired/claim_boundary.json": "f8a7a7d4370e5233660ebe16c16c65489bc097b27331a5884e3e9ba0227409a4",
+    "repaired/closure_a.json": "ff67e61e9b09a19a7aca00910dff00f39cf7196562fa55f152f7850965f54b25",
+    "repaired/closure_b.json": "cd477b648d13ffc577706cf37ea7509c49a547c536f9d61aa3b5e956dcdece68",
+    "repaired/closure_blocked_during_ack.json": "a17fcf0a2f50e2d495e4f90ce263410edc183add6c62699a2facbccf60410f74",
+    "repaired/completed_at.json": "e52c01d9ad01edbdb41a04a3181769d4a945eed25ec2b01a3bc41f34d4ab26e2",
+    "repaired/effect_b.json": "3bc20736e8c002fea78c7d09d9a2b99de03646f704dea507b30b274b4a78bb81",
+    "repaired/errors.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "repaired/experiment_id.json": "a01629189b51dc8f6869a904f14ab7b81af7e695735f2fc4f14010e05a989145",
+    "repaired/merge_requests.json": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "repaired/merge_requests_after_a.json": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "repaired/merge_response.json": "d54d9205f2e2f6664edd2e54e9cf6a13c3cf5892863d9a3441c9a8a6fe95e24c",
+    "repaired/result.json": "ba9e2a89cc90860154d938ff852cf6379a52b3ae7bc815134ee256824e641be2",
+    "repaired/revoked_b.json": "9cad183b0c059973f0fbf0eb4131709f90a8f078ebe5a60dc75b2c08dc55feae",
+    "repaired/stopped_a.json": "0ad605747e8a26a71e1de7fd936339554dd1e68b398b5f1ac0c2181f3e032037",
+    "repaired/target.json": "2202b616c96353030cadbf64952894c4e752176f99830198637f81a994f1cc0a",
+    "repaired/timing.json": "a3c39aa4de11d71eee207c4c5aee6b3edbfb0ec278f5ce950339c6535bd28173",
+    "repaired/transport.json": "87ebf2e944ee267daa6d72290549a99290da4f0514b34b3fe02fbe5d49a62eac",
+    "repaired/verdict.json": "1d5ee696cdb62b244a67611f1eb5f376ba9362e20ac35c11627494d9a1914e02",
+    "repaired/wallet_receipt_count.json": "53c234e5e8472b6ac51c1ae1cab3fe06fad053beb8ebfd8977b010655bfdd3c3",
+    "unsafe-control.json": "ffed4518cf39c372e2b9e4cdf56145f772b00adfad814c029593df6590bf2ccd"
+  },
+  "experiment_id": "PROVIDER-EFFECT-001",
+  "live_github_run": false,
+  "payload_hash": "6ed2b1e24e751468aa5633bd296fc9d31b4f3fc8cafc84fc4fee3e4a243337f5",
+  "schema": "openline.wallet.provider_effect_experiment.v1",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "9e495ef24aa81a9d1889e6f638b4685e0c6f1c80876e092f9b8d95db6b5b0578",
+    "value": "8d8d9256f17a3bac0a905c66e1e1071e01969b749032b07d75e634a5fd749aea313c456dacd67c40ab8b7b56d02d5b0cfaa8b6c31b9d7942e69eb422c4e0ad00"
+  },
+  "source_sha256": {
+    "proofs/provider-effect-001/reproduce.py": "bf07f3f97b1bdb44b111a08bf56be418aa865e2b51d8a02012acddf1ac47ceed",
+    "proofs/provider-effect-001/verify.py": "fa31ab4511353dda0cf59e81fd915c300235393b476df6551c77fda5798f3abc",
+    "src/openline_wallet/github_effect.py": "b4e50a1ff1b047f6538e10e2cc0d4a95063a6872a3d0bbdcc1a039715a9413e6",
+    "src/openline_wallet/github_effect_live.py": "a3b4dc8582ab4e5edc2f6430325d26da17c67faf877df57e8ecf3e4396f7d977",
+    "tests/github_http_fixture.py": "5d8447059f6f0d22b6a52789ec525d0d0dfdb36af1a013ad5e4a7e8374443e47",
+    "tests/test_github_effect.py": "ea38a86b0c3cf7a32b5998571b2e03886f285547ca71053ebd754fcfc0e5ba55",
+    "tests/test_github_http.py": "9d5b1c9b4e83c88aad131780bfc3aa586407c16b0cf253961b5ae87ccb011c41"
+  },
+  "transport": "LOOPBACK_HTTP_FIXTURE",
+  "verdict": "CONTROLLED_TRANSPORT_BOUNDARY_ENFORCED",
+  "verification": "Disposable self-attestation; not an independent provider witness."
+}

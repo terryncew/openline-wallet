@@ -1,0 +1,7 @@
+{
+  "ack_observed_ns": 5625844134074,
+  "ack_released_ns": 5625950045836,
+  "closure_requested_ns": 5625849740404,
+  "closure_returned_ns": 5625959680564,
+  "revocation_requested_ns": 5625844170684
+}

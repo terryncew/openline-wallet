@@ -1,0 +1,10 @@
+{
+  "action": "github:merge:e526e6ccfece32522601a6fc373a5bf23132e87dc8a66e2f3c9fb990b3d96a1b",
+  "base_ref": "olp-test-base",
+  "base_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "head_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "number": 7,
+  "repository": "example/provider-effect-sandbox",
+  "repository_id": 12345,
+  "schema": "openline.wallet.github_merge_action.v1"
+}

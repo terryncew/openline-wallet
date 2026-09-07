@@ -1,0 +1,21 @@
+{
+  "action": "github:merge:e526e6ccfece32522601a6fc373a5bf23132e87dc8a66e2f3c9fb990b3d96a1b",
+  "decided_at": "2026-09-07T04:35:12.914915Z",
+  "decision": "ALLOWED",
+  "decision_authority": "RECEIVER_GATE",
+  "gate_id": "provider-effect-b",
+  "gate_public_key": "b03adea3ead560685553e1de34492a0d156e1667b240a713f7d864e1d540dad6",
+  "mandate_id": "grant-b",
+  "payload_hash": "243069d2496913cbd6e29f4b8f7e742c7f355a1458d5d0057f45cf6f5997bd1b",
+  "presentation_hash": "6ee12ef4d01c0c599925025e274f6f6be4c94cbe86eaa117be826bc4e058be07",
+  "principal_id": "openline:principal:0de930c27444f6c2ea9be3f746110fbbe66bc10a63c7d69a2a370f2dbb29457b",
+  "reason_codes": [],
+  "schema": "openline.gate.action_receipt.v1",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "b03adea3ead560685553e1de34492a0d156e1667b240a713f7d864e1d540dad6",
+    "value": "f307df4b07cf1d9e2582107f4481ac1408b35d6cdd7c0d596576e511a800c294290096fb2a3e54ade213480160abe75a0ce8b90c5bfa0dd86bca326f8e281b00"
+  },
+  "subject_id": "agent-b",
+  "wallet_policy_authority": "NONE"
+}
