@@ -1,0 +1,23 @@
+{
+  "action": "deploy:staging",
+  "decided_at": "2026-09-06T12:00:05Z",
+  "decision": "STOPPED",
+  "decision_authority": "RECEIVER_GATE",
+  "gate_id": "effect-closure-receiver",
+  "gate_public_key": "f68872d0a79c32729999c2c9b2cab12bbaf348cdea20bfb434a433789beffe81",
+  "mandate_id": "grant-a",
+  "payload_hash": "64a340c2fa727e88874fff5731ca6a2ec5ee622ff8e03a1fc6afec8cc37569fa",
+  "presentation_hash": "4a1c3b9ac703dc61275a517424f524c1521a1dce112559af25e1bd835864b676",
+  "principal_id": "openline:principal:d96893d6cebd8be6d2aac6b845133be56f9f8c078ffc74db5af59fbffc42d6ba",
+  "reason_codes": [
+    "MANDATE_REVOKED"
+  ],
+  "schema": "openline.gate.action_receipt.v1",
+  "signature": {
+    "algorithm": "Ed25519",
+    "public_key": "f68872d0a79c32729999c2c9b2cab12bbaf348cdea20bfb434a433789beffe81",
+    "value": "cc170cdf7f29e75cb9b80d2f60d95e2cce380ec5fe3640e5a2953cae188cca13b403f26a6bbffb7939be8c9dd188143df6cbeef816c333a26593d65ce2b4d706"
+  },
+  "subject_id": "agent-a",
+  "wallet_policy_authority": "NONE"
+}
