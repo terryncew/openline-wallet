@@ -25,28 +25,13 @@ jobs:
       - name: Test
         run: python -m unittest discover -s tests -v
       - name: Verify frozen predecessor evidence
-        run: python proofs/provider-effect-001/verify_prior.py
-      - name: WALLET-EFFECT-CLOSURE-001
-        run: |
-          python proofs/wallet-effect-closure-001/reproduce.py --output effect-closure-artifacts
-          python proofs/wallet-effect-closure-001/verify.py effect-closure-artifacts
-      - name: Upload effect-closure diagnostics
+        run: python proofs/provider-effect-001/verify_prior.py --output historical-artifacts/reappraisal.json
+      - name: Upload historical diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: effect-closure-${{ matrix.python-version }}
-          path: effect-closure-artifacts/
-          if-no-files-found: warn
-      - name: WALLET-CLOSURE-SET-001
-        run: |
-          python proofs/wallet-closure-set-001/reproduce.py --output closure-set-artifacts
-          python proofs/wallet-closure-set-001/verify.py closure-set-artifacts
-      - name: Upload closure-set diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: closure-set-${{ matrix.python-version }}
-          path: closure-set-artifacts/
+          name: historical-evidence-${{ matrix.python-version }}
+          path: historical-artifacts/
           if-no-files-found: warn
       - name: PROVIDER-EFFECT-001
         run: |

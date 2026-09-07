@@ -61,3 +61,25 @@ The controlled verifier checks source hashes, all evidence files, signed Wallet 
 This proves a receiver-controlled capability for one exact PR/head/base branch, under trusted local key/journal custody and one local writer. It does not prove arbitrary provider effect closure, exact-base atomicity, durable production standing, Byzantine provider honesty, merge-queue cancellation, GitHub Actions completion, deployment safety, or that no other GitHub credential can merge the PR. A signed certificate is evidence only and cannot authorize a new effect.
 
 The next earned evidence is an actual disposable GitHub run. If that produces a late rejected effect, an unresolved remote outcome, or a base-drift failure, preserve it and implement only the smallest provider-supported repair. Do not create another synthetic coordination layer or claim global closure from this adapter.
+
+## CI source-provenance correction
+
+The first PR #11 runs passed the complete 76-test suite but stopped at the
+historical verifier. The previously prepared closure-set source packet differs
+from the exact merged Git tree, including canonical.py. The experiment's base
+commit identifies its starting point; it does not establish that every staged
+source byte was committed at that revision.
+
+The historical reappraisal now uses a byte-pinned recorded-source snapshot,
+checks all 14 source hashes from the unchanged frozen result, and runs the
+original evidence verifiers in an isolated subprocess. The result is pinned
+independently. It reports Git-tree source identity as UNRESOLVED and cannot
+promote the old result into a live, production, or source-provenance claim.
+The archived packet contains no signing private keys. The current application
+and original receipts remain unchanged.
+
+CI retains the full current test suite and replaces redundant historical
+reproductions with this exact evidence reappraisal. It then runs the new
+provider proof, platform-exit demo, and wheel build. Historical source or
+record tampering is a hard failure. This correction does not establish that
+the old staged source was the original main-branch implementation.
