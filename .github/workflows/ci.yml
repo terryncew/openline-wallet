@@ -36,7 +36,7 @@ jobs:
       - name: PROVIDER-EFFECT-001
         run: |
           python proofs/provider-effect-001/reproduce.py --output provider-effect-artifacts
-          python proofs/provider-effect-001/verify.py provider-effect-artifacts
+          python proofs/provider-effect-001/verify.py provider-effect-artifacts --self-attested-fixture
       - name: Upload provider-effect diagnostics
         if: always()
         uses: actions/upload-artifact@v4
