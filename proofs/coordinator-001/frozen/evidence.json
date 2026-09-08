@@ -1,0 +1,687 @@
+{
+  "agreement": {
+    "amount": 10000,
+    "base": "a45866273cd27de964b19171cf7389e41aff9004",
+    "buyer": {
+      "principal": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+      "root": "eaaf54585624fc248c599e5dd8ca19536f2fd1efc27aca19b7dd8ab4a19fee0a"
+    },
+    "checks": [
+      [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "check.py"
+      ]
+    ],
+    "currency": "SIM_USD",
+    "deadline": 1788910336,
+    "protected": [
+      "check.py"
+    ],
+    "provider_key": "f9a01334fb29e14b3fecdab804c087caaa3676043cfa61a30b9b5f81cf197518",
+    "repository": "/tmp/coordinator-proof-xx1c0a1n/maintenance",
+    "schema": "coordinator.agreement.v1",
+    "task": "Fix total(items) to sum items",
+    "worker": {
+      "principal": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+      "root": "3a0559eaa3752c251f31168d1949a76a90894eec068cadfe3f88f2d2285b44a8"
+    }
+  },
+  "balances": {
+    "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210": 10000,
+    "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6": 10000
+  },
+  "events": [
+    {
+      "bundle": {
+        "canonicalization": "olp-canonical-json-int-v1",
+        "decision_authority": "RECEIVER_GATE",
+        "epoch_certificate": {
+          "authority": "ISSUE_AND_NARROW_MANDATES",
+          "epoch_id": "epoch_a34458a03475e7c1",
+          "epoch_public_key": "532a97d317db696bee6d90619e6f9071ed7771cf9a6a60e28896122f406cf915",
+          "expires_at": "2027-09-09T22:32:16.312972Z",
+          "issued_at": "2026-09-08T22:32:16.312972Z",
+          "payload_hash": "81f8a748e2d53ec08e72a303376598de9cea820354aa9cf65412e3ef671c75cd",
+          "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+          "schema": "openline.wallet.epoch_certificate.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "eaaf54585624fc248c599e5dd8ca19536f2fd1efc27aca19b7dd8ab4a19fee0a",
+            "value": "824b9b2fb3675725f4ec27b42a6f6df8defbe03edbf978212bb906fb7030a4c7163bf4f44eb770d5e6e98b0bb07a4fc0f53e49ae59c26a1f1383031085beb10c"
+          }
+        },
+        "events": [
+          {
+            "data": {
+              "expires_at": "2026-09-08T22:42:16.316781Z",
+              "mandate_id": "b8db6d04dd6d7efd65f5ef5dagree",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "job:agree:b8db6d04dd6d7efd65f5ef5d37948c95678bf9dcc329f48abb84073c236ee20a"
+              ],
+              "subject_id": "buyer",
+              "subject_public_key": "661fb9b2b4ea7137b6fff9e5f1dafb1d405d85e9ed1bcfd3a6509e00da84a05f"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-08T22:32:16.316786Z",
+            "payload_hash": "623cdd1d9aa03a3e0a4cc9e6cacff92f9eb9e648e71a8565d591cd3fc0d3353d",
+            "previous_event_hash": null,
+            "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 1,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "532a97d317db696bee6d90619e6f9071ed7771cf9a6a60e28896122f406cf915",
+              "value": "b39bb67f80247fb1dab48300088c5bf5f710667ab3266a386af2dd7664fe83392004a863fe67c891c603f722b800e6cf0b3b154c0d1cd52c0e03158bb8476d00"
+            }
+          }
+        ],
+        "expires_at": "2026-09-08T22:42:16.318387Z",
+        "head": {
+          "event_hash": "4e9ff9a0ae6f5a84d94b642092507954bb3c2f495a435a7c36c41f14a9003f0a",
+          "sequence": 1
+        },
+        "issued_at": "2026-09-08T22:32:16.318387Z",
+        "payload_hash": "8fbf95c2d50380c1faa960db0f4934db146b6ee8742ac226adc5db700d4ff7c3",
+        "principal": {
+          "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+          "root_public_key": "eaaf54585624fc248c599e5dd8ca19536f2fd1efc27aca19b7dd8ab4a19fee0a"
+        },
+        "receipts": [],
+        "schema": "openline.wallet.receiver_bundle.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "eaaf54585624fc248c599e5dd8ca19536f2fd1efc27aca19b7dd8ab4a19fee0a",
+          "value": "444ded09235fb1b0aa05eaf82c11806162854eabb605155ca62572e00b8333a2bafa99dc82b7fe6409ffc55280461c46c1ee304629f31ecd2cd7a320fe1d4707"
+        },
+        "wallet_policy_authority": "NONE"
+      },
+      "gate_receipt": {
+        "action": "job:agree:b8db6d04dd6d7efd65f5ef5d37948c95678bf9dcc329f48abb84073c236ee20a",
+        "decided_at": "2026-09-08T22:32:16.398497Z",
+        "decision": "ALLOWED",
+        "decision_authority": "RECEIVER_GATE",
+        "gate_id": "coordinator-001",
+        "gate_public_key": "0b52d9eec87db2bca69f65b41bedd062265f6f15c99b15ed6a7a1a73eae8212a",
+        "mandate_id": "b8db6d04dd6d7efd65f5ef5dagree",
+        "payload_hash": "a231502917907406ac33a682ae3669dfe7511b5a7e24ae0d213dd5d987ce36ba",
+        "presentation_hash": "1dbea19f9edf6d0f06738ac78800d328cbcd353b4c0eea0a7a02f44c41742a12",
+        "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+        "reason_codes": [],
+        "schema": "openline.gate.action_receipt.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "0b52d9eec87db2bca69f65b41bedd062265f6f15c99b15ed6a7a1a73eae8212a",
+          "value": "a9f56b6080f48d72d4e7b5311e3ecb41f0b2dbb8c613543cd309d1c5303e671a154ff23124525cecc0309261b0af21b57e718ffad182dda6ee3da69cdb126b00"
+        },
+        "subject_id": "buyer",
+        "wallet_policy_authority": "NONE"
+      },
+      "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+      "kind": "agree",
+      "payload": {
+        "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da"
+      },
+      "presentation": {
+        "action": "job:agree:b8db6d04dd6d7efd65f5ef5d37948c95678bf9dcc329f48abb84073c236ee20a",
+        "bundle_head_hash": "4e9ff9a0ae6f5a84d94b642092507954bb3c2f495a435a7c36c41f14a9003f0a",
+        "issued_at": "2026-09-08T22:32:16.384812Z",
+        "mandate_id": "b8db6d04dd6d7efd65f5ef5dagree",
+        "payload_hash": "e6586171cac0daabcebada69416e8852b49c08b8a26921790e893fb8f523592a",
+        "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+        "receiver_challenge": "challenge_0863f4a07fa612b2a6183facd3634614",
+        "schema": "openline.wallet.holder_presentation.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "661fb9b2b4ea7137b6fff9e5f1dafb1d405d85e9ed1bcfd3a6509e00da84a05f",
+          "value": "4aacefdc3b93657434bccb72b7172f86648b33efec93936f59b931538cb000f64a1cb552abf624da591aa53b78152259a15b13cf6313be80cb20eeaaef9bb403"
+        },
+        "subject_id": "buyer",
+        "subject_public_key": "661fb9b2b4ea7137b6fff9e5f1dafb1d405d85e9ed1bcfd3a6509e00da84a05f"
+      },
+      "previous": null
+    },
+    {
+      "bundle": {
+        "canonicalization": "olp-canonical-json-int-v1",
+        "decision_authority": "RECEIVER_GATE",
+        "epoch_certificate": {
+          "authority": "ISSUE_AND_NARROW_MANDATES",
+          "epoch_id": "epoch_57f663ee688ac6ee",
+          "epoch_public_key": "c4403d65ef4a269f0452c4d2d6a0776f4cd578448ca4adbb5a682e328b7de56c",
+          "expires_at": "2027-09-09T22:32:16.314184Z",
+          "issued_at": "2026-09-08T22:32:16.314184Z",
+          "payload_hash": "351bb0b3c2670f3e2fd1057a9b624742f9d1e9c0de330ddafdbc5de174a02c92",
+          "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+          "schema": "openline.wallet.epoch_certificate.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3a0559eaa3752c251f31168d1949a76a90894eec068cadfe3f88f2d2285b44a8",
+            "value": "a5f5b53944930e0d130bf751c306a394a66d856fdf7340198889e03d5745dfb43e539a9fbfd70771bbb404d6b4111bbbb59a189303ebefaad8d9c09566ab1004"
+          }
+        },
+        "events": [
+          {
+            "data": {
+              "expires_at": "2026-09-08T22:42:16.399214Z",
+              "mandate_id": "b8db6d04dd6d7efd65f5ef5dagree",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "job:agree:b8db6d04dd6d7efd65f5ef5d37948c95678bf9dcc329f48abb84073c236ee20a"
+              ],
+              "subject_id": "worker",
+              "subject_public_key": "2d4eb3056d838938d3654420c8f10cfcf1ae6de7c047d0966ef02e9b63490174"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-08T22:32:16.399219Z",
+            "payload_hash": "f60ac2f3d58cc2ee50af3c9a8399b00d4602253e01ee2fd5640bd4ac9aa8b7a3",
+            "previous_event_hash": null,
+            "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 1,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "c4403d65ef4a269f0452c4d2d6a0776f4cd578448ca4adbb5a682e328b7de56c",
+              "value": "9c8d44b3594f2ed3063bcb7d141552b655cda981cc3693bd1d7b5413739a2fcd777b738d3eef242024b805d908d7ef80d166e728379c4eb1180578673250a30f"
+            }
+          }
+        ],
+        "expires_at": "2026-09-08T22:42:16.400719Z",
+        "head": {
+          "event_hash": "6b540f45882f5a5190f242284d608a7ca9bf87dbe1df1d9e3be55dd7966eba84",
+          "sequence": 1
+        },
+        "issued_at": "2026-09-08T22:32:16.400719Z",
+        "payload_hash": "60f6118b51f44e37f364722161849384e021f9cf0830c5de1d80f670866d3be4",
+        "principal": {
+          "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+          "root_public_key": "3a0559eaa3752c251f31168d1949a76a90894eec068cadfe3f88f2d2285b44a8"
+        },
+        "receipts": [],
+        "schema": "openline.wallet.receiver_bundle.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "3a0559eaa3752c251f31168d1949a76a90894eec068cadfe3f88f2d2285b44a8",
+          "value": "1387a315d1639ec5fca03fcce155a24b26f9571154b6f2cc0a94390a16682812d7eba96d8d9c1621c813450b8177dcf5c48fb07cd5b4a733b936a74b9eebbe07"
+        },
+        "wallet_policy_authority": "NONE"
+      },
+      "gate_receipt": {
+        "action": "job:agree:b8db6d04dd6d7efd65f5ef5d37948c95678bf9dcc329f48abb84073c236ee20a",
+        "decided_at": "2026-09-08T22:32:16.477151Z",
+        "decision": "ALLOWED",
+        "decision_authority": "RECEIVER_GATE",
+        "gate_id": "coordinator-001",
+        "gate_public_key": "0b52d9eec87db2bca69f65b41bedd062265f6f15c99b15ed6a7a1a73eae8212a",
+        "mandate_id": "b8db6d04dd6d7efd65f5ef5dagree",
+        "payload_hash": "bf5e92c92bb6c9c823cb51901e946769f702662e78b9d31db58e54ad502f2d9f",
+        "presentation_hash": "abf08448d93c2dab9987a8c1b7bb19712354f751d430499fd95c551a17531eb4",
+        "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+        "reason_codes": [],
+        "schema": "openline.gate.action_receipt.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "0b52d9eec87db2bca69f65b41bedd062265f6f15c99b15ed6a7a1a73eae8212a",
+          "value": "76ccff46bd33e7a9a4498c64badb3a4ee9532d0c072fb1f953b790325ddf48d831b81e70dc32da1506b8a24982846d72954a0a95becfca9055327aad20173b02"
+        },
+        "subject_id": "worker",
+        "wallet_policy_authority": "NONE"
+      },
+      "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+      "kind": "agree",
+      "payload": {
+        "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da"
+      },
+      "presentation": {
+        "action": "job:agree:b8db6d04dd6d7efd65f5ef5d37948c95678bf9dcc329f48abb84073c236ee20a",
+        "bundle_head_hash": "6b540f45882f5a5190f242284d608a7ca9bf87dbe1df1d9e3be55dd7966eba84",
+        "issued_at": "2026-09-08T22:32:16.464960Z",
+        "mandate_id": "b8db6d04dd6d7efd65f5ef5dagree",
+        "payload_hash": "482660619d52fb7b37c1b34c8b1412f5f197fc0ae140976bf1fca96bdc62dd62",
+        "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+        "receiver_challenge": "challenge_84dc539aea6851199099a977622289d7",
+        "schema": "openline.wallet.holder_presentation.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "2d4eb3056d838938d3654420c8f10cfcf1ae6de7c047d0966ef02e9b63490174",
+          "value": "c78e6b17268b13cf4c4576405f6632a27033412e7080974e9131caab069a3c5300358e927f4033cf6d08e7c66aea114a5a4e0520d47f878aa543fb2e94904b08"
+        },
+        "subject_id": "worker",
+        "subject_public_key": "2d4eb3056d838938d3654420c8f10cfcf1ae6de7c047d0966ef02e9b63490174"
+      },
+      "previous": "c7cc5dce1f522dcd85641a2473313f65783aef994ace8dc465419bd3094596b6"
+    },
+    {
+      "bundle": {
+        "canonicalization": "olp-canonical-json-int-v1",
+        "decision_authority": "RECEIVER_GATE",
+        "epoch_certificate": {
+          "authority": "ISSUE_AND_NARROW_MANDATES",
+          "epoch_id": "epoch_57f663ee688ac6ee",
+          "epoch_public_key": "c4403d65ef4a269f0452c4d2d6a0776f4cd578448ca4adbb5a682e328b7de56c",
+          "expires_at": "2027-09-09T22:32:16.314184Z",
+          "issued_at": "2026-09-08T22:32:16.314184Z",
+          "payload_hash": "351bb0b3c2670f3e2fd1057a9b624742f9d1e9c0de330ddafdbc5de174a02c92",
+          "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+          "schema": "openline.wallet.epoch_certificate.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3a0559eaa3752c251f31168d1949a76a90894eec068cadfe3f88f2d2285b44a8",
+            "value": "a5f5b53944930e0d130bf751c306a394a66d856fdf7340198889e03d5745dfb43e539a9fbfd70771bbb404d6b4111bbbb59a189303ebefaad8d9c09566ab1004"
+          }
+        },
+        "events": [
+          {
+            "data": {
+              "expires_at": "2026-09-08T22:42:16.399214Z",
+              "mandate_id": "b8db6d04dd6d7efd65f5ef5dagree",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "job:agree:b8db6d04dd6d7efd65f5ef5d37948c95678bf9dcc329f48abb84073c236ee20a"
+              ],
+              "subject_id": "worker",
+              "subject_public_key": "2d4eb3056d838938d3654420c8f10cfcf1ae6de7c047d0966ef02e9b63490174"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-08T22:32:16.399219Z",
+            "payload_hash": "f60ac2f3d58cc2ee50af3c9a8399b00d4602253e01ee2fd5640bd4ac9aa8b7a3",
+            "previous_event_hash": null,
+            "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 1,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "c4403d65ef4a269f0452c4d2d6a0776f4cd578448ca4adbb5a682e328b7de56c",
+              "value": "9c8d44b3594f2ed3063bcb7d141552b655cda981cc3693bd1d7b5413739a2fcd777b738d3eef242024b805d908d7ef80d166e728379c4eb1180578673250a30f"
+            }
+          },
+          {
+            "data": {
+              "mandate_id": "b8db6d04dd6d7efd65f5ef5dagree",
+              "reason": "USER_REVOKED"
+            },
+            "event_type": "MANDATE_REVOKED",
+            "issued_at": "2026-09-08T22:32:16.485768Z",
+            "payload_hash": "4a764c3b7a649b99a1f593f808680619bfdb4db61a716f54a907f2957a27a6d0",
+            "previous_event_hash": "6b540f45882f5a5190f242284d608a7ca9bf87dbe1df1d9e3be55dd7966eba84",
+            "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 2,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "3a0559eaa3752c251f31168d1949a76a90894eec068cadfe3f88f2d2285b44a8",
+              "value": "3769d01d063e16d8c5ac156efb91c874c4c91d4db8a11ef16b1702464a6cb9c32459e9a6878596ce2ba8204b3ab9a2157a8b1f3465c15885e97e6dec440ee300"
+            }
+          },
+          {
+            "data": {
+              "expires_at": "2026-09-08T22:42:16.488040Z",
+              "mandate_id": "3bc67bf7ddac6d549e229d44submit",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "job:submit:3bc67bf7ddac6d549e229d44aecc7145d4043db744678314aaebea036046af2e"
+              ],
+              "subject_id": "worker",
+              "subject_public_key": "2d4eb3056d838938d3654420c8f10cfcf1ae6de7c047d0966ef02e9b63490174"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-08T22:32:16.488046Z",
+            "payload_hash": "587b0a00e28b3ef8a3d48431cdfea1b0e42c11ab2e3e4207a542f52b24d862a5",
+            "previous_event_hash": "daa4d73f80638d87ff828770555fdfaa440bd5c7f44612124f3a41b3aa64104a",
+            "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 3,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "c4403d65ef4a269f0452c4d2d6a0776f4cd578448ca4adbb5a682e328b7de56c",
+              "value": "894c30b29b5658b51885310717e8f8ecd00edfd66a1e8531d56515c3a4c3a5679ba95f5f076b5da0e0420757f450925f28c42232b85617c1bf91cf57590c5a0a"
+            }
+          }
+        ],
+        "expires_at": "2026-09-08T22:42:16.490339Z",
+        "head": {
+          "event_hash": "e7730d74f826f630177fa996dfe890a55f35c810fc274092b18ea46415ae0a9d",
+          "sequence": 3
+        },
+        "issued_at": "2026-09-08T22:32:16.490339Z",
+        "payload_hash": "63551531bc5704c546dd478b2c958913ea2b09d816bca926e9afe66e153f8ef2",
+        "principal": {
+          "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+          "root_public_key": "3a0559eaa3752c251f31168d1949a76a90894eec068cadfe3f88f2d2285b44a8"
+        },
+        "receipts": [],
+        "schema": "openline.wallet.receiver_bundle.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "3a0559eaa3752c251f31168d1949a76a90894eec068cadfe3f88f2d2285b44a8",
+          "value": "8b3f1124ed6525f8681a66ebb61af0c6eaaf33149700a342b2a812445e96cce98b110b2dedca21b0a88e19f4a6ea23be91e865ef2960a392ef06a53aee80d70f"
+        },
+        "wallet_policy_authority": "NONE"
+      },
+      "gate_receipt": {
+        "action": "job:submit:3bc67bf7ddac6d549e229d44aecc7145d4043db744678314aaebea036046af2e",
+        "decided_at": "2026-09-08T22:32:16.565443Z",
+        "decision": "ALLOWED",
+        "decision_authority": "RECEIVER_GATE",
+        "gate_id": "coordinator-001",
+        "gate_public_key": "0b52d9eec87db2bca69f65b41bedd062265f6f15c99b15ed6a7a1a73eae8212a",
+        "mandate_id": "3bc67bf7ddac6d549e229d44submit",
+        "payload_hash": "60e2000c149ba9c7bad60b7fbe51cc18e151adcb62be01fa5fdb767f3da267ad",
+        "presentation_hash": "f093f797a7493476739f43a467c7c8a2d0386fbb6227babd67c2b0be7737ebbd",
+        "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+        "reason_codes": [],
+        "schema": "openline.gate.action_receipt.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "0b52d9eec87db2bca69f65b41bedd062265f6f15c99b15ed6a7a1a73eae8212a",
+          "value": "642f6bf4d88374c5916f3cfd67729e586e28e5117b53484f659346bebb7d7c04482f634d069ae61e25d3eace151ad210406b80c761978bcfb1c9a5cbfa7ce000"
+        },
+        "subject_id": "worker",
+        "wallet_policy_authority": "NONE"
+      },
+      "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+      "kind": "submit",
+      "payload": {
+        "candidate": "6f00d93a22a4feae7c7aff9ce9794d4e672610ff",
+        "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da"
+      },
+      "presentation": {
+        "action": "job:submit:3bc67bf7ddac6d549e229d44aecc7145d4043db744678314aaebea036046af2e",
+        "bundle_head_hash": "e7730d74f826f630177fa996dfe890a55f35c810fc274092b18ea46415ae0a9d",
+        "issued_at": "2026-09-08T22:32:16.551821Z",
+        "mandate_id": "3bc67bf7ddac6d549e229d44submit",
+        "payload_hash": "1ead3e852c690d945c433cd08a80c05aeb94758aea339cbd882bfd63eacd2efd",
+        "principal_id": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6",
+        "receiver_challenge": "challenge_9f8bf6f873580be03335dedb04386818",
+        "schema": "openline.wallet.holder_presentation.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "2d4eb3056d838938d3654420c8f10cfcf1ae6de7c047d0966ef02e9b63490174",
+          "value": "1bd54f62cc3df36376e49fdf29da87d75264e783bc2b34fc4c70fb82d24c21164f5987b2fd98784f026f3b4cb7527303b3643cbf5978098e463786ef240cd806"
+        },
+        "subject_id": "worker",
+        "subject_public_key": "2d4eb3056d838938d3654420c8f10cfcf1ae6de7c047d0966ef02e9b63490174"
+      },
+      "previous": "7616be3f1e93052c87d54a99f7c6a692badc3dab0bb43d5cf95b9dfd19b91647"
+    },
+    {
+      "evidence": {
+        "base": "a45866273cd27de964b19171cf7389e41aff9004",
+        "candidate": "6f00d93a22a4feae7c7aff9ce9794d4e672610ff",
+        "checks": {
+          "commands": [
+            {
+              "argv": [
+                "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+                "check.py"
+              ],
+              "duration_seconds": "0.015195",
+              "exit_code": 0,
+              "kind": "target",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stderr_tail": "",
+              "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_tail": "",
+              "timed_out": false
+            }
+          ],
+          "rule": "target",
+          "status": "PASS"
+        },
+        "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+        "protected": {
+          "rule": "protected_files",
+          "status": "PASS",
+          "touched": []
+        }
+      },
+      "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+      "kind": "evaluation",
+      "previous": "af183190272f39cf4c28e6842f4c1b247d45d39cfca0f7f9914916dbf7ff2bb1"
+    },
+    {
+      "bundle": {
+        "canonicalization": "olp-canonical-json-int-v1",
+        "decision_authority": "RECEIVER_GATE",
+        "epoch_certificate": {
+          "authority": "ISSUE_AND_NARROW_MANDATES",
+          "epoch_id": "epoch_a34458a03475e7c1",
+          "epoch_public_key": "532a97d317db696bee6d90619e6f9071ed7771cf9a6a60e28896122f406cf915",
+          "expires_at": "2027-09-09T22:32:16.312972Z",
+          "issued_at": "2026-09-08T22:32:16.312972Z",
+          "payload_hash": "81f8a748e2d53ec08e72a303376598de9cea820354aa9cf65412e3ef671c75cd",
+          "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+          "schema": "openline.wallet.epoch_certificate.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "eaaf54585624fc248c599e5dd8ca19536f2fd1efc27aca19b7dd8ab4a19fee0a",
+            "value": "824b9b2fb3675725f4ec27b42a6f6df8defbe03edbf978212bb906fb7030a4c7163bf4f44eb770d5e6e98b0bb07a4fc0f53e49ae59c26a1f1383031085beb10c"
+          }
+        },
+        "events": [
+          {
+            "data": {
+              "expires_at": "2026-09-08T22:42:16.316781Z",
+              "mandate_id": "b8db6d04dd6d7efd65f5ef5dagree",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "job:agree:b8db6d04dd6d7efd65f5ef5d37948c95678bf9dcc329f48abb84073c236ee20a"
+              ],
+              "subject_id": "buyer",
+              "subject_public_key": "661fb9b2b4ea7137b6fff9e5f1dafb1d405d85e9ed1bcfd3a6509e00da84a05f"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-08T22:32:16.316786Z",
+            "payload_hash": "623cdd1d9aa03a3e0a4cc9e6cacff92f9eb9e648e71a8565d591cd3fc0d3353d",
+            "previous_event_hash": null,
+            "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 1,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "532a97d317db696bee6d90619e6f9071ed7771cf9a6a60e28896122f406cf915",
+              "value": "b39bb67f80247fb1dab48300088c5bf5f710667ab3266a386af2dd7664fe83392004a863fe67c891c603f722b800e6cf0b3b154c0d1cd52c0e03158bb8476d00"
+            }
+          },
+          {
+            "data": {
+              "mandate_id": "b8db6d04dd6d7efd65f5ef5dagree",
+              "reason": "USER_REVOKED"
+            },
+            "event_type": "MANDATE_REVOKED",
+            "issued_at": "2026-09-08T22:32:16.595966Z",
+            "payload_hash": "d62a341753c680a9f0d4f074fb27f763c5d742d0e51c3e4ce0ac13dd79d6e9af",
+            "previous_event_hash": "4e9ff9a0ae6f5a84d94b642092507954bb3c2f495a435a7c36c41f14a9003f0a",
+            "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 2,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "eaaf54585624fc248c599e5dd8ca19536f2fd1efc27aca19b7dd8ab4a19fee0a",
+              "value": "803f0f98926e1698b0de7f5086651b0116df8cbde1c32fd335222af58945a364aa9758c73e5b5ec10b6e672439ce4cbe49c7d3997359596f78617691fd9f7607"
+            }
+          },
+          {
+            "data": {
+              "expires_at": "2026-09-08T22:42:16.598289Z",
+              "mandate_id": "aac0eb85ec4d524192fc2a67accept",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "job:accept:aac0eb85ec4d524192fc2a6733394e63bf6ae15585232a1a7821bb4f3ee426db"
+              ],
+              "subject_id": "buyer",
+              "subject_public_key": "661fb9b2b4ea7137b6fff9e5f1dafb1d405d85e9ed1bcfd3a6509e00da84a05f"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-08T22:32:16.598295Z",
+            "payload_hash": "e7383e3c8a3b81025d81b3fd2f737cf113497fa3c74f739f257bb98ce331e4d7",
+            "previous_event_hash": "6616f5ae2d6875e0deb5607e474979e33d8ddeae23bda7c92737a6cc7a0882da",
+            "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 3,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "532a97d317db696bee6d90619e6f9071ed7771cf9a6a60e28896122f406cf915",
+              "value": "063417c6c58803510c8d3deca01f2a497fbd8c2ad597e470e04d49b0b1bc60b6a6a3319cdad46d6e62dabff16f7ff5cb1daffe4b0c86f88a57686ee571eaed02"
+            }
+          }
+        ],
+        "expires_at": "2026-09-08T22:42:16.601411Z",
+        "head": {
+          "event_hash": "d70033c4f951780c09906fc065952faa6eafead45c8367fc0bb956190b61adb0",
+          "sequence": 3
+        },
+        "issued_at": "2026-09-08T22:32:16.601411Z",
+        "payload_hash": "82ba20318518149f83aa719beb2c0b1ddfae33ad7c56637de81b2c7b0b3dd40e",
+        "principal": {
+          "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+          "root_public_key": "eaaf54585624fc248c599e5dd8ca19536f2fd1efc27aca19b7dd8ab4a19fee0a"
+        },
+        "receipts": [],
+        "schema": "openline.wallet.receiver_bundle.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "eaaf54585624fc248c599e5dd8ca19536f2fd1efc27aca19b7dd8ab4a19fee0a",
+          "value": "5ea6e138d792cdac28ec61b654c6fe5b52b10a548c7079b97edd4353c3ade6ce1fdabb80d09c102aed2d225e50095f663376c01d6a8c2fe03b205688a848d709"
+        },
+        "wallet_policy_authority": "NONE"
+      },
+      "gate_receipt": {
+        "action": "job:accept:aac0eb85ec4d524192fc2a6733394e63bf6ae15585232a1a7821bb4f3ee426db",
+        "decided_at": "2026-09-08T22:32:16.691947Z",
+        "decision": "ALLOWED",
+        "decision_authority": "RECEIVER_GATE",
+        "gate_id": "coordinator-001",
+        "gate_public_key": "0b52d9eec87db2bca69f65b41bedd062265f6f15c99b15ed6a7a1a73eae8212a",
+        "mandate_id": "aac0eb85ec4d524192fc2a67accept",
+        "payload_hash": "f0a03934c2df6ad35cf0151e1cda3142c09a847b170acc7f4a47d73e6272c4c4",
+        "presentation_hash": "7b67104039ee5fdde5a54c85b39fc602f8d364ff800d04c442be34ec0f0eb0c8",
+        "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+        "reason_codes": [],
+        "schema": "openline.gate.action_receipt.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "0b52d9eec87db2bca69f65b41bedd062265f6f15c99b15ed6a7a1a73eae8212a",
+          "value": "18e82d1b38875ef2d24b075387e5c6fb7c8295efb1d7c7a8b7a6ce5564e730f87c5913afd1717d7ce82a1178f96e31a681c718c0566400244e95d07403b92d08"
+        },
+        "subject_id": "buyer",
+        "wallet_policy_authority": "NONE"
+      },
+      "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+      "kind": "accept",
+      "payload": {
+        "candidate": "6f00d93a22a4feae7c7aff9ce9794d4e672610ff",
+        "evaluation": "7e8016966198fa052fa33903c741ca369b3be4e392248526157e9cac2f7fee89",
+        "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da"
+      },
+      "presentation": {
+        "action": "job:accept:aac0eb85ec4d524192fc2a6733394e63bf6ae15585232a1a7821bb4f3ee426db",
+        "bundle_head_hash": "d70033c4f951780c09906fc065952faa6eafead45c8367fc0bb956190b61adb0",
+        "issued_at": "2026-09-08T22:32:16.675926Z",
+        "mandate_id": "aac0eb85ec4d524192fc2a67accept",
+        "payload_hash": "758897d8d444b7dd004056872eac06cc651c0ab9abf9efdba8c8c35cd033bd47",
+        "principal_id": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+        "receiver_challenge": "challenge_65afa6fa0486d2e1ecfd58f35efcd45f",
+        "schema": "openline.wallet.holder_presentation.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "661fb9b2b4ea7137b6fff9e5f1dafb1d405d85e9ed1bcfd3a6509e00da84a05f",
+          "value": "92515ec2b64235ca9bd0f2e3db61fa9069054b8fbb55e94f535f031c3333ada7ebf621b69091647bf949a15aa94dfc09fdef91a2591c5adb44bf2b7d08de7101"
+        },
+        "subject_id": "buyer",
+        "subject_public_key": "661fb9b2b4ea7137b6fff9e5f1dafb1d405d85e9ed1bcfd3a6509e00da84a05f"
+      },
+      "previous": "5c98fc9e82a48cd31a126a1bbc60bf11ac9be91262dd5b1e9de0b2eb9080ad41"
+    },
+    {
+      "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+      "kind": "payment_intent",
+      "previous": "3848704205f18099e7effc7a82a13d54ecf608e38e278641a4ed54e81faf7dd9",
+      "request": {
+        "amount": 10000,
+        "buyer": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+        "currency": "SIM_USD",
+        "id": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+        "worker": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6"
+      }
+    },
+    {
+      "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+      "kind": "payment_intent",
+      "previous": "bb0aec718809565e20022415aed37da0053457ae1a90d1b90951b07e49aa3dbf",
+      "request": {
+        "amount": 10000,
+        "buyer": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+        "currency": "SIM_USD",
+        "id": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+        "worker": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6"
+      }
+    },
+    {
+      "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+      "kind": "payment_intent",
+      "previous": "bc70006dbffdc6d358b97230c5286cf7a7400c5462c7ad435f05bf78def757e6",
+      "request": {
+        "amount": 10000,
+        "buyer": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+        "currency": "SIM_USD",
+        "id": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+        "worker": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6"
+      }
+    },
+    {
+      "job": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+      "kind": "settlement",
+      "previous": "857bbf7ef34664c7572f5b4bc98396ef0d7bb64571a9789f84364e80648a507a",
+      "receipt": {
+        "payload_hash": "162b2f9e4f700fad3351fe5ea6ada8610ffb90ccc2e712321c92f9ace3cb0271",
+        "request": {
+          "amount": 10000,
+          "buyer": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+          "currency": "SIM_USD",
+          "id": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+          "worker": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6"
+        },
+        "schema": "coordinator.simulated-payment.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "f9a01334fb29e14b3fecdab804c087caaa3676043cfa61a30b9b5f81cf197518",
+          "value": "b6ccf0a2edfb8946e52095001bfe867fd13b621eec4c5e3542b8319360edce17e035635cacd4ed884412a583b94e47404752329c69de3141b255f06897268c01"
+        },
+        "status": "SETTLED"
+      }
+    }
+  ],
+  "final": {
+    "agreed": [
+      "buyer",
+      "worker"
+    ],
+    "candidate": "6f00d93a22a4feae7c7aff9ce9794d4e672610ff",
+    "evaluation": "7e8016966198fa052fa33903c741ca369b3be4e392248526157e9cac2f7fee89",
+    "payment": {
+      "payload_hash": "162b2f9e4f700fad3351fe5ea6ada8610ffb90ccc2e712321c92f9ace3cb0271",
+      "request": {
+        "amount": 10000,
+        "buyer": "openline:principal:3fac6cc8db17c8b73f16019f97c769f13cbac1805b37cb4d85dca101daf10210",
+        "currency": "SIM_USD",
+        "id": "8bc000b33888e202deb249fa9255972f9e5a9f5a7f0c438c5e18efafae87c9da",
+        "worker": "openline:principal:65593e80039865c4a4f0205f96b1eb8a97479866267bcd8e697670e5031bc0c6"
+      },
+      "schema": "coordinator.simulated-payment.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "f9a01334fb29e14b3fecdab804c087caaa3676043cfa61a30b9b5f81cf197518",
+        "value": "b6ccf0a2edfb8946e52095001bfe867fd13b621eec4c5e3542b8319360edce17e035635cacd4ed884412a583b94e47404752329c69de3141b255f06897268c01"
+      },
+      "status": "SETTLED"
+    },
+    "status": "SETTLED"
+  },
+  "initial_total": 20000,
+  "transfers": 1
+}

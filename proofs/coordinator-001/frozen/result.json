@@ -1,0 +1,42 @@
+{
+  "airlock_commit": "fb02207f3ac561368beeabf9ff168076bf828824",
+  "claim_boundary": "Controlled separate signer processes; trusted coordinator, evaluator and provider; no OS isolation, live models, external operators or real payments.",
+  "external_parties": false,
+  "files_sha256": {
+    "evidence.json": "e2195ca4eeed00aff39f7333464a256376e10c42c8253330391c5f65e6fbabe6",
+    "tests.txt": "e5f60c676bd741fdbf0eec5991643a4aa1408ca39716098fb943d892e738b297"
+  },
+  "negative_control": "fresh retry key permits two transfers for one logical obligation",
+  "python": "3.12.14",
+  "schema": "coordinator-001.result.v1",
+  "simulated_money": true,
+  "source_sha256": {
+    "coordinator.py": "bc765e8f5a23461f1a86b181c86158df241658546303ff7eb22946f51878d00f",
+    "reproduce.py": "b8d8e56995048bf7d77ed2fe0b71319a416d79b100cbe959ae726aba8207aee9",
+    "test_coordinator.py": "1b87714719d0ea1b54cd394850c1cf9785a0aba3c1a209c3934f70837644509b",
+    "verify.py": "5adb4eb13cb59ea36a46d04425ae4311968dcb841009ab3d10bc4e6118aef4c1"
+  },
+  "tests": [
+    "test_acceptance_wrong_evaluation_rejected",
+    "test_agreement_cannot_be_reinitialized",
+    "test_airlock_pass_never_pays",
+    "test_bad_patch_rejected",
+    "test_changed_agreement_rejected",
+    "test_concurrent_settlement_single_transfer",
+    "test_crash_before_external_transfer_can_resume",
+    "test_failed_provider_transfer_rolls_back_debit",
+    "test_negative_control_new_payment_key_duplicates_transfer",
+    "test_payload_tampering_stopped_by_wallet",
+    "test_process_death_lost_ack_restart_and_duplicate_retries",
+    "test_protected_check_rewrite_rejected",
+    "test_provider_reused_key_changed_amount_rejected",
+    "test_replayed_agreement_after_restart_rejected",
+    "test_revoked_mandate_cannot_authorize_agreement",
+    "test_signed_wrong_payment_and_forgery_stay_pending",
+    "test_worker_cannot_accept_own_result",
+    "test_worker_cannot_impersonate_buyer"
+  ],
+  "tests_passed": 18,
+  "verdict": "CONTROLLED_SETTLEMENT_RECONCILIATION_PASSED",
+  "wallet_base": "b30e36463edd4b7ce3e56879a743745241070849"
+}
