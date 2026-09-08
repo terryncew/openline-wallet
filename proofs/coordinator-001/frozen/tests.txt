@@ -1,0 +1,23 @@
+test_acceptance_wrong_evaluation_rejected (test_coordinator.CoordinatorTests.test_acceptance_wrong_evaluation_rejected) ... ok
+test_agreement_cannot_be_reinitialized (test_coordinator.CoordinatorTests.test_agreement_cannot_be_reinitialized) ... ok
+test_airlock_pass_never_pays (test_coordinator.CoordinatorTests.test_airlock_pass_never_pays) ... ok
+test_bad_patch_rejected (test_coordinator.CoordinatorTests.test_bad_patch_rejected) ... ok
+test_changed_agreement_rejected (test_coordinator.CoordinatorTests.test_changed_agreement_rejected) ... ok
+test_concurrent_settlement_single_transfer (test_coordinator.CoordinatorTests.test_concurrent_settlement_single_transfer) ... ok
+test_crash_before_external_transfer_can_resume (test_coordinator.CoordinatorTests.test_crash_before_external_transfer_can_resume) ... ok
+test_failed_provider_transfer_rolls_back_debit (test_coordinator.CoordinatorTests.test_failed_provider_transfer_rolls_back_debit) ... ok
+test_negative_control_new_payment_key_duplicates_transfer (test_coordinator.CoordinatorTests.test_negative_control_new_payment_key_duplicates_transfer) ... ok
+test_payload_tampering_stopped_by_wallet (test_coordinator.CoordinatorTests.test_payload_tampering_stopped_by_wallet) ... ok
+test_process_death_lost_ack_restart_and_duplicate_retries (test_coordinator.CoordinatorTests.test_process_death_lost_ack_restart_and_duplicate_retries) ... ok
+test_protected_check_rewrite_rejected (test_coordinator.CoordinatorTests.test_protected_check_rewrite_rejected) ... ok
+test_provider_reused_key_changed_amount_rejected (test_coordinator.CoordinatorTests.test_provider_reused_key_changed_amount_rejected) ... ok
+test_replayed_agreement_after_restart_rejected (test_coordinator.CoordinatorTests.test_replayed_agreement_after_restart_rejected) ... ok
+test_revoked_mandate_cannot_authorize_agreement (test_coordinator.CoordinatorTests.test_revoked_mandate_cannot_authorize_agreement) ... ok
+test_signed_wrong_payment_and_forgery_stay_pending (test_coordinator.CoordinatorTests.test_signed_wrong_payment_and_forgery_stay_pending) ... ok
+test_worker_cannot_accept_own_result (test_coordinator.CoordinatorTests.test_worker_cannot_accept_own_result) ... ok
+test_worker_cannot_impersonate_buyer (test_coordinator.CoordinatorTests.test_worker_cannot_impersonate_buyer) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 5.666s
+
+OK
