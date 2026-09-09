@@ -1,0 +1,27 @@
+{
+  "actual_provider_outage_observed": false,
+  "airlock_commit": "fb02207f3ac561368beeabf9ff168076bf828824",
+  "claim_boundary": "One bounded fixture job, one exact git checkpoint, one owner-approved agreement, and one replacement continuation. The current EGRESS-GATE-001 Receiver Gate is verified separately as a preflight; this experiment itself stops at Airlock ELIGIBLE and executes no downstream effect. Real mode uses Claude Code before the handoff and Codex after it; provider A is intentionally absent from the continuation path. On GitHub-hosted Linux runners, Codex retains its workspace-write filesystem sandbox with tool network access enabled and temporary directories excluded from writable roots; the subprocess still receives no GitHub, SSH, or Claude credentials. This does not establish an actual provider outage, full conversation/memory portability, production deployment safety, or duplicate-effect closure for external systems.",
+  "files_sha256": {
+    "continuation.patch": "c7f20a37ad5ff41492c34caecbd47309edd2e32d12c2b2733e54adcd5217cc93",
+    "evidence.json": "05db4946b28838c2fb188a634d1a410877761fae71a78d632675c8b18751ff81",
+    "handoff.json": "4af5dda402fe3b7cf21a3532f6f282177001dfeb122840644c81df67613c11db",
+    "handoff.patch": "99ab6cec03093ab2641340c3ac08cce06425180e38a72440cd48a5ae9fa1b8ee",
+    "provider-a.log": "cf0277abea5364d0471d232b70d59f38476184420633813ce922576499351d4c",
+    "provider-b.log": "39a089c3f51767fc170aabe309b74ccd5de2dfcfd47f5f183c78ed1c023a0c88",
+    "restart-falsifier.json": "0aab73e494873176b7f3540e06fec53c9e3fa790415fb1b5ff6fdb5849a795f8"
+  },
+  "full_context_portability": false,
+  "live_models": true,
+  "mode": "real",
+  "outage_condition": "induced provider-A absence after verified checkpoint",
+  "payment_or_marketplace": false,
+  "predecessor": "APPROVED-JOB-001",
+  "production_effect": false,
+  "python": "3.12.14",
+  "receiver_boundary_preflight": "EGRESS-GATE-001",
+  "schema": "approved-job-live-001.result.v1",
+  "source_sha256": "53af179ea8fd74f9009f026b0dbd999bff3d5916f5a84bc768b316d93fc3c83e",
+  "verdict": "APPROVED_JOB_LIVE_CONTINUATION_ENFORCED",
+  "wallet_predecessor_base": "eb9dc395e7b941f1966a96d9731a867eea6fd050"
+}

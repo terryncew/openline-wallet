@@ -1,0 +1,6 @@
+{
+  "handoff_candidate": "ce51a65137bf441f7038b83b521e52871148d8fc",
+  "reason": "candidate is not a descendant of the verified handoff",
+  "rejected": true,
+  "restart_candidate": "5d64b245a2e39991ae882c425329e5e934729a74"
+}

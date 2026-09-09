@@ -1,0 +1,17 @@
+{
+  "agreement_digest": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+  "candidate_commit": "653a8067b3d45dde39957f9ad18d90822367cdef",
+  "job": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+  "previous_provider_chat_transferred": false,
+  "previous_provider_credentials_transferred": false,
+  "requirement": "Correct numeric result and preserve caller-provided list order",
+  "schema": "approved-job-live.handoff.v1",
+  "task": "Fix total(items) so it returns the correct sum without mutating caller input",
+  "unresolved": [
+    "caller input must remain order-equivalent"
+  ],
+  "verified_stage": {
+    "acceptance": "FAIL",
+    "ordinary": "PASS"
+  }
+}

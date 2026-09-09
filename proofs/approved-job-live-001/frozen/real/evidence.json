@@ -1,0 +1,639 @@
+{
+  "agreement": {
+    "acceptance_checks": [
+      [
+        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "approved_check.py"
+      ]
+    ],
+    "base": "fb85624af6b3a35130286068935aaddc024148f9",
+    "ordinary_checks": [
+      [
+        "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+        "test_basic.py"
+      ]
+    ],
+    "owner": {
+      "principal": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+      "root": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a"
+    },
+    "protected": [
+      "test_basic.py",
+      "approved_check.py"
+    ],
+    "repository": "/tmp/approved-job-live-b6k9xj74/maintenance",
+    "requirement": "Correct numeric result and preserve caller-provided list order",
+    "schema": "approved-job.agreement.v1",
+    "task": "Fix total(items) so it returns the correct sum without mutating caller input"
+  },
+  "agreement_digest_after_replacement": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+  "agreement_digest_before_handoff": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+  "base_commit": "fb85624af6b3a35130286068935aaddc024148f9",
+  "events": [
+    {
+      "bundle": {
+        "canonicalization": "olp-canonical-json-int-v1",
+        "decision_authority": "RECEIVER_GATE",
+        "epoch_certificate": {
+          "authority": "ISSUE_AND_NARROW_MANDATES",
+          "epoch_id": "epoch_62977734cbe5d23f",
+          "epoch_public_key": "e7ef7f66529e0aa8cb710c7dc17606d24c779aba03cc7542064fb6f492fdc12c",
+          "expires_at": "2027-09-10T22:42:37.055231Z",
+          "issued_at": "2026-09-09T22:42:37.055231Z",
+          "payload_hash": "5a6ffac1d4f2bbae91c2299dbf61b0b5dc56c06fdbf0e6fdd81eb18bf5bc4bae",
+          "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+          "schema": "openline.wallet.epoch_certificate.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a",
+            "value": "e7af04807ba96b292f372ad02fb55962eaf18315532eb80842b8689d19289abdd1c7c28480016e5cd5e30960afc05a34db9d0cbb1f21376f7ac86797b7763b0f"
+          }
+        },
+        "events": [
+          {
+            "data": {
+              "expires_at": "2026-09-09T22:52:37.245728Z",
+              "mandate_id": "bced280faa8eda8262770a7eapprove",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "approved-job:approve:bced280faa8eda8262770a7e257d108f3dfb18059184aecbf2036e69b8a62b71"
+              ],
+              "subject_id": "owner",
+              "subject_public_key": "c75fd6576c8d396ecd638df81976a7ea1eceb64da0d5fedf5f60e0fb548cbf96"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-09T22:42:37.245742Z",
+            "payload_hash": "e4d441835cba8c452354f3dda3461f8131348ad9e620346637cd9065b382c7aa",
+            "previous_event_hash": null,
+            "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 1,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "e7ef7f66529e0aa8cb710c7dc17606d24c779aba03cc7542064fb6f492fdc12c",
+              "value": "de347954e3eb3ab6d6863291d308b9bd11adc497788fc3852e8d857728b15a8558bfa9ed6700d27d6ed1b62acac159bd92ae57db7462c8ece2c901f677669a09"
+            }
+          }
+        ],
+        "expires_at": "2026-09-09T22:52:37.250258Z",
+        "head": {
+          "event_hash": "1a1c438126dff46b2307aa7991b9ed1c2a921defdc3dc46b3f8bbc24ef2806dc",
+          "sequence": 1
+        },
+        "issued_at": "2026-09-09T22:42:37.250258Z",
+        "payload_hash": "521492d42edcf125817ecd89494beab7d035fd9a93ca39c594f625d6b95a14df",
+        "principal": {
+          "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+          "root_public_key": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a"
+        },
+        "receipts": [],
+        "schema": "openline.wallet.receiver_bundle.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a",
+          "value": "400df903f190ba2213f8636f46b21c85c67fd06217b643feeab8291ae921c13eca5c2d28077e6ac206fc9832a49690c9bcd13d066ab090bfd5f15a9c3eeb0001"
+        },
+        "wallet_policy_authority": "NONE"
+      },
+      "gate_receipt": {
+        "action": "approved-job:approve:bced280faa8eda8262770a7e257d108f3dfb18059184aecbf2036e69b8a62b71",
+        "decided_at": "2026-09-09T22:42:37.320012Z",
+        "decision": "ALLOWED",
+        "decision_authority": "RECEIVER_GATE",
+        "gate_id": "approved-job-001",
+        "gate_public_key": "2eb7646c40767af025f1a5ee1dd969693adaae7cc5f15907a6af8c7cb1a746da",
+        "mandate_id": "bced280faa8eda8262770a7eapprove",
+        "payload_hash": "33803f6c1293a1d46c42b087bd830171827ed9cda6c24b14496615cced537a41",
+        "presentation_hash": "ae0afe7e230dcfeb964a0a38880c2b7e7cc949e1962a50f42a6fb7cd08a4a397",
+        "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+        "reason_codes": [],
+        "schema": "openline.gate.action_receipt.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "2eb7646c40767af025f1a5ee1dd969693adaae7cc5f15907a6af8c7cb1a746da",
+          "value": "f14e1353357d359586aee2b9548c53d828913be9d42170fd26cbe6b0c617bde586940baf4a3a1460f927f1a7c82dc6af59d6697368c17dbbda1b0fbb782a1300"
+        },
+        "subject_id": "owner",
+        "wallet_policy_authority": "NONE"
+      },
+      "job": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+      "kind": "approve",
+      "payload": {
+        "job": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2"
+      },
+      "presentation": {
+        "action": "approved-job:approve:bced280faa8eda8262770a7e257d108f3dfb18059184aecbf2036e69b8a62b71",
+        "bundle_head_hash": "1a1c438126dff46b2307aa7991b9ed1c2a921defdc3dc46b3f8bbc24ef2806dc",
+        "issued_at": "2026-09-09T22:42:37.309111Z",
+        "mandate_id": "bced280faa8eda8262770a7eapprove",
+        "payload_hash": "546184c0d2f89c27a959332f4ef0ea3464911fef1147a7ea0ca3fd2414981d0f",
+        "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+        "receiver_challenge": "challenge_e5687680f43197440de769909addcbc6",
+        "schema": "openline.wallet.holder_presentation.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "c75fd6576c8d396ecd638df81976a7ea1eceb64da0d5fedf5f60e0fb548cbf96",
+          "value": "66446d2b22160c0f8f41754892d7bfc88258f9e3a3a676345916733c0d9a1b32545f1cb03145ced9d421521fadf31cadcd1e820a9c54805fd7ffcf902231c20f"
+        },
+        "subject_id": "owner",
+        "subject_public_key": "c75fd6576c8d396ecd638df81976a7ea1eceb64da0d5fedf5f60e0fb548cbf96"
+      },
+      "previous": null,
+      "subject": "owner"
+    },
+    {
+      "bundle": {
+        "canonicalization": "olp-canonical-json-int-v1",
+        "decision_authority": "RECEIVER_GATE",
+        "epoch_certificate": {
+          "authority": "ISSUE_AND_NARROW_MANDATES",
+          "epoch_id": "epoch_62977734cbe5d23f",
+          "epoch_public_key": "e7ef7f66529e0aa8cb710c7dc17606d24c779aba03cc7542064fb6f492fdc12c",
+          "expires_at": "2027-09-10T22:42:37.055231Z",
+          "issued_at": "2026-09-09T22:42:37.055231Z",
+          "payload_hash": "5a6ffac1d4f2bbae91c2299dbf61b0b5dc56c06fdbf0e6fdd81eb18bf5bc4bae",
+          "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+          "schema": "openline.wallet.epoch_certificate.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a",
+            "value": "e7af04807ba96b292f372ad02fb55962eaf18315532eb80842b8689d19289abdd1c7c28480016e5cd5e30960afc05a34db9d0cbb1f21376f7ac86797b7763b0f"
+          }
+        },
+        "events": [
+          {
+            "data": {
+              "expires_at": "2026-09-09T22:52:37.245728Z",
+              "mandate_id": "bced280faa8eda8262770a7eapprove",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "approved-job:approve:bced280faa8eda8262770a7e257d108f3dfb18059184aecbf2036e69b8a62b71"
+              ],
+              "subject_id": "owner",
+              "subject_public_key": "c75fd6576c8d396ecd638df81976a7ea1eceb64da0d5fedf5f60e0fb548cbf96"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-09T22:42:37.245742Z",
+            "payload_hash": "e4d441835cba8c452354f3dda3461f8131348ad9e620346637cd9065b382c7aa",
+            "previous_event_hash": null,
+            "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 1,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "e7ef7f66529e0aa8cb710c7dc17606d24c779aba03cc7542064fb6f492fdc12c",
+              "value": "de347954e3eb3ab6d6863291d308b9bd11adc497788fc3852e8d857728b15a8558bfa9ed6700d27d6ed1b62acac159bd92ae57db7462c8ece2c901f677669a09"
+            }
+          },
+          {
+            "data": {
+              "expires_at": "2026-09-09T22:52:46.473279Z",
+              "mandate_id": "964a4f8684bc3d0ec03259a2handoff",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "approved-job:handoff:964a4f8684bc3d0ec03259a2f1851695b7e5106cda2ee9f3a4ec1134b36f7937"
+              ],
+              "subject_id": "worker-a",
+              "subject_public_key": "9ce88905fa62cba747dbc862bf03b2579b09dff34d8ab6e2fc435679c3efca09"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-09T22:42:46.473303Z",
+            "payload_hash": "a471ceb6bdbed5962a57c7f28f35935c5414f8162e1610bc3cf43a740ba5fa58",
+            "previous_event_hash": "1a1c438126dff46b2307aa7991b9ed1c2a921defdc3dc46b3f8bbc24ef2806dc",
+            "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 2,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "e7ef7f66529e0aa8cb710c7dc17606d24c779aba03cc7542064fb6f492fdc12c",
+              "value": "177c8710800ec42368c080ce0cb74cbfe6df5422ec9e5054836d3a9c1a6e7103699943cb84bb350d64d5492cb69390f8d4c993623ecb5f0a6cc3c615e842ff0d"
+            }
+          }
+        ],
+        "expires_at": "2026-09-09T22:52:46.486305Z",
+        "head": {
+          "event_hash": "a44c7ae84e30c1e0e5cf3a5c96799d6dbdbd3f8a16db9af6e8d8593fb97e0d19",
+          "sequence": 2
+        },
+        "issued_at": "2026-09-09T22:42:46.486305Z",
+        "payload_hash": "9a7cf10319d3ccb4cfa720e6556525ad7094cf478e99d2fec82917392f75bfb9",
+        "principal": {
+          "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+          "root_public_key": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a"
+        },
+        "receipts": [],
+        "schema": "openline.wallet.receiver_bundle.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a",
+          "value": "eefe48d08505e3ce694f2ea5e9120f95e3310c2f92620fdbb36dff6aeef24b41016fcba538cff5d4f1a1ba74f189c2f31b6783b1833eadf71ff9e12fa5063705"
+        },
+        "wallet_policy_authority": "NONE"
+      },
+      "gate_receipt": {
+        "action": "approved-job:handoff:964a4f8684bc3d0ec03259a2f1851695b7e5106cda2ee9f3a4ec1134b36f7937",
+        "decided_at": "2026-09-09T22:42:46.555836Z",
+        "decision": "ALLOWED",
+        "decision_authority": "RECEIVER_GATE",
+        "gate_id": "approved-job-001",
+        "gate_public_key": "2eb7646c40767af025f1a5ee1dd969693adaae7cc5f15907a6af8c7cb1a746da",
+        "mandate_id": "964a4f8684bc3d0ec03259a2handoff",
+        "payload_hash": "07a9e68b3fcadb7409666a60d5d5bd380fff913776c20fccbe4cfb9a774524bb",
+        "presentation_hash": "a463504dd48bca7c7f250a5d2466938f18a09d0816c7303e9573207f7305ae8e",
+        "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+        "reason_codes": [],
+        "schema": "openline.gate.action_receipt.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "2eb7646c40767af025f1a5ee1dd969693adaae7cc5f15907a6af8c7cb1a746da",
+          "value": "7cb7d57a0d7bb5c2e4328bcc02c2f099d06025517c346b6ecba7af0016b1310039aef0072f021ab5103f19797198eaa6200eb22b258c04e558f0e259d9696406"
+        },
+        "subject_id": "worker-a",
+        "wallet_policy_authority": "NONE"
+      },
+      "job": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+      "kind": "handoff",
+      "payload": {
+        "candidate": "653a8067b3d45dde39957f9ad18d90822367cdef",
+        "job": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+        "note": "Independent stage check passed numeric behavior; approved no-mutation requirement remains unresolved.",
+        "unresolved": [
+          "caller input must remain order-equivalent"
+        ]
+      },
+      "presentation": {
+        "action": "approved-job:handoff:964a4f8684bc3d0ec03259a2f1851695b7e5106cda2ee9f3a4ec1134b36f7937",
+        "bundle_head_hash": "a44c7ae84e30c1e0e5cf3a5c96799d6dbdbd3f8a16db9af6e8d8593fb97e0d19",
+        "issued_at": "2026-09-09T22:42:46.544066Z",
+        "mandate_id": "964a4f8684bc3d0ec03259a2handoff",
+        "payload_hash": "ee8e554b0ab5f5cf5dbbbd86f5f4bf375393e70cb5bb31b91e693c68f1f401fe",
+        "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+        "receiver_challenge": "challenge_64881633dff723fec5f94bcd4dfb109a",
+        "schema": "openline.wallet.holder_presentation.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "9ce88905fa62cba747dbc862bf03b2579b09dff34d8ab6e2fc435679c3efca09",
+          "value": "308e55e0d55a630e1604ba3f0b53a0e44af791c95e4dd92b5e75956ea6dca07eea6431b2b59dab73fad7255b991239bb80b6c5094dcfb37ef0063c1accebef0d"
+        },
+        "subject_id": "worker-a",
+        "subject_public_key": "9ce88905fa62cba747dbc862bf03b2579b09dff34d8ab6e2fc435679c3efca09"
+      },
+      "previous": "405fcbfa68fd2c916ec9c85dc25e776514699151432bbc1761ab3263f456ba76",
+      "subject": "worker-a"
+    },
+    {
+      "bundle": {
+        "canonicalization": "olp-canonical-json-int-v1",
+        "decision_authority": "RECEIVER_GATE",
+        "epoch_certificate": {
+          "authority": "ISSUE_AND_NARROW_MANDATES",
+          "epoch_id": "epoch_62977734cbe5d23f",
+          "epoch_public_key": "e7ef7f66529e0aa8cb710c7dc17606d24c779aba03cc7542064fb6f492fdc12c",
+          "expires_at": "2027-09-10T22:42:37.055231Z",
+          "issued_at": "2026-09-09T22:42:37.055231Z",
+          "payload_hash": "5a6ffac1d4f2bbae91c2299dbf61b0b5dc56c06fdbf0e6fdd81eb18bf5bc4bae",
+          "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+          "schema": "openline.wallet.epoch_certificate.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a",
+            "value": "e7af04807ba96b292f372ad02fb55962eaf18315532eb80842b8689d19289abdd1c7c28480016e5cd5e30960afc05a34db9d0cbb1f21376f7ac86797b7763b0f"
+          }
+        },
+        "events": [
+          {
+            "data": {
+              "expires_at": "2026-09-09T22:52:37.245728Z",
+              "mandate_id": "bced280faa8eda8262770a7eapprove",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "approved-job:approve:bced280faa8eda8262770a7e257d108f3dfb18059184aecbf2036e69b8a62b71"
+              ],
+              "subject_id": "owner",
+              "subject_public_key": "c75fd6576c8d396ecd638df81976a7ea1eceb64da0d5fedf5f60e0fb548cbf96"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-09T22:42:37.245742Z",
+            "payload_hash": "e4d441835cba8c452354f3dda3461f8131348ad9e620346637cd9065b382c7aa",
+            "previous_event_hash": null,
+            "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 1,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "e7ef7f66529e0aa8cb710c7dc17606d24c779aba03cc7542064fb6f492fdc12c",
+              "value": "de347954e3eb3ab6d6863291d308b9bd11adc497788fc3852e8d857728b15a8558bfa9ed6700d27d6ed1b62acac159bd92ae57db7462c8ece2c901f677669a09"
+            }
+          },
+          {
+            "data": {
+              "expires_at": "2026-09-09T22:52:46.473279Z",
+              "mandate_id": "964a4f8684bc3d0ec03259a2handoff",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "approved-job:handoff:964a4f8684bc3d0ec03259a2f1851695b7e5106cda2ee9f3a4ec1134b36f7937"
+              ],
+              "subject_id": "worker-a",
+              "subject_public_key": "9ce88905fa62cba747dbc862bf03b2579b09dff34d8ab6e2fc435679c3efca09"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-09T22:42:46.473303Z",
+            "payload_hash": "a471ceb6bdbed5962a57c7f28f35935c5414f8162e1610bc3cf43a740ba5fa58",
+            "previous_event_hash": "1a1c438126dff46b2307aa7991b9ed1c2a921defdc3dc46b3f8bbc24ef2806dc",
+            "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 2,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "e7ef7f66529e0aa8cb710c7dc17606d24c779aba03cc7542064fb6f492fdc12c",
+              "value": "177c8710800ec42368c080ce0cb74cbfe6df5422ec9e5054836d3a9c1a6e7103699943cb84bb350d64d5492cb69390f8d4c993623ecb5f0a6cc3c615e842ff0d"
+            }
+          },
+          {
+            "data": {
+              "mandate_id": "964a4f8684bc3d0ec03259a2handoff",
+              "reason": "USER_REVOKED"
+            },
+            "event_type": "MANDATE_REVOKED",
+            "issued_at": "2026-09-09T22:42:46.558397Z",
+            "payload_hash": "6013cd28c04e614a173a178bc59b36be946f044e800573a4d6adba9e6d7e7447",
+            "previous_event_hash": "a44c7ae84e30c1e0e5cf3a5c96799d6dbdbd3f8a16db9af6e8d8593fb97e0d19",
+            "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 3,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a",
+              "value": "3232063e4ff55655f46bbcb4c8f77abfecfe552e8369b9abb249c1f22a0194eac9ae5851b16d21db4fb117d596891a3caf63d9c348b4efed9f89f5abea2c2e08"
+            }
+          },
+          {
+            "data": {
+              "expires_at": "2026-09-09T22:53:09.290960Z",
+              "mandate_id": "69a9a18fc3205ae85862e9c1submit",
+              "predecessor_mandate_id": null,
+              "scopes": [
+                "approved-job:submit:69a9a18fc3205ae85862e9c1ac01791a063ae437280d91935bb87d7e7a31edeb"
+              ],
+              "subject_id": "worker-b",
+              "subject_public_key": "b6b89260d10bdad2bf5eef3ebc2caece4f43dc56163205358bfc3c5e3c6bf77a"
+            },
+            "event_type": "MANDATE_ISSUED",
+            "issued_at": "2026-09-09T22:43:09.290980Z",
+            "payload_hash": "e597e4b2863fb95501ae2374e1578115f10d52b0770a07347d90508665c1e5fe",
+            "previous_event_hash": "c1b9da494dc71573557e1767aa394f7ad3eed422aa6309c317e86e302186df86",
+            "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+            "schema": "openline.wallet.timeline_event.v1",
+            "sequence": 4,
+            "signature": {
+              "algorithm": "Ed25519",
+              "public_key": "e7ef7f66529e0aa8cb710c7dc17606d24c779aba03cc7542064fb6f492fdc12c",
+              "value": "27dc834818c5c1de34cbafd4c717be067fbb4789513c024507ffca0159e6ec4748f950a25d1831fb3de3cfba80c25f37fcf1129588c8ee6dd77b650b7f78bf03"
+            }
+          }
+        ],
+        "expires_at": "2026-09-09T22:53:09.340154Z",
+        "head": {
+          "event_hash": "96c67c5bb5ccedd2ce61c6cabc8ea4302f4dd5d56006c7ae9ada995b280feed3",
+          "sequence": 4
+        },
+        "issued_at": "2026-09-09T22:43:09.340154Z",
+        "payload_hash": "ffeae556b9c1e87919485b65d2927e170f3b4e37493d7c83b67b2c0f88d20d90",
+        "principal": {
+          "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+          "root_public_key": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a"
+        },
+        "receipts": [],
+        "schema": "openline.wallet.receiver_bundle.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "99e764049202ed02534808f7d26dcab8428fcb88106b7ffdcd019cf7dea7324a",
+          "value": "ff5cae557732da83ef7a9234eba54807824e247afd0b8ff324fdf568ab3b1b3e917cc394d142b99ae93423242babafe81944c28fee186cebd4d3d8193e12cf00"
+        },
+        "wallet_policy_authority": "NONE"
+      },
+      "gate_receipt": {
+        "action": "approved-job:submit:69a9a18fc3205ae85862e9c1ac01791a063ae437280d91935bb87d7e7a31edeb",
+        "decided_at": "2026-09-09T22:43:09.412253Z",
+        "decision": "ALLOWED",
+        "decision_authority": "RECEIVER_GATE",
+        "gate_id": "approved-job-001",
+        "gate_public_key": "2eb7646c40767af025f1a5ee1dd969693adaae7cc5f15907a6af8c7cb1a746da",
+        "mandate_id": "69a9a18fc3205ae85862e9c1submit",
+        "payload_hash": "f5f3987b042e6bb4ed9050aa53d6202c10d0d18df839926f3c37b8f375023819",
+        "presentation_hash": "a5a2a771e1d584659ca515c47688590ad9a9ce44808f67a0617d049152bde14f",
+        "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+        "reason_codes": [],
+        "schema": "openline.gate.action_receipt.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "2eb7646c40767af025f1a5ee1dd969693adaae7cc5f15907a6af8c7cb1a746da",
+          "value": "9f462d7dbf2ba48d7407bda2ba27a37e6678a84c0fb7178f273ca87fbe8c1b8fac3e0186b716f2ad8ef41421fa446d370d6ab04ff022e91b8b016f395cb07e0a"
+        },
+        "subject_id": "worker-b",
+        "wallet_policy_authority": "NONE"
+      },
+      "job": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+      "kind": "submit",
+      "payload": {
+        "candidate": "db722a2ad1c4059b05e498749d44c2b5f9120c35",
+        "handoff": "964a4f8684bc3d0ec03259a2f1851695b7e5106cda2ee9f3a4ec1134b36f7937",
+        "job": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2"
+      },
+      "presentation": {
+        "action": "approved-job:submit:69a9a18fc3205ae85862e9c1ac01791a063ae437280d91935bb87d7e7a31edeb",
+        "bundle_head_hash": "96c67c5bb5ccedd2ce61c6cabc8ea4302f4dd5d56006c7ae9ada995b280feed3",
+        "issued_at": "2026-09-09T22:43:09.399809Z",
+        "mandate_id": "69a9a18fc3205ae85862e9c1submit",
+        "payload_hash": "b3d707b3b536708952f157cdccfdf63c7b233d5a7259d8482e81ad5ddbf38044",
+        "principal_id": "openline:principal:71aba695ac71e1fba2d87a345fd7333e9c32c5f6d3f54519ddcf16f0f71ba15b",
+        "receiver_challenge": "challenge_1d1df1ff6eef59973cd0b364fb010c56",
+        "schema": "openline.wallet.holder_presentation.v1",
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "b6b89260d10bdad2bf5eef3ebc2caece4f43dc56163205358bfc3c5e3c6bf77a",
+          "value": "c62d4b19db38fb4d22b68e060339b15aa23ae1d8c1627160199dd570614c131683b2d93169cd1686950bdadb1c730681fd26814918bfdede8fb03ea868c35f0f"
+        },
+        "subject_id": "worker-b",
+        "subject_public_key": "b6b89260d10bdad2bf5eef3ebc2caece4f43dc56163205358bfc3c5e3c6bf77a"
+      },
+      "previous": "7d6dbbf86e2fd1805097a019197ddb2e9b667ce26066081606b79bdb49c2b97f",
+      "subject": "worker-b"
+    },
+    {
+      "evidence": {
+        "acceptance": {
+          "commands": [
+            {
+              "argv": [
+                "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+                "approved_check.py"
+              ],
+              "duration_seconds": "0.009174",
+              "exit_code": 0,
+              "kind": "approved_requirement",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stderr_tail": "",
+              "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_tail": "",
+              "timed_out": false
+            }
+          ],
+          "rule": "approved_requirement",
+          "status": "PASS"
+        },
+        "approved": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+        "candidate": "db722a2ad1c4059b05e498749d44c2b5f9120c35",
+        "handoff": "964a4f8684bc3d0ec03259a2f1851695b7e5106cda2ee9f3a4ec1134b36f7937",
+        "handoff_candidate": "653a8067b3d45dde39957f9ad18d90822367cdef",
+        "job": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+        "ordinary": {
+          "commands": [
+            {
+              "argv": [
+                "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+                "test_basic.py"
+              ],
+              "duration_seconds": "0.011119",
+              "exit_code": 0,
+              "kind": "ordinary",
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stderr_tail": "",
+              "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "stdout_tail": "",
+              "timed_out": false
+            }
+          ],
+          "rule": "ordinary",
+          "status": "PASS"
+        },
+        "proposal_count": 0,
+        "protected": {
+          "rule": "protected_files",
+          "status": "PASS",
+          "touched": []
+        }
+      },
+      "job": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+      "kind": "evaluation",
+      "previous": "26cfae5abfbcc4a828006ca73842f87287266fab75d6bdf5dfb756219d1db04c"
+    }
+  ],
+  "external_effect_executed": false,
+  "final": {
+    "acceptance_status": "PASS",
+    "approved": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+    "candidate": "db722a2ad1c4059b05e498749d44c2b5f9120c35",
+    "evaluation": "88a0eac5eafcda1999a7939d407766bfe8b510ef4c47e52295da791a006a7eca",
+    "handoff": "964a4f8684bc3d0ec03259a2f1851695b7e5106cda2ee9f3a4ec1134b36f7937",
+    "handoff_candidate": "653a8067b3d45dde39957f9ad18d90822367cdef",
+    "handoff_note": "Independent stage check passed numeric behavior; approved no-mutation requirement remains unresolved.",
+    "handoff_unresolved": [
+      "caller input must remain order-equivalent"
+    ],
+    "handoff_worker": "worker-a",
+    "ordinary_status": "PASS",
+    "proposals": [],
+    "protected_status": "PASS",
+    "status": "ELIGIBLE",
+    "submitted_worker": "worker-b"
+  },
+  "final_candidate": "db722a2ad1c4059b05e498749d44c2b5f9120c35",
+  "full_chat_or_model_memory_transferred": false,
+  "handoff_commit": "653a8067b3d45dde39957f9ad18d90822367cdef",
+  "handoff_projection": {
+    "agreement_digest": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+    "candidate_commit": "653a8067b3d45dde39957f9ad18d90822367cdef",
+    "job": "15f68e45ede5a541e529006735484acc634d493070bdf76fc7a9ce687e2771d2",
+    "previous_provider_chat_transferred": false,
+    "previous_provider_credentials_transferred": false,
+    "requirement": "Correct numeric result and preserve caller-provided list order",
+    "schema": "approved-job-live.handoff.v1",
+    "task": "Fix total(items) so it returns the correct sum without mutating caller input",
+    "unresolved": [
+      "caller input must remain order-equivalent"
+    ],
+    "verified_stage": {
+      "acceptance": "FAIL",
+      "ordinary": "PASS"
+    }
+  },
+  "handoff_stage": {
+    "acceptance": {
+      "returncode": 1,
+      "status": "FAIL",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/approved-job-live-b6k9xj74/maintenance/approved_check.py\", line 5, in <module>\n    assert items == before, 'caller input mutated'\n           ^^^^^^^^^^^^^^^\nAssertionError: caller input mutated\n",
+      "stdout": ""
+    },
+    "ordinary": {
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    }
+  },
+  "provider_a_credentials_transferred_to_provider_b": false,
+  "provider_a_home_removed_before_worker_b": true,
+  "provider_a_invocations_after_handoff": 0,
+  "provider_filesystem_home_transferred_to_provider_b": false,
+  "provider_invocations": [
+    {
+      "command": "claude -p [bounded Worker A prompt]",
+      "credential_env_names": [
+        "ANTHROPIC_API_KEY"
+      ],
+      "filesystem_sandbox": "not-applicable",
+      "forbidden_env_forwarded": [],
+      "mode": "real",
+      "other_provider_credentials_forwarded": false,
+      "other_provider_home_visible_as_home": false,
+      "phase": "before-handoff",
+      "provider": "claude",
+      "provider_home_isolated": true,
+      "returncode": 0,
+      "tool_network_access": false,
+      "version": "2.1.260 (Claude Code)"
+    },
+    {
+      "command": "codex exec [verified replacement handoff]",
+      "credential_env_names": [
+        "OPENAI_API_KEY"
+      ],
+      "filesystem_sandbox": "workspace-write",
+      "forbidden_env_forwarded": [],
+      "mode": "real",
+      "other_provider_credentials_forwarded": false,
+      "other_provider_home_visible_as_home": false,
+      "phase": "after-handoff",
+      "provider": "codex",
+      "provider_home_isolated": true,
+      "returncode": 0,
+      "tool_network_access": true,
+      "version": "codex-cli 0.153.0"
+    }
+  ],
+  "receiver_boundary": "RECEIVER_GATE",
+  "replacement_pre_submit": {
+    "acceptance": {
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    },
+    "ordinary": {
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    }
+  },
+  "worker_a_changed_paths": [
+    "calculator.py"
+  ],
+  "worker_b_changed_paths": [
+    "calculator.py"
+  ]
+}
