@@ -27,6 +27,7 @@ mcp = ["mcp>=2,<3"]
 openline-wallet = "openline_wallet.cli:main"
 openline-wallet-gate = "openline_wallet.gate_http:main"
 openline-wallet-mcp = "openline_wallet.mcp_bridge:main"
+openline-wallet-egress = "openline_wallet.mcp_egress:main"
 openline-wallet-platform-exit = "openline_wallet.platform_exit_live:main"
 
 [tool.setuptools]

@@ -1,0 +1,49 @@
+name: EGRESS-GATE-001
+on:
+  push:
+    branches: [main, "feat/**", "fix/**"]
+    paths:
+      - "src/openline_wallet/mcp_egress.py"
+      - "tests/test_mcp_egress.py"
+      - "proofs/egress-gate-001/**"
+      - "EGRESS_GATE_001.md"
+      - "pyproject.toml"
+      - ".github/workflows/egress-gate-001.yml"
+  pull_request:
+    paths:
+      - "src/openline_wallet/mcp_egress.py"
+      - "tests/test_mcp_egress.py"
+      - "proofs/egress-gate-001/**"
+      - "EGRESS_GATE_001.md"
+      - "pyproject.toml"
+      - ".github/workflows/egress-gate-001.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  proof:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Wallet
+        run: python -m pip install -e .
+      - name: Unit tests for MCP Receiver Gate
+        run: python -m unittest discover -s tests -p 'test_mcp_egress.py' -v
+      - name: Reproduce EGRESS-GATE-001
+        run: python proofs/egress-gate-001/run.py --output egress-gate-artifacts
+      - name: Verify reproduced evidence
+        run: python proofs/egress-gate-001/run.py --verify egress-gate-artifacts
+      - name: Preserve diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: egress-gate-001-${{ matrix.python-version }}
+          path: egress-gate-artifacts/
+          if-no-files-found: warn
