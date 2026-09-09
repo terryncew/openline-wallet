@@ -211,7 +211,9 @@ def sandbox_preflight(output: Path) -> None:
         # the shell setting. Exercise that namespace path as well as the shell.
         for network in (True, False):
             label = "shell" if network else "restricted-helper-policy"
-            command = ["codex", "sandbox", "linux", *codex_sandbox_config(network),
+            # Codex 0.153.0 selects the sandbox backend from the host OS.
+            # A literal "linux" here is treated as the command to execute.
+            command = ["codex", "sandbox", *codex_sandbox_config(network),
                        "--", sys.executable, "-c", probe]
             try:
                 result = command_result(command, repo, env, 45)
