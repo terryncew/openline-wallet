@@ -83,7 +83,7 @@ jobs:
 
   real-hosts:
     if: github.event_name == 'workflow_dispatch' && inputs.run_real_hosts == true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -136,6 +136,9 @@ jobs:
           mkdir -p "$RUNNER_TEMP/codex-home"
           claude --version
           codex --version
+
+      - name: Check both Codex sandbox paths before provider calls
+        run: python proofs/approved-job-live-001/run.py --sandbox-preflight approved-job-sandbox-artifacts
 
       - name: Authenticate Codex
         shell: bash
@@ -192,6 +195,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: approved-job-live-001-real-hosts
-          path: approved-job-live-real-artifacts/
+          path: |
+            approved-job-live-real-artifacts/
+            approved-job-sandbox-artifacts/
           if-no-files-found: warn
           retention-days: 30

@@ -160,9 +160,73 @@ def changed_paths(module, repo: Path) -> list[str]:
 
 def require_only_calculator(module, repo: Path) -> list[str]:
     paths = changed_paths(module, repo)
+    if not paths:
+        raise RuntimeError("WORKER_MADE_NO_CHANGES: see provider log for blocked tools or incomplete work")
     if paths != ["calculator.py"]:
         raise RuntimeError("WORKER_CHANGED_UNAPPROVED_PATHS:" + ",".join(paths))
     return paths
+
+
+def codex_sandbox_config(network: bool = True) -> list[str]:
+    return [
+        "--config", "sandbox_mode=\"workspace-write\"",
+        "--config", f"sandbox_workspace_write.network_access={str(network).lower()}",
+        "--config", "sandbox_workspace_write.exclude_tmpdir_env_var=true",
+        "--config", "sandbox_workspace_write.exclude_slash_tmp=true",
+    ]
+
+
+def sandbox_preflight(output: Path) -> None:
+    """Exercise namespace setup and write boundaries without a model or credentials."""
+    output.mkdir(parents=True, exist_ok=False)
+    results = []
+    with tempfile.TemporaryDirectory(prefix="approved-job-sandbox-") as root:
+        root = Path(root)
+        repo = root / "workspace"
+        repo.mkdir()
+        (repo / ".git").mkdir()
+        outside = root / "outside.txt"
+        outside.write_text("unchanged")
+        env, _ = provider_env("codex", root / "home")
+        for name in ("OPENAI_API_KEY", "CODEX_HOME"):
+            env.pop(name, None)
+        env["CODEX_HOME"] = str(root / "codex-home")
+        Path(env["CODEX_HOME"]).mkdir()
+        probe = (
+            "from pathlib import Path\n"
+            "import errno\n"
+            "p=Path('allowed.txt'); p.write_text('ok'); assert p.read_text() == 'ok'\n"
+            "for path in [Path('.git/forbidden'), Path(" + repr(str(outside)) + ")]:\n"
+            "    try: path.write_text('forbidden')\n"
+            "    except OSError as e:\n"
+            "        if e.errno not in (errno.EACCES, errno.EPERM, errno.EROFS): raise\n"
+            "    else: raise RuntimeError('SANDBOX_ALLOWED_FORBIDDEN_WRITE:' + str(path))\n"
+            "print('SANDBOX_PROBE_PASS')\n"
+        )
+        # The file helper always uses restricted networking, independently of
+        # the shell setting. Exercise that namespace path as well as the shell.
+        for network in (True, False):
+            label = "shell" if network else "restricted-helper-policy"
+            command = ["codex", "sandbox", "linux", *codex_sandbox_config(network),
+                       "--", sys.executable, "-c", probe]
+            try:
+                result = command_result(command, repo, env, 45)
+            except (OSError, subprocess.TimeoutExpired) as exc:
+                (output / f"sandbox-{label}.log").write_text(type(exc).__name__ + "\n")
+                raise RuntimeError(f"CODEX_SANDBOX_PREFLIGHT_FAILED:{label}") from exc
+            log = redacted((result.stdout or "") + "\n" + (result.stderr or ""))
+            (output / f"sandbox-{label}.log").write_text(log)
+            if result.returncode != 0 or "SANDBOX_PROBE_PASS" not in result.stdout:
+                raise RuntimeError(f"CODEX_SANDBOX_PREFLIGHT_FAILED:{label}: see sandbox log")
+            if outside.read_text() != "unchanged" or (repo / ".git/forbidden").exists():
+                raise RuntimeError("CODEX_SANDBOX_PREFLIGHT_BOUNDARY_FAILURE")
+            results.append({"path": label, "returncode": result.returncode, "verified": True})
+    write_json(output / "sandbox-preflight.json", {
+        "schema": "approved-job-live.sandbox-preflight.v1",
+        "provider_called": False,
+        "probes": results,
+        "scope": "CLI shell with network enabled and restricted helper-equivalent policy; not an agent tool invocation",
+    })
 
 
 class LiveFixture:
@@ -363,12 +427,7 @@ def invoke_worker(mode: str, phase: str, repo: Path, projection: dict | None) ->
         command = [
             "codex", "exec", "--ephemeral", "--skip-git-repo-check",
             "--sandbox", "workspace-write",
-            # GitHub-hosted runners reject the isolated network namespace Codex
-            # normally creates for workspace-write. Keep the filesystem sandbox
-            # intact while retaining the host network namespace; provider_env()
-            # still forwards only the OpenAI credential and no GitHub/SSH/Claude
-            # credentials.
-            "--config", "sandbox_workspace_write.network_access=true",
+            *codex_sandbox_config(),
             prompt,
         ]
         result = command_result(command, repo, env, 300)
@@ -583,7 +642,7 @@ def reproduce(output: Path, mode: str) -> None:
             "preflight; this experiment itself stops at Airlock ELIGIBLE and executes no downstream effect. "
             "Real mode uses Claude Code before the handoff and Codex after it; provider A is intentionally absent "
             "from the continuation path. On GitHub-hosted Linux runners, Codex retains its workspace-write filesystem "
-            "sandbox but tool network access is enabled because the runner rejects Codex's isolated network namespace; "
+            "sandbox with tool network access enabled and temporary directories excluded from writable roots; "
             "the subprocess still receives no GitHub, SSH, or Claude credentials. This does not establish an "
             "actual provider outage, full conversation/memory portability, production deployment safety, "
             "or duplicate-effect closure for external systems."
@@ -658,10 +717,13 @@ def main() -> None:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("--output", type=Path)
     group.add_argument("--verify", type=Path)
+    group.add_argument("--sandbox-preflight", type=Path)
     parser.add_argument("--mode", choices=("scripted", "real"), default="scripted")
     parser.add_argument("--require-real", action="store_true")
     args = parser.parse_args()
-    if args.output:
+    if args.sandbox_preflight:
+        sandbox_preflight(args.sandbox_preflight)
+    elif args.output:
         reproduce(args.output, args.mode)
     else:
         verify(args.verify, require_real=args.require_real)
