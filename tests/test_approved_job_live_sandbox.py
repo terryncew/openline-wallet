@@ -85,6 +85,10 @@ class LiveSandboxTests(unittest.TestCase):
         self.assertIn('sandbox_workspace_write.network_access=true', seen[0])
         self.assertIn('sandbox_workspace_write.network_access=false', seen[1])
         for command in seen:
+            # Codex 0.153.0 infers the host sandbox. Supplying an old `linux`
+            # subcommand makes the CLI try to exec a program literally named linux.
+            self.assertEqual(command[:2], ['codex', 'sandbox'])
+            self.assertNotEqual(command[2], 'linux')
             self.assertIn('sandbox_mode="workspace-write"', command)
             self.assertNotIn('danger-full-access', command)
 
