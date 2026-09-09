@@ -125,6 +125,10 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install -e . -e .deps/airlock
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          test "$(command -v bwrap)" = "/usr/bin/bwrap"
+          bwrap --version
           npm install -g @anthropic-ai/claude-code@2.1.260 @openai/codex@0.153.0
           echo "CODEX_HOME=$RUNNER_TEMP/codex-home" >> "$GITHUB_ENV"
           mkdir -p "$RUNNER_TEMP/codex-home"
