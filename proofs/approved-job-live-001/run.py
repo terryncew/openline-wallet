@@ -139,8 +139,20 @@ def run_check(repo: Path, filename: str) -> dict:
 
 
 def changed_paths(module, repo: Path) -> list[str]:
+    # APPROVED-JOB-001's git helper strips outer whitespace. That means the
+    # leading status column in porcelain output can disappear for an unstaged
+    # change (" M file" becomes "M file"). Parse both forms instead of slicing
+    # at a fixed offset.
     rows = git(module, repo, "status", "--porcelain").splitlines()
-    return sorted(row[3:] for row in rows if len(row) >= 4)
+    paths = []
+    for row in rows:
+        if len(row) >= 4 and row[2] == " ":
+            paths.append(row[3:])
+            continue
+        parts = row.split(maxsplit=1)
+        if len(parts) == 2:
+            paths.append(parts[1])
+    return sorted(paths)
 
 
 def require_only_calculator(module, repo: Path) -> list[str]:
