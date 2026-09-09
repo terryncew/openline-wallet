@@ -80,3 +80,11 @@ Workspace-write isolation remains enabled. Temporary directories are excluded fr
 This is an environment repair awaiting a real-host run, not evidence that live continuation has passed. Dispatch `APPROVED-JOB-LIVE-001` on the patched branch with `run_real_hosts=true`; require both the real handoff and real-host verdict steps to pass. Ordinary push/PR runs skip real hosts.
 
 Source basis: [Codex 0.153.0 filesystem helper](https://github.com/openai/codex/blob/rust-v0.153.0/codex-rs/exec-server/src/fs_sandbox.rs) forces restricted networking. [Ubuntu documents namespace restrictions introduced in 23.10/24.04](https://discourse.ubuntu.com/t/understanding-apparmor-user-namespace-restriction/58007). Those restrictions are a plausible host-level cause; the saved log does not contain an AppArmor audit record. The runner change must therefore be validated by the new preflight and live run.
+
+### Run 20: preflight helper-home correction
+
+Run `34409803206` (`real-hosts` job `102661336671`) at main `80d50d5e9482791d112070978825eeb5170b1db1` stopped in the sandbox preflight, before authentication or any provider call. Artifact `10126799910` preserves the diagnostic: Codex refused helper aliases under `/tmp`, then bubblewrap could not find `codex-linux-sandbox`. This was a preflight setup defect, not a failed continuation attempt.
+
+The isolated preflight directory now lives beneath the invoking user's home, outside the OS temporary directory. It still uses a fresh, credential-free Codex home and removes it afterward. No sandbox setting, acceptance rule, or provider-worker permission changes in this correction.
+
+Validation used the real pinned `codex-cli 0.153.0` binary: the former `/tmp` location reproduces the refusal and missing helper; the corrected home creates a resolvable helper alias. Both added regression tests fail against the run-20 source and pass against this correction. All seven focused tests pass. The actual sandbox execution probe still timed out in the local managed environment, so this establishes helper startup only, not successful sandbox execution or a live continuation. Require a new GitHub real-host run and terminal verdict before claiming completion.

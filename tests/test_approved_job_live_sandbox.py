@@ -1,5 +1,7 @@
 """Regressions for the live host's empty-patch and sandbox setup failures."""
 import importlib.util
+import os
+import shutil
 from pathlib import Path
 import subprocess
 import tempfile
@@ -13,6 +15,36 @@ SPEC.loader.exec_module(live)
 
 
 class LiveSandboxTests(unittest.TestCase):
+    def test_preflight_home_is_outside_os_temp_and_is_cleaned_up(self):
+        homes = []
+        def invoke(command, cwd, env, timeout):
+            home = Path(env['CODEX_HOME'])
+            self.assertFalse(home.is_relative_to(Path(tempfile.gettempdir())))
+            self.assertNotEqual(home, Path(os.environ.get('CODEX_HOME', '/unused')))
+            self.assertTrue(home.is_dir())
+            homes.append(home)
+            return subprocess.CompletedProcess(command, 0, 'SANDBOX_PROBE_PASS', '')
+        with tempfile.TemporaryDirectory() as root, patch.object(live, 'command_result', side_effect=invoke):
+            live.sandbox_preflight(Path(root) / 'out')
+        self.assertTrue(homes)
+        self.assertTrue(all(not home.exists() for home in homes))
+
+    @unittest.skipUnless(shutil.which('codex'), 'pinned Codex CLI not installed')
+    def test_real_cli_creates_helper_in_preflight_home(self):
+        # Exercise release-binary startup, not a mocked claim about its path.
+        def invoke(command, cwd, env, timeout):
+            result = subprocess.run([command[0], '--version'], cwd=cwd, env=env,
+                                    text=True, capture_output=True, timeout=15)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn('0.153.0', result.stdout)
+            self.assertNotIn('Refusing to create helper', result.stderr)
+            aliases = list(Path(env['CODEX_HOME']).glob('tmp/arg0/*/codex-linux-sandbox'))
+            self.assertTrue(aliases, result.stderr)
+            self.assertTrue(all(alias.is_file() for alias in aliases))
+            return subprocess.CompletedProcess(command, 0, 'SANDBOX_PROBE_PASS', '')
+        with tempfile.TemporaryDirectory() as root, patch.object(live, 'command_result', side_effect=invoke):
+            live.sandbox_preflight(Path(root) / 'out')
+
     def test_empty_change_set_is_not_reported_as_an_unapproved_path(self):
         with patch.object(live, 'changed_paths', return_value=[]):
             with self.assertRaisesRegex(RuntimeError, 'WORKER_MADE_NO_CHANGES'):

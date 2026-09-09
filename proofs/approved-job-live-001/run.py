@@ -180,7 +180,11 @@ def sandbox_preflight(output: Path) -> None:
     """Exercise namespace setup and write boundaries without a model or credentials."""
     output.mkdir(parents=True, exist_ok=False)
     results = []
-    with tempfile.TemporaryDirectory(prefix="approved-job-sandbox-") as root:
+    # Codex 0.153.0 refuses helper aliases below the OS temporary directory.
+    # Keep its isolated HOME outside /tmp; never borrow the authenticated home.
+    with tempfile.TemporaryDirectory(
+        prefix=".approved-job-sandbox-", dir=Path.home()
+    ) as root:
         root = Path(root)
         repo = root / "workspace"
         repo.mkdir()
