@@ -126,8 +126,11 @@ def git(module, repo: Path, *args: str) -> str:
 
 
 def run_check(repo: Path, filename: str) -> dict:
+    # These are evaluator reads, not candidate writes. Disable bytecode output so
+    # checking the candidate cannot dirty the fixture with __pycache__/ and then
+    # masquerade as a worker-authored path change.
     result = subprocess.run(
-        [sys.executable, filename], cwd=repo, text=True, capture_output=True,
+        [sys.executable, "-B", filename], cwd=repo, text=True, capture_output=True,
         check=False, timeout=30,
     )
     return {
