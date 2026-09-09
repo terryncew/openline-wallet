@@ -362,7 +362,14 @@ def invoke_worker(mode: str, phase: str, repo: Path, projection: dict | None) ->
         )
         command = [
             "codex", "exec", "--ephemeral", "--skip-git-repo-check",
-            "--sandbox", "workspace-write", prompt,
+            "--sandbox", "workspace-write",
+            # GitHub-hosted runners reject the isolated network namespace Codex
+            # normally creates for workspace-write. Keep the filesystem sandbox
+            # intact while retaining the host network namespace; provider_env()
+            # still forwards only the OpenAI credential and no GitHub/SSH/Claude
+            # credentials.
+            "--config", "sandbox_workspace_write.network_access=true",
+            prompt,
         ]
         result = command_result(command, repo, env, 300)
         version = version_line("codex", env)
@@ -388,6 +395,8 @@ def invoke_worker(mode: str, phase: str, repo: Path, projection: dict | None) ->
             repo.parent / "provider-homes" / ("codex" if provider == "claude" else "claude")
         ).resolve(),
         "command": display_command,
+        "filesystem_sandbox": ("workspace-write" if mode == "real" and provider == "codex" else "not-applicable"),
+        "tool_network_access": bool(mode == "real" and provider == "codex"),
         "log": log[-20000:],
     }
 
@@ -573,7 +582,9 @@ def reproduce(output: Path, mode: str) -> None:
             "replacement continuation. The current EGRESS-GATE-001 Receiver Gate is verified separately as a "
             "preflight; this experiment itself stops at Airlock ELIGIBLE and executes no downstream effect. "
             "Real mode uses Claude Code before the handoff and Codex after it; provider A is intentionally absent "
-            "from the continuation path. This does not establish an "
+            "from the continuation path. On GitHub-hosted Linux runners, Codex retains its workspace-write filesystem "
+            "sandbox but tool network access is enabled because the runner rejects Codex's isolated network namespace; "
+            "the subprocess still receives no GitHub, SSH, or Claude credentials. This does not establish an "
             "actual provider outage, full conversation/memory portability, production deployment safety, "
             "or duplicate-effect closure for external systems."
         ),
@@ -625,6 +636,12 @@ def verify(output: Path, require_real: bool = False) -> None:
         assert item["other_provider_credentials_forwarded"] is False
         assert item["provider_home_isolated"] is True
         assert item["other_provider_home_visible_as_home"] is False
+    codex_invocation = evidence["provider_invocations"][1]
+    if report["mode"] == "real":
+        assert codex_invocation["filesystem_sandbox"] == "workspace-write"
+        assert codex_invocation["tool_network_access"] is True
+    else:
+        assert codex_invocation["tool_network_access"] is False
     assert restart["rejected"] is True
 
     previous = None
