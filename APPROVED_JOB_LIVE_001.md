@@ -68,3 +68,15 @@ python proofs/approved-job-live-001/run.py --verify approved-job-live-artifacts
 ```
 
 The GitHub workflow first reproduces `APPROVED-JOB-001` and the current `EGRESS-GATE-001` Receiver Gate proof, then runs this controlled continuation proof on Python 3.11, 3.12, and 3.13. Its manual `run_real_hosts=true` arm repeats the Receiver Gate preflight, installs the same pinned Claude Code and Codex CLI versions already used by `PLATFORM-EXIT-LIVE-001`, requires repository provider secrets, runs real mode, and preserves only the non-secret evidence directory.
+
+## Live-host environment repair (run 16)
+
+Run 16 at Wallet `31bd64bf030b9c079adf0bf2f0bcacd6bf55a4ac` passed the controlled matrix but failed the real continuation. The preserved `provider-b.log` reports bubblewrap namespace setup failures, including `loopback: Failed RTM_NEWADDR: Operation not permitted`. Codex returned zero while reporting it could not read or edit files. The resulting empty patch was misleadingly reported as an unapproved path.
+
+The live job now targets `ubuntu-22.04` instead of the moving `ubuntu-latest` image and performs a credential-free Codex sandbox preflight before either provider is called. It checks an allowed workspace write and denied writes outside the workspace and into `.git`, under both network-enabled and restricted-network policies. The second probe exercises the namespace setup required by Codex's file helper, which imposes restricted networking independently of the shell configuration. It does not invoke the actual agent file tool.
+
+Workspace-write isolation remains enabled. Temporary directories are excluded from the writable roots. The preflight has no unrestricted fallback, preserves failure logs, and cannot produce a passing report unless both probes complete. Empty worker patches remain failures with a distinct diagnostic. Acceptance checks and handoff ancestry requirements are unchanged.
+
+This is an environment repair awaiting a real-host run, not evidence that live continuation has passed. Dispatch `APPROVED-JOB-LIVE-001` on the patched branch with `run_real_hosts=true`; require both the real handoff and real-host verdict steps to pass. Ordinary push/PR runs skip real hosts.
+
+Source basis: [Codex 0.153.0 filesystem helper](https://github.com/openai/codex/blob/rust-v0.153.0/codex-rs/exec-server/src/fs_sandbox.rs) forces restricted networking. [Ubuntu documents namespace restrictions introduced in 23.10/24.04](https://discourse.ubuntu.com/t/understanding-apparmor-user-namespace-restriction/58007). Those restrictions are a plausible host-level cause; the saved log does not contain an AppArmor audit record. The runner change must therefore be validated by the new preflight and live run.
