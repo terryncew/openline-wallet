@@ -1,0 +1,48 @@
+{
+  "claim": "A real Claude Code worker produced a verified partial checkpoint; Claude was absent from the continuation path after that checkpoint; a real Codex worker continued from the exact checkpoint under the same owner-approved agreement; and Airlock accepted the final descendant candidate without transferring Claude chat or provider credentials.",
+  "claim_boundary": "One bounded fixture job, one exact git checkpoint, one owner-approved agreement, one replacement continuation. Provider-A absence was induced, not an observed outage. No production effect, payment, full conversation/memory portability, or external-effect closure is claimed.",
+  "experiment": "APPROVED-JOB-LIVE-001",
+  "frozen_from": {
+    "artifact_created_at": "2026-09-09T22:43:10Z",
+    "artifact_id": 10128172859,
+    "artifact_name": "approved-job-live-001-real-hosts",
+    "artifact_sha256": "96a55c659059ef4bdfca55b231c2e5664eba774c86dfb22d0b59a27c4af56ec2",
+    "artifact_size_bytes": 13185,
+    "head_sha": "7d4e8fe501528e3e7758921d28b58e2cecd3f18c",
+    "run_completed_at": "2026-09-09T22:43:14Z",
+    "run_started_at": "2026-09-09T22:41:55Z",
+    "workflow": "APPROVED-JOB-LIVE-001",
+    "workflow_conclusion": "success",
+    "workflow_event": "workflow_dispatch",
+    "workflow_run_id": 34413490635,
+    "workflow_run_number": 28
+  },
+  "observed": {
+    "actual_provider_outage_observed": false,
+    "agreement_digest_stable": true,
+    "external_effect_executed": false,
+    "final_acceptance_status": "PASS",
+    "final_airlock_status": "ELIGIBLE",
+    "final_ordinary_status": "PASS",
+    "full_chat_or_model_memory_transferred": false,
+    "live_models": true,
+    "provider_a_credentials_transferred_to_provider_b": false,
+    "provider_a_home_removed_before_worker_b": true,
+    "provider_a_invocations_after_handoff": 0,
+    "provider_filesystem_home_transferred_to_provider_b": false,
+    "restart_from_base_negative_control_rejected": true,
+    "worker_a_changed_only_calculator": true,
+    "worker_b_changed_only_calculator": true
+  },
+  "runtime": {
+    "airlock_commit": "fb02207f3ac561368beeabf9ff168076bf828824",
+    "claude_code": "2.1.260",
+    "codex_cli": "0.153.0",
+    "python": "3.12.14",
+    "receiver_boundary_preflight": "EGRESS-GATE-001"
+  },
+  "schema": "approved-job-live-001.freeze.v1",
+  "source_sha256": "53af179ea8fd74f9009f026b0dbd999bff3d5916f5a84bc768b316d93fc3c83e",
+  "status": "PASS",
+  "verdict": "APPROVED_JOB_LIVE_CONTINUATION_ENFORCED"
+}

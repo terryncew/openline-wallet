@@ -1,0 +1,17 @@
+{
+  "probes": [
+    {
+      "path": "shell",
+      "returncode": 0,
+      "verified": true
+    },
+    {
+      "path": "restricted-helper-policy",
+      "returncode": 0,
+      "verified": true
+    }
+  ],
+  "provider_called": false,
+  "schema": "approved-job-live.sandbox-preflight.v1",
+  "scope": "CLI shell with network enabled and restricted helper-equivalent policy; not an agent tool invocation"
+}
