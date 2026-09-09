@@ -91,6 +91,8 @@ jobs:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/checkout@v4
         with:
@@ -148,6 +150,15 @@ jobs:
           set -euo pipefail
           python proofs/egress-gate-001/run.py --output egress-gate-real-preflight-artifacts
           python proofs/egress-gate-001/run.py --verify egress-gate-real-preflight-artifacts
+
+      - name: Verify checkout credentials are absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git config --local --get-regexp '^http\..*\.extraheader$' >/dev/null 2>&1; then
+            echo "::error::checkout credential persisted into the real-host workspace"
+            exit 4
+          fi
 
       - name: Run real provider handoff
         shell: bash
