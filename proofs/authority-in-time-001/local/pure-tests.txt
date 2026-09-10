@@ -1,0 +1,17 @@
+test_missing_effect_evidence_is_not_closure (test_authority_in_time.SimulatedActionTests.test_missing_effect_evidence_is_not_closure) ... ok
+test_negative_control_bypass_can_show_late_authentic_revocation (test_authority_in_time.SimulatedActionTests.test_negative_control_bypass_can_show_late_authentic_revocation) ... ok
+test_protected_action_stopped_before_cutoff_has_no_effect (test_authority_in_time.SimulatedActionTests.test_protected_action_stopped_before_cutoff_has_no_effect) ... ok
+test_refused_action_never_arms (test_authority_in_time.SimulatedActionTests.test_refused_action_never_arms) ... ok
+test_stop_at_exact_cutoff_is_too_late (test_authority_in_time.SimulatedActionTests.test_stop_at_exact_cutoff_is_too_late) ... ok
+test_bound_violation_is_detected_even_if_total_path_still_beats_cutoff (test_authority_in_time.TimingBudgetTests.test_bound_violation_is_detected_even_if_total_path_still_beats_cutoff) ... ok
+test_exact_equality_refuses (test_authority_in_time.TimingBudgetTests.test_exact_equality_refuses) ... ok
+test_exceeded_budget_refuses (test_authority_in_time.TimingBudgetTests.test_exceeded_budget_refuses) ... ok
+test_missing_bound_refuses (test_authority_in_time.TimingBudgetTests.test_missing_bound_refuses) ... ok
+test_queueing_or_jitter_cannot_be_counted_as_extra_component (test_authority_in_time.TimingBudgetTests.test_queueing_or_jitter_cannot_be_counted_as_extra_component) ... ok
+test_supported_budget_with_positive_margin_is_admitted (test_authority_in_time.TimingBudgetTests.test_supported_budget_with_positive_margin_is_admitted) ... ok
+test_unsupported_bound_refuses (test_authority_in_time.TimingBudgetTests.test_unsupported_bound_refuses) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.000s
+
+OK

@@ -1,0 +1,38 @@
+name: AUTHORITY-IN-TIME-001
+
+on:
+  push:
+    branches: [main, "proof/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  temporal-admission:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: python -m pip install -e .
+      - name: Pure timing falsifiers
+        run: python -m unittest discover -s proofs/authority-in-time-001 -p 'test_*.py' -v
+      - name: Reproduce and verify AUTHORITY-IN-TIME-001
+        run: |
+          rm -rf authority-in-time-artifacts
+          python proofs/authority-in-time-001/reproduce.py --output authority-in-time-artifacts
+          python proofs/authority-in-time-001/verify.py authority-in-time-artifacts
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: authority-in-time-${{ matrix.python-version }}
+          path: authority-in-time-artifacts/
+          if-no-files-found: warn
