@@ -70,11 +70,21 @@ The experiment fails if an unsafe, equal, missing, or unsupported budget earns t
 
 The exact cutoff boundary is tested independently from budget equality. The former says when a stop is physically too late; the latter says when the receiver must refuse the protection promise before execution.
 
-## Local candidate status
+## Frozen result
 
-The pure timing suite passes locally on Python 3.13: 12 tests, 12 passed. It covers strict positive-margin admission, equality, exceeded budget, missing/unsupported bounds, uncertainty double-count defense, a component-bound violation, pre-cutoff prevention, exact-cutoff lateness, the fixture-only negative bypass, and the requirement for post-completion effect evidence before closure.
+Merged on main at `e503b7b909b1f6c876eb84c753e359bf9f97e105` by PR #25.
 
-The integration reproduction and verifier are included, but this runtime does not contain an installable checkout of `openline-wallet`, so the Wallet-bound reproduction cannot be honestly reported as executed here. The connected GitHub integration also returned HTTP 403 on branch creation, so no remote CI result exists yet. The proof receipt must remain **candidate / not frozen** until that reproduction and verifier pass on the repository checkout.
+Dedicated AUTHORITY-IN-TIME-001 workflow run: `34434054862`.
+
+Repository-wide Wallet CI run: `34434054867`.
+
+Python 3.11, 3.12, and 3.13 all passed the pure timing falsifiers, Wallet-bound reproduction, verifier, existing Wallet test suite, frozen predecessor verification, `PROVIDER-EFFECT-001`, `PLATFORM-EXIT-001`, and wheel build.
+
+The five discriminating cases passed with aggregate verdict:
+
+`CONTROLLED_TEMPORAL_ADMISSION_ENFORCED`
+
+AUTHORITY-IN-TIME-001 is therefore **frozen** at the merge SHA above. Reopen it only for a concrete external falsifier or a demonstrated defect in the frozen evidence.
 
 ## Run
 
@@ -88,14 +98,14 @@ python proofs/authority-in-time-001/reproduce.py --output authority-in-time-arti
 python proofs/authority-in-time-001/verify.py authority-in-time-artifacts
 ```
 
-The dedicated workflow runs those steps on Python 3.11, 3.12, and 3.13 and uploads the generated evidence even if a later step fails. Existing repository CI remains untouched and will still run on the pull request.
+The dedicated workflow runs those steps on Python 3.11, 3.12, and 3.13 and uploads the generated evidence even if a later step fails. Existing repository CI remains untouched and also passed on the frozen merge.
 
 ## Earned claim boundary
 
-Only after the integration reproduction, verifier, and remote CI pass is this claim earned:
+The frozen experiment earns exactly this claim:
 
 > In this controlled fixture, the receiver admitted revocation-protected work only within a supported timing budget and distinguished prevention from late revocation.
 
-That would justify a draft temporal profile and an OpenLine Report. It would not establish worst-case transport bounds, provider-side cancellation, multi-machine clock integrity, queue fencing, multi-receiver temporal closure, or a universal revocation guarantee.
+It does not establish worst-case transport bounds, provider-side cancellation, multi-machine clock integrity, queue fencing, multi-receiver temporal closure, or a universal revocation guarantee.
 
 Three facts remain separate and evidence-bearing: **revocation issued; revocation observed; outstanding effects closed.**
