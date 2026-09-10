@@ -392,7 +392,12 @@ def case_ambiguous_egress_no_auto_retry() -> dict[str, Any]:
     """
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
-        wallet = Wallet.create(root / "wallet", now=at(0))
+        # MCPConsequenceGate.execute() intentionally revalidates against the
+        # receiver's real current clock. Keep this case on that same clock so
+        # the probe cannot expire its own authority before reaching the
+        # acknowledgement-loss path.
+        current = datetime.now(timezone.utc)
+        wallet = Wallet.create(root / "wallet", now=current)
         subject_key = Ed25519PrivateKey.generate()
         subject_id = "worker"
         mandate_id = "mcp-worker"
@@ -401,14 +406,14 @@ def case_ambiguous_egress_no_auto_retry() -> dict[str, Any]:
             subject_id=subject_id,
             subject_public_key=public_key_hex(subject_key),
             scopes=[scope],
-            expires_at=at(3600),
-            now=at(1),
+            expires_at=current + timedelta(hours=1),
+            now=current,
             mandate_id=mandate_id,
         )
-        bundle = wallet.export_bundle(now=at(2))
+        bundle = wallet.export_bundle(now=current + timedelta(seconds=1))
         gate = EffectGate("stop-barrier-egress")
         gate.pin_principal(wallet.principal_id, wallet.root_public_key)
-        gate.admit_bundle(bundle, now=at(2))
+        gate.admit_bundle(bundle, now=current + timedelta(seconds=1))
 
         calls: list[int] = []
 
@@ -419,11 +424,12 @@ def case_ambiguous_egress_no_auto_retry() -> dict[str, Any]:
         runtime = MCPConsequenceGate(
             gate, mcp_contract(), root / "consequence-receipts", downstream
         )
+        challenge_time = current + timedelta(seconds=2)
         challenge = gate.issue_challenge(
             principal_id=wallet.principal_id,
             subject_id=subject_id,
             action=scope,
-            now=at(3),
+            now=challenge_time,
         )
         presentation = create_presentation(
             bundle=bundle,
@@ -432,7 +438,7 @@ def case_ambiguous_egress_no_auto_retry() -> dict[str, Any]:
             subject_key=subject_key,
             action=scope,
             receiver_challenge=challenge,
-            now=at(3),
+            now=challenge_time,
         )
         result = runtime.execute(
             headers=mcp_headers(),
@@ -472,17 +478,40 @@ def reproduce(output: Path) -> dict[str, Any]:
         shutil.rmtree(output)
     output.mkdir(parents=True)
 
-    cases = [
-        case_hold_then_reject(),
-        case_exact_ticket_replay(),
-        case_close_fences_late_work(),
-        case_ambiguous_egress_no_auto_retry(),
+    case_functions = [
+        ("hold_then_reject", case_hold_then_reject),
+        ("exact_ticket_replay", case_exact_ticket_replay),
+        ("close_fences_late_work", case_close_fences_late_work),
+        ("ambiguous_egress_no_auto_retry", case_ambiguous_egress_no_auto_retry),
     ]
-
+    cases: list[dict[str, Any]] = []
     case_hashes: dict[str, str] = {}
-    for case in cases:
+
+    # Persist each completed case immediately. If a later probe fails, CI's
+    # always-upload diagnostics step still has the surviving evidence plus an
+    # explicit failure record instead of an empty artifact directory.
+    for expected_case_id, case_function in case_functions:
+        try:
+            case = case_function()
+        except Exception as exc:
+            atomic_write_json(
+                output / "failure.json",
+                {
+                    "schema": "openline.wallet.stop_barrier_cold_001.failure.v1",
+                    "experiment_id": "STOP-BARRIER-COLD-001",
+                    "base_commit": BASE_COMMIT,
+                    "failed_case": expected_case_id,
+                    "error_type": type(exc).__name__,
+                    "error": str(exc),
+                },
+                mode=0o644,
+            )
+            raise
+        if case.get("case_id") != expected_case_id:
+            raise AssertionError(f"case id mismatch: {expected_case_id}")
         path = output / f"{case['case_id']}.json"
         atomic_write_json(path, case, mode=0o644)
+        cases.append(case)
         case_hashes[case["case_id"]] = record_hash(case)
 
     experiment_key = Ed25519PrivateKey.generate()
