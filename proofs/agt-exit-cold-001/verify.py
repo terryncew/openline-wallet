@@ -12,6 +12,7 @@ from typing import Any
 HERE = Path(__file__).resolve().parent
 RUN_PATH = HERE / "run.py"
 PREREG_PATH = HERE / "prereg.json"
+REPAIR_PATH = HERE / "harness-repair-001.json"
 EXPECTED_WALLET = "24c92b6588410a5e3537bdccb2f0cefda387b2a5"
 EXPECTED_AGT = "0533ceaf6c5b0975bfc71bff42f6ccd2d34c8adf"
 ALLOWED = {
@@ -63,6 +64,8 @@ def main(argv=None) -> int:
         raise AssertionError("preregistered AGT pin mismatch")
     if result["prereg_sha256"] != _sha(PREREG_PATH):
         raise AssertionError("prereg hash mismatch")
+    if result.get("harness_repair_sha256") != _sha(REPAIR_PATH):
+        raise AssertionError("harness repair hash mismatch")
     if result.get("verdict") not in ALLOWED:
         raise AssertionError("unknown verdict")
 
@@ -89,6 +92,11 @@ def main(argv=None) -> int:
 
     if not env["agt_pin_ok"] or not env["agt_selected_upstream_tests_passed"]:
         raise AssertionError("semantic verdict produced without valid AGT environment")
+    if not env.get("agt_full_upstream_receipt_suite_passed", False):
+        if not env.get("known_stale_exception_test_observed", False):
+            raise AssertionError("scoped preflight used without frozen known-stale signature")
+        if env.get("harness_repair_id") != "AGT-EXIT-COLD-001-R1":
+            raise AssertionError("known-stale bypass missing repair id")
 
     receipts = _load_json(artifact / "agt-receipts.json")
     trusted = result["agt"]["criterion_7a"]["independent_verifier"][

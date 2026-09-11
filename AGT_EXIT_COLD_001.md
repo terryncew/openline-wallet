@@ -55,6 +55,23 @@ counted as comparator evidence. The proof reruns the upstream tests for the exac
 standalone MCP-receipt package it exercises. Setup/import/test failure becomes
 `INCONCLUSIVE_AGT_ENVIRONMENT`, not an OpenLine win.
 
+## Harness repair R1
+
+The first branch execution is preserved as an environment-inconclusive receipt. On all
+observed matrix legs, the pinned AGT receipt package ran **63 passing tests and one
+failing test**: `TestSigning.test_signing_failure_raises`. The test still expects
+`RuntimeError`, while the pinned adapter now deliberately raises its typed
+`ReceiptSigningError` on receipt-signing failure. The failure is upstream
+test/implementation drift in an invalid-key exception-type assertion; it does not
+exercise any comparator arm.
+
+R1 does not modify AGT and does not erase that failure. Every run still executes and
+archives the full upstream receipt suite. Only when the failure matches that exact frozen
+signature does R1 run a second scoped preflight excluding **only**
+`test_signing_failure_raises`. If that scoped suite is not green, the experiment remains
+`INCONCLUSIVE_AGT_ENVIRONMENT`. The original preregistration remains unchanged; this
+repair is separately frozen in `harness-repair-001.json`.
+
 ## Frozen arms
 
 ### 1. Model-provider exit
