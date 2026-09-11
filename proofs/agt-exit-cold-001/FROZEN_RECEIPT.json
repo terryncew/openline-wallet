@@ -1,0 +1,75 @@
+{
+  "agt_pin": "0533ceaf6c5b0975bfc71bff42f6ccd2d34c8adf",
+  "base_wallet_main": "24c92b6588410a5e3537bdccb2f0cefda387b2a5",
+  "branch_head": "f3cfe9766492b0afc66f7a065c3850310a57fa09",
+  "conclusive_run": {
+    "conclusion": "success",
+    "matrix": {
+      "3.11": {
+        "artifact_digest": "sha256:b851142e70aba972c999d6cd2e1409fc007a1ad72bb9d06da15ffcdb73468cd6",
+        "artifact_id": 10181089042,
+        "result_sha256": "06c022bca2ae6f3068e1f6d6f9333e4260f06967984eb22a3027cf31861cb77a"
+      },
+      "3.12": {
+        "artifact_digest": "sha256:06292ed145a07b009ddddc565572e410ef4e5464aedf4f9d031464282fda0a54",
+        "artifact_id": 10181093255,
+        "result_sha256": "6c006811e98011328dbff643a64b7845887dba1a01696f9c1271cd2d7f7fbed9"
+      },
+      "3.13": {
+        "artifact_digest": "sha256:9f0f0a263d583307f3d689c9da17143a2aa93acb8b6d6992f74d0c726cff9093",
+        "artifact_id": 10181091540,
+        "result_sha256": "3e44553ca4ebbbdf352c3fe20cdaa81b4126b8ef9624189013ab7b0c973fd3e7"
+      }
+    },
+    "verdict": "AGT_MODEL_EXIT_OFFLINE_RECEIPT_PASS_CURRENT_STANDING_REQUIRES_LIVE_STATUS_SOURCE",
+    "workflow_run_id": 34551812166
+  },
+  "earned_claim": "On the pinned AGT ordinary paths tested here, AGT preserved the same governed job across a provider-labelled worker swap, produced independently verifiable historical receipts, and enforced live revocation safely while its status source existed. After that live status source was unavailable, the tested receiver could fail closed but did not have a portable authenticated current-standing artifact sufficient to distinguish the newer revoked state from an older valid state. The selected AGT paths also exposed no comparable consequence-horizon admission rule for the unsafe timing case.",
+  "experiment_id": "AGT-EXIT-COLD-001",
+  "first_inconclusive_run": {
+    "preserved": true,
+    "reason": "Pinned AGT upstream receipt suite had one stale exception-type assertion: test_signing_failure_raises expected RuntimeError while implementation raises ReceiptSigningError.",
+    "verdict": "INCONCLUSIVE_AGT_ENVIRONMENT",
+    "workflow_run_id": 34551472569
+  },
+  "nonclaims": [
+    "This is not a claim that AGT cannot revoke; its tested online revocation path passed.",
+    "This is not a claim that AGT historical receipts are weak; independent verification passed.",
+    "This is not a claim that fail-closed behavior is unsafe; it is safe refusal, but not portable current-standing continuity.",
+    "This is not a claim that all AGT configurations lack portable current authority; only the pinned ordinary paths were tested.",
+    "NO_COMPARABLE_PROTECTION_CLAIM_SURFACE is not an AGT security failure.",
+    "OpenLine does not prove discovery of hidden newer revocations globally; the receiver must receive the newer signed Wallet bundle."
+  ],
+  "observations": {
+    "agt_current_standing_after_status_source_exit": "CURRENT_STANDING_REQUIRES_LIVE_STATUS_SOURCE",
+    "agt_historical_receipt_external_verification": "PASS_LOW_SIGNAL",
+    "agt_model_provider_exit": "PASS",
+    "agt_online_revocation_control": "PASS",
+    "agt_temporal_protection_admission": "NO_COMPARABLE_PROTECTION_CLAIM_SURFACE",
+    "openline_platform_exit": "PASS",
+    "openline_unsafe_timing": "REFUSE_REVOCATION_PROTECTION"
+  },
+  "parallel_workflows_on_head": {
+    "authority_in_time_001": {
+      "conclusion": "success",
+      "run_id": 34551812157
+    },
+    "ci": {
+      "conclusion": "success",
+      "run_id": 34551812214
+    },
+    "stop_barrier_cold_001": {
+      "conclusion": "success",
+      "run_id": 34551812179
+    }
+  },
+  "pr": 28,
+  "repair": {
+    "agt_source_modified": false,
+    "id": "AGT-EXIT-COLD-001-R1",
+    "preregistration_modified": false,
+    "rule": "Always run full upstream receipt suite. Only the exact frozen stale-test signature permits a second scoped preflight excluding test_signing_failure_raises; any other failure remains environment-inconclusive."
+  },
+  "schema": "openline.agt-exit-cold-001.freeze-receipt.v1",
+  "status": "FROZEN"
+}

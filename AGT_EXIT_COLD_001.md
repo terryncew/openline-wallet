@@ -1,6 +1,6 @@
 # AGT-EXIT-COLD-001
 
-Status: **preregistered external comparator — no production feature change**
+Status: **FROZEN — model exit + historical receipt portability passed; current standing required the live status source on the tested AGT paths**
 
 Pinned revisions:
 
@@ -143,6 +143,48 @@ OpenLine's arm requires the receiver to receive a newer signed Wallet bundle. On
 does, `ReferenceGate` pins the principal root, enforces freshness and monotonic history
 heads, rejects the older bundle, stops the revoked mandate, and admits the successor.
 This does **not** claim global dissemination or discovery of a hidden newer revocation.
+
+## Frozen result
+
+Conclusive workflow: `34551812166` on branch head
+`f3cfe9766492b0afc66f7a065c3850310a57fa09`. Python 3.11, 3.12, and 3.13 all
+produced the same semantic verdict and passed the independent verifier.
+
+```text
+AGT model/provider exit                         PASS
+AGT historical receipt verification outside AGT PASS_LOW_SIGNAL
+AGT live online revocation control             PASS
+AGT current standing after status-source exit  CURRENT_STANDING_REQUIRES_LIVE_STATUS_SOURCE
+AGT unsafe timing comparator                    NO_COMPARABLE_PROTECTION_CLAIM_SURFACE
+OpenLine provider/control-plane continuity      PASS
+OpenLine 110 ms required vs 100 ms horizon      REFUSE_REVOCATION_PROTECTION
+```
+
+Terminal verdict:
+
+`AGT_MODEL_EXIT_OFFLINE_RECEIPT_PASS_CURRENT_STANDING_REQUIRES_LIVE_STATUS_SOURCE`
+
+The separator earned by this pinned case is narrow. AGT kept the same governed job
+working across the provider-labelled worker swap and its historical signed receipts
+verified independently. Its strongest tested online revocation path also behaved safely:
+a valid token passed, a revoked key was denied, and loss of the revocation status source
+failed closed.
+
+What did not survive the control-plane/status-source exit was independently usable
+**current standing**. The ordinary file-backed revocation state had no authenticated
+freshness/head envelope and accepted a tampered state with the revocation removed. The
+ExternalJWKS path, when its live revocation source disappeared, could safely refuse but
+could not authenticate from a portable artifact which competing authority state was
+current.
+
+The timing criterion remains deliberately asymmetric. OpenLine refused the unsafe
+110 ms stopping budget against a 100 ms consequence horizon. No comparable ordinary
+AGT admission surface was found in the selected receipt, credential, and JWKS paths.
+That is recorded as an unearned comparator criterion, **not** as an AGT security defect.
+
+The first run (`34551472569`) remains preserved as environment-inconclusive. R1 only
+scoped out the exact stale upstream exception-type assertion after still running and
+archiving the full suite; it did not modify AGT or the preregistration.
 
 ## Run
 
