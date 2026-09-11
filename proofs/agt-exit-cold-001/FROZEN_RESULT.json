@@ -1,0 +1,160 @@
+{
+  "agt": {
+    "criterion_7a": {
+      "independent_verifier": {
+        "count": 2,
+        "errors": [],
+        "last_payload_hash": "d8ac85c8ae4aa8c116c7f302a2949129648d446a309a51d1fd56be6bababa439",
+        "trusted_signer_public_key": "db995fe25169d141cab9bbba92baa01f9f2e1ece7df4cb2ac05190f37fcc1f9d",
+        "valid": true
+      },
+      "passed": true,
+      "status": "PASS_LOW_SIGNAL"
+    },
+    "criterion_7b": {
+      "interpretation": "Historical signed receipts remain verifiable, and AGT's live JWKS path safely checks revocation while the status source exists. In the tested ordinary paths, control-plane/status-source exit leaves no portable authenticated current-standing artifact equivalent to a signed fresh authority-state head.",
+      "local_file_backed_revocation": {
+        "after_file": "agt-revocations-after.json",
+        "after_reports_revoked": true,
+        "before_file": "agt-revocations-before.json",
+        "before_reports_revoked": false,
+        "interpretation": "The file-backed RevocationList persists useful local state, but the ordinary serialized file is accepted after an entry is removed and supplies no list-level cryptographic freshness/authentication envelope.",
+        "portable_authenticated_current_standing_from_file": false,
+        "serialized_root_type": "list",
+        "tampered_file": "agt-revocations-tampered.json",
+        "tampered_post_state_accepted_and_reports_not_revoked": true,
+        "top_level_authenticated_freshness_envelope_present": false
+      },
+      "online_external_jwks_control": {
+        "control_plane_exit_result": "FAIL_CLOSED_STATUS_UNKNOWN",
+        "revoked_token_denied": true,
+        "status_source_failure_failed_closed": true,
+        "valid_token_accepted": true
+      },
+      "portable_current_standing_passed": false,
+      "status": "CURRENT_STANDING_REQUIRES_LIVE_STATUS_SOURCE"
+    },
+    "model_exit": {
+      "passed": true,
+      "provider_a_decision": "allow",
+      "provider_b_decision": "allow",
+      "provider_calls": [
+        "provider-a",
+        "provider-b"
+      ],
+      "receipt_chain_external_verification": {
+        "count": 2,
+        "errors": [],
+        "last_payload_hash": "d8ac85c8ae4aa8c116c7f302a2949129648d446a309a51d1fd56be6bababa439",
+        "trusted_signer_public_key": "db995fe25169d141cab9bbba92baa01f9f2e1ece7df4cb2ac05190f37fcc1f9d",
+        "valid": true
+      },
+      "receipt_file": "agt-receipts.json",
+      "same_agent_did": true,
+      "same_policy_id": true,
+      "status": "PASS"
+    },
+    "online_revocation_control": {
+      "configuration": {
+        "revocation_cache_ttl_seconds": 0,
+        "revocation_endpoint": "https://partner.example.com/.well-known/jwks-revoked.json",
+        "trusted_endpoint": "https://partner.example.com/.well-known/jwks.json"
+      },
+      "control_plane_exit_result": "FAIL_CLOSED_STATUS_UNKNOWN",
+      "interpretation": "AGT has a real online revocation path. With the cache window removed for this comparison, it observes a revoked kid and fails closed if the revocation status source disappears. The latter is safe refusal, not portable evidence of current standing.",
+      "revoked_token_denied": true,
+      "status": "PASS",
+      "status_source_failure_failed_closed": true,
+      "valid_token_accepted": true
+    },
+    "unsafe_timing": {
+      "comparable_temporal_admission_surface": false,
+      "credential_manager_revocation_propagation_target_seconds": 5,
+      "interpretation": "The selected ordinary AGT receipt/credential/JWKS paths expose revocation timing and cache controls but no discovered admission rule that labels work revocation-protected only when a composed bound beats a consequence horizon. Absence is recorded as an unearned comparator criterion, not as an AGT security defect.",
+      "selected_source_files": {
+        "credentials": "agent-governance-python/agent-mesh/src/agentmesh/identity/credentials.py",
+        "external_jwks": "agent-governance-python/agent-mesh/src/agentmesh/identity/external_jwks.py",
+        "receipt_adapter": "agent-governance-python/agentmesh-integrations/mcp-receipt-governed/mcp_receipt_governed/adapter.py"
+      },
+      "source_hits": {},
+      "status": "NO_COMPARABLE_PROTECTION_CLAIM_SURFACE",
+      "timing_admission_search_terms": [
+        "consequence_horizon",
+        "remaining_margin",
+        "cancellation_cutoff",
+        "revocation_protected",
+        "revocation-protected",
+        "admit_revocation"
+      ],
+      "unsafe_budget_refused_protection": false,
+      "unsafe_policy_ms": {
+        "consequence_horizon_ms": 100,
+        "detect_bound_ms": 10,
+        "propagation_bound_ms": 60,
+        "receiver_bound_ms": 20,
+        "remaining_margin_ms": -10,
+        "required_time_ms": 110,
+        "stop_bound_ms": 10,
+        "uncertainty_bound_ms": 10
+      }
+    }
+  },
+  "claim_limits": [
+    "A historical allow receipt does not prove authority is live now.",
+    "Fail-closed on missing status infrastructure is not the same as portable current-standing proof.",
+    "This does not claim AGT lacks revocation; ExternalJWKSProvider is explicitly tested as a strong online revocation control.",
+    "This does not claim OpenLine discovers hidden revocations globally. A receiver must receive a newer signed Wallet bundle; bundle expiry and monotonic head rules bound what it may accept.",
+    "No result generalizes beyond the pinned AGT and Wallet revisions and the tested ordinary paths."
+  ],
+  "earned_claim": "No claim until the frozen verifier validates the produced artifacts. The result is scoped to the pinned source revisions and tested ordinary paths.",
+  "environment": {
+    "agt_full_upstream_receipt_suite_log": "agt-upstream-receipt-tests-full.txt",
+    "agt_full_upstream_receipt_suite_passed": false,
+    "agt_full_upstream_receipt_suite_returncode": 1,
+    "agt_pin_ok": true,
+    "agt_pinned_upstream_monorepo_ci_conclusion": "failure",
+    "agt_pinned_upstream_monorepo_ci_run": 34460169275,
+    "agt_required_paths_present": true,
+    "agt_selected_upstream_tests_log": "agt-upstream-receipt-tests-scoped.txt",
+    "agt_selected_upstream_tests_passed": true,
+    "agt_selected_upstream_tests_returncode": 0,
+    "harness_repair_id": "AGT-EXIT-COLD-001-R1",
+    "known_stale_exception_test_observed": true,
+    "upstream_ci_scope_note": "Pinned AGT main was globally red. This comparator does not count that as a semantic loss; selected comparator-path upstream receipt tests are rerun here."
+  },
+  "experiment_id": "AGT-EXIT-COLD-001",
+  "harness_repair_sha256": "b54322d015825cdce517bebd02e9a6a228b02994d9fdbee77abae0cefe2cfcaa",
+  "openline": {
+    "claim_limit": "This does not prove global hidden-revocation discovery. The receiver must receive a newer signed bundle; freshness and monotonic-head rules govern what it may then accept.",
+    "platform_exit_checks": {
+      "history_head_survived_move": true,
+      "imported_wallet_has_same_principal": true,
+      "old_authority_stopped_on_platform_b": true,
+      "old_mandate_signature_still_valid": true,
+      "platform_a_action_allowed": true,
+      "platform_a_receipt_survived_move": true,
+      "stale_pre_exit_bundle_rejected": true,
+      "successor_authority_allowed_on_platform_b": true
+    },
+    "platform_exit_passed": true,
+    "platform_exit_verdict": "PLATFORM_EXIT_CONTINUITY_ENFORCED",
+    "status": "EVALUATED",
+    "unsafe_timing": {
+      "admission_decision": "REFUSE_REVOCATION_PROTECTION",
+      "reason_codes": [
+        "NONPOSITIVE_REMAINING_MARGIN"
+      ],
+      "remaining_margin_ms": -10,
+      "required_time_ms": 110
+    },
+    "unsafe_timing_refused_protection": true
+  },
+  "pins": {
+    "agt": "0533ceaf6c5b0975bfc71bff42f6ccd2d34c8adf",
+    "agt_actual": "0533ceaf6c5b0975bfc71bff42f6ccd2d34c8adf",
+    "openline_wallet": "24c92b6588410a5e3537bdccb2f0cefda387b2a5"
+  },
+  "prereg_sha256": "a509d904911eb38cfebaba429f8e590fdc5da4888781cd1b5e42acc52669e78e",
+  "schema": "openline.agt-exit-cold-001.result.v1",
+  "verdict": "AGT_MODEL_EXIT_OFFLINE_RECEIPT_PASS_CURRENT_STANDING_REQUIRES_LIVE_STATUS_SOURCE"
+}

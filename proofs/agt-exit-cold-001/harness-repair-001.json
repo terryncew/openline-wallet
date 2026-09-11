@@ -1,0 +1,33 @@
+{
+  "claim_effect": "No semantic comparator claim is changed. R1 only prevents one understood unrelated stale upstream test from blocking the preregistered arms. The original inconclusive run remains evidence.",
+  "diagnosis": {
+    "boundary": "The failure is upstream test/implementation drift in a negative invalid-key exception-type assertion. It does not exercise the model-exit, receipt-verification, current-standing, revocation-status, or temporal-admission comparator paths.",
+    "failing_test": "tests/test_adapter.py::TestSigning::test_signing_failure_raises",
+    "full_upstream_receipt_suite": "1 failed, 63 passed",
+    "pinned_implementation_actual": "mcp_receipt_governed.receipt.ReceiptSigningError with Receipt signing failed",
+    "relevance_to_comparator": "UNRELATED_STALE_EXCEPTION_TYPE_CONTRACT",
+    "test_expected": "RuntimeError with Receipt signing failed"
+  },
+  "experiment_id": "AGT-EXIT-COLD-001",
+  "repair_id": "AGT-EXIT-COLD-001-R1",
+  "repair_rule": {
+    "allow_scoped_preflight_only_when": [
+      "full suite has exactly the known stale test failure signature",
+      "scoped suite excluding only test_signing_failure_raises passes",
+      "pinned AGT SHA remains unchanged"
+    ],
+    "always_run_full_upstream_receipt_suite_for_diagnostics": true,
+    "do_not_modify_agt_source_or_tests": true,
+    "otherwise": "INCONCLUSIVE_AGT_ENVIRONMENT",
+    "preserve_original_inconclusive": true,
+    "scoped_pytest_expression": "not test_signing_failure_raises"
+  },
+  "schema": "openline.agt-exit-cold-001.harness-repair.v1",
+  "trigger": {
+    "artifact_3_11_id": 10180968221,
+    "branch_head": "28286b717be6f5ba0b27ff73cfdefe434e752498",
+    "observed_verdict": "INCONCLUSIVE_AGT_ENVIRONMENT",
+    "pr": 28,
+    "workflow_run": 34551472569
+  }
+}
