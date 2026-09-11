@@ -1,0 +1,70 @@
+{
+  "claim_limits": [
+    "A historical allow receipt does not prove authority is live now.",
+    "Fail-closed on missing status infrastructure is not the same as portable current-standing proof.",
+    "This does not claim AGT lacks revocation; ExternalJWKSProvider is explicitly tested as a strong online revocation control.",
+    "This does not claim OpenLine discovers hidden revocations globally. A receiver must receive a newer signed Wallet bundle; bundle expiry and monotonic head rules bound what it may accept.",
+    "No result generalizes beyond the pinned AGT and Wallet revisions and the tested ordinary paths."
+  ],
+  "constraints": {
+    "agt_source_modification": "FORBIDDEN",
+    "openline_production_source_modification": "FORBIDDEN",
+    "ordinary_documented_glue": "ALLOWED",
+    "reimplement_openline_authority_inside_agt": "FORBIDDEN",
+    "same_logical_job": "DeployStaging with identical arguments",
+    "strong_agt_status_configuration": "ExternalJWKSProvider uses a trusted endpoint with revocation_cache_ttl_seconds=0 so AGT is not made to lose on its default cache window."
+  },
+  "criteria": {
+    "7a_historical_receipt_external_verification": {
+      "expected_signal": "LOW_SIGNAL_PASS",
+      "pass": "An independent verifier that imports no AGT code validates the pinned signer, receipt signatures, payload hashes, and hash chain.",
+      "question": "Can a past AGT governance receipt be verified outside AGT?"
+    },
+    "7b_current_live_authority_outside_control_plane": {
+      "nonpass_is_not": "Fail-closed when a live status endpoint disappears is safe behavior, but it is not portable proof of which authority is current.",
+      "pass": "Ordinary AGT output supplies a portable authenticated freshness/standing artifact sufficient to distinguish current post-revocation state from an older valid state without querying the governance status source being exited.",
+      "question": "After a newer revocation state exists, can an independent receiver authenticate which authority state is current after the governance status source/control plane exits?"
+    },
+    "model_exit": {
+      "pass": "Both provider-labelled workers execute the same allowed job and produce a valid receipt chain.",
+      "question": "Can the same governed logical job continue through AGT when the model/provider label changes, without changing the governance rule?"
+    },
+    "online_revocation_control": {
+      "pass": "With revocation cache TTL forced to zero, valid token passes, revoked kid is denied, and status-source transport failure fails closed.",
+      "question": "Does AGT correctly enforce current revocation while its ordinary live status source exists?"
+    },
+    "unsafe_timing": {
+      "absence_rule": "If the tested AGT path exposes no comparable temporal admission/protection claim, record NO_COMPARABLE_PROTECTION_CLAIM_SURFACE. Do not call that a security defect.",
+      "agt_pass": "A comparable ordinary AGT admission surface refuses a revocation-protection claim because the supported bound exceeds the consequence horizon.",
+      "openline_expected": "REFUSE_REVOCATION_PROTECTION",
+      "policy_ms": {
+        "consequence_horizon_ms": 100,
+        "detect_bound_ms": 10,
+        "propagation_bound_ms": 60,
+        "receiver_bound_ms": 20,
+        "remaining_margin_ms": -10,
+        "required_time_ms": 110,
+        "stop_bound_ms": 10,
+        "uncertainty_bound_ms": 10
+      }
+    }
+  },
+  "experiment_id": "AGT-EXIT-COLD-001",
+  "outcome_rules": {
+    "AGT_CURRENT_STANDING_PORTABLE_TEMPORAL_ADMISSIBILITY_UNEARNED": "AGT passes portable current-standing exit but exposes no comparable temporal protection-admission surface.",
+    "AGT_MATCHES_PORTABLE_CURRENT_AUTHORITY": "AGT passes model exit, 7a, portable 7b after status-source exit, and comparable unsafe-timing refusal.",
+    "AGT_MODEL_EXIT_OFFLINE_RECEIPT_PASS_CURRENT_STANDING_REQUIRES_LIVE_STATUS_SOURCE": "AGT passes model exit and offline historical receipt verification; its live status path handles revocation safely, but no portable authenticated current-standing artifact survives status-source exit.",
+    "INCONCLUSIVE_AGT_ENVIRONMENT": "Pinned source cannot be checked out/loaded or comparator-scoped upstream receipt tests fail.",
+    "INCONCLUSIVE_AGT_SEMANTICS": "Observed behavior does not match a preregistered branch.",
+    "INCONCLUSIVE_OPENLINE_BASELINE": "Current pinned Wallet baseline fails its already-frozen behaviors."
+  },
+  "pins": {
+    "agt_upstream_main_ci_conclusion": "failure",
+    "agt_upstream_main_ci_run": 34460169275,
+    "microsoft_agent_governance_toolkit_main": "0533ceaf6c5b0975bfc71bff42f6ccd2d34c8adf",
+    "note": "The pinned AGT monorepo main CI run was not globally green. This experiment does not treat that as comparator evidence; it reruns the selected upstream receipt tests and classifies setup/import/test failure as environment-inconclusive.",
+    "openline_wallet_main": "24c92b6588410a5e3537bdccb2f0cefda387b2a5"
+  },
+  "question": "Can Microsoft AGT preserve independently usable current authority across both a model-provider exit and a governance-control-plane/status-source exit, while refusing to claim revocation protection when the timing budget cannot beat consequence?",
+  "schema": "openline.agt-exit-cold-001.prereg.v1"
+}
