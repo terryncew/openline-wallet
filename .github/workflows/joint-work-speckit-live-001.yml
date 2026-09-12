@@ -1,0 +1,191 @@
+name: JOINT-WORK-SPECKIT-LIVE-001
+
+on:
+  push:
+    branches:
+      - main
+      - "proof/**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    name: preflight (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout Wallet
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout pinned Airlock
+        uses: actions/checkout@v4
+        with:
+          repository: terryncew/openline-airlock
+          ref: 3ef34fb0100516e458cb362a7448c78a72da097b
+          path: _airlock
+          persist-credentials: false
+
+      - name: Checkout pinned GitHub Spec Kit
+        uses: actions/checkout@v4
+        with:
+          repository: github/spec-kit
+          ref: d848fb4e18f44640ad6b42e60a280551ee90cdce
+          path: _spec-kit
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install frozen OpenLine sources
+        run: |
+          python -m pip install -e .
+          python -m pip install -e ./_airlock
+
+      - name: Harness self-test
+        run: python proofs/joint-work-speckit-live-001/run.py --self-test
+
+      - name: Run zero-provider live-harness preflight
+        run: |
+          rm -rf "${{ runner.temp }}/joint-work-speckit-live-preflight"
+          python proofs/joint-work-speckit-live-001/run.py \
+            --mode preflight \
+            --spec-kit-root ./_spec-kit \
+            --output "${{ runner.temp }}/joint-work-speckit-live-preflight"
+
+      - name: Verify preflight receipt
+        run: |
+          python proofs/joint-work-speckit-live-001/verify.py \
+            "${{ runner.temp }}/joint-work-speckit-live-preflight"
+
+      - name: Upload preflight receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: joint-work-speckit-live-001-preflight-${{ matrix.python-version }}
+          path: ${{ runner.temp }}/joint-work-speckit-live-preflight/
+          if-no-files-found: warn
+
+  activation:
+    name: live activation gate
+    runs-on: ubuntu-latest
+    outputs:
+      enabled: ${{ steps.gate.outputs.enabled }}
+
+    steps:
+      - name: Checkout activation commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - id: gate
+        name: Allow exactly the first activation push
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          GIT_REF: ${{ github.ref }}
+          BEFORE: ${{ github.event.before }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          enabled=false
+
+          if [[ "$EVENT_NAME" == "push" \
+             && "$GIT_REF" == "refs/heads/proof/joint-work-speckit-live-001" \
+             && "$RUN_ATTEMPT" == "1" \
+             && -n "${BEFORE:-}" \
+             && "$BEFORE" != "0000000000000000000000000000000000000000" ]]; then
+
+            git diff --name-only "$BEFORE" "$GITHUB_SHA" > /tmp/speckit-live-changed.txt
+            cat /tmp/speckit-live-changed.txt
+
+            if [[ "$(wc -l < /tmp/speckit-live-changed.txt | tr -d ' ')" == "1" ]] \
+               && grep -Fxq "proofs/joint-work-speckit-live-001/LIVE_ARM.json" /tmp/speckit-live-changed.txt; then
+              python proofs/joint-work-speckit-live-001/run.py --validate-activation
+              enabled=true
+            fi
+          fi
+
+          echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
+
+  live:
+    name: bounded real-provider arm
+    needs: [preflight, activation]
+    if: needs.activation.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+    steps:
+      - name: Checkout Wallet without repository credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout pinned Airlock
+        uses: actions/checkout@v4
+        with:
+          repository: terryncew/openline-airlock
+          ref: 3ef34fb0100516e458cb362a7448c78a72da097b
+          path: _airlock
+          persist-credentials: false
+
+      - name: Checkout pinned GitHub Spec Kit
+        uses: actions/checkout@v4
+        with:
+          repository: github/spec-kit
+          ref: d848fb4e18f44640ad6b42e60a280551ee90cdce
+          path: _spec-kit
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install frozen OpenLine sources
+        run: |
+          python -m pip install -e .
+          python -m pip install -e ./_airlock
+
+      - name: Verify repository credentials are absent
+        run: |
+          test -z "$(git config --local --get-all http.https://github.com/.extraheader || true)"
+          test -z "${GITHUB_TOKEN:-}"
+          test -z "${GH_TOKEN:-}"
+
+      - name: Run bounded live-provider arm
+        run: |
+          rm -rf "${{ runner.temp }}/joint-work-speckit-live"
+          python proofs/joint-work-speckit-live-001/run.py \
+            --mode real \
+            --spec-kit-root ./_spec-kit \
+            --output "${{ runner.temp }}/joint-work-speckit-live"
+
+      - name: Verify terminal live receipt
+        run: |
+          python proofs/joint-work-speckit-live-001/verify.py \
+            --require-live \
+            "${{ runner.temp }}/joint-work-speckit-live"
+
+      - name: Upload live receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: joint-work-speckit-live-001-live
+          path: ${{ runner.temp }}/joint-work-speckit-live/
+          if-no-files-found: warn
