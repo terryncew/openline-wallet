@@ -1,6 +1,6 @@
 # JOINT-WORK-LIVE-001
 
-Status: **scripted arm passed; first live attempt frozen as provider setup failure; repair commit is zero-spend**
+Status: **FROZEN — scripted arm passed; live arm ended INCONCLUSIVE_PROVIDER_BUDGET before revocation/replacement/composition**
 
 This is an additive proof that composes existing OpenLine Wallet authority with
 Airlock protected acceptance. It does not add an orchestrator, planner, policy
@@ -242,9 +242,73 @@ than a worker scope violation. A real wrong-path edit remains a falsifier.
 This repair commit itself does not contain `LIVE_PROVIDER_RETRY_002.json`, so it cannot
 start another provider run.
 
+
+## Live run 002 — terminal result
+
+Final bounded retry workflow: `34670763403` at branch head
+`3f6027f5a700bc62884da8fb99431d7ed70313b6`. The activation gate, all three scripted matrix legs, the real-host
+arm, the independent live verifier, and artifact upload all completed successfully.
+
+The experiment result itself is **not PASS**:
+
+```text
+INCONCLUSIVE_PROVIDER_BUDGET
+```
+
+The two live initial-worker calls did overlap for
+`10664965512` ns. Wallet independently admitted Worker A and
+Worker B, while the cross-scope Worker A -> Worker B action was stopped with
+`ACTION_OUTSIDE_MANDATE`.
+
+Claude Code 2.1.260 used the final permitted Claude call and produced the intended
+producer checkpoint. The owner checkpoint check passed, while the full producer
+test still failed at the intentionally unresolved `build_request`, preserving real
+successor work.
+
+Codex CLI 0.153.0 reached `gpt-5.6-sol` successfully and emitted usage, but its
+workspace sandbox could not initialize loopback networking:
+
+```text
+bwrap: loopback: Failed RTM_NEWADDR: Operation not permitted
+```
+
+It therefore made no receiver-file change. Worker B's local receiver check remained
+red. This was not a contract or Airlock rejection: the experiment never reached
+handoff, Claude revocation, successor execution, the preregistered broken
+composition, or final valid composition.
+
+The frozen call envelope had no Worker B repair call remaining. One Codex call was
+still reserved for the required successor, so spending it to repair Worker B would
+make the terminal success condition impossible. Under the preregistered stop rule,
+the experiment therefore closes as `INCONCLUSIVE_PROVIDER_BUDGET`; no additional
+provider call, retry, credit, or harness relaxation is permitted.
+
+Cumulative recorded provider use across both live attempts:
+
+```text
+Claude calls: 2 / 2
+Claude spend: $0.36919200 / $3.00
+
+Codex calls: 2 / 3
+Codex calculated spend: $0.08321440 / $10.00
+```
+
+The unused dollar balance and one nominal Codex call do not reopen the experiment:
+the remaining call cannot both repair Worker B and provide the required successor.
+No live revocation/replacement or final composition claim was earned.
+
+Artifact `10290004487` preserves the live evidence. Its GitHub artifact digest is
+`sha256:e5a4c2dd4aee74b4d61e5f953cc7d3a3726b1d1867060965d25c93149c43170e`. `FROZEN_RESULT.json` stores the exact independently verified
+`result.json` bytes from that artifact, and `FROZEN_RECEIPT.json` binds the terminal
+scope, provider accounting, and artifact/log hashes.
+
+The scripted arm remains useful evidence that the complete deterministic mechanism
+works, including revocation, successor handoff, negative-control rejection, and
+valid Airlock composition. The real-host arm did not reach those boundaries.
+
 ## Terminal live claim
 
-Only `JOINT_WORK_LIVE_PASS` earns:
+The following claim was preregistered for `JOINT_WORK_LIVE_PASS`, but it was **not earned**:
 
 > Two independently operated AI workers completed different parts of one
 > approved job in parallel under separate authority. One worker was revoked
@@ -252,4 +316,4 @@ Only `JOINT_WORK_LIVE_PASS` earns:
 > provider credentials or private chat state, and the combined result was
 > accepted only after independent integration checks passed.
 
-Stop there.
+The experiment is terminal at the frozen inconclusive result above. Do not rerun it.
