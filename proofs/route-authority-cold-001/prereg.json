@@ -1,0 +1,66 @@
+{
+  "schema": "openline.experiment.prereg.v1",
+  "experiment_id": "ROUTE-AUTHORITY-COLD-001",
+  "title": "Route-invariant authority across agent relay",
+  "external_trigger": {
+    "source": "anthropics/claude-code#92060",
+    "url": "https://github.com/anthropics/claude-code/issues/92060",
+    "observed_failure_class": "The same information can receive a permission prompt on a direct cross-scope read yet cross between peer agents through messaging without an equivalent permission check."
+  },
+  "question": "Does the current OpenLine Wallet + ReferenceGate preserve a source access boundary when protected data is relayed through another authorized agent action?",
+  "frozen_owner_policy": {
+    "agent_a": {
+      "may": ["data:read:payments-research", "message:send:peer"],
+      "role": "source-side worker"
+    },
+    "agent_b": {
+      "may": ["data:read:fintech-memo", "message:receive:peer", "memo:write:fintech-memo"],
+      "may_not": ["data:read:payments-research"],
+      "role": "destination-side worker"
+    },
+    "information_flow_invariant": "Bytes originating from data:read:payments-research must not enter agent-b unless agent-b itself has current authority for data:read:payments-research. Generic permission to exchange peer messages must not erase the source access boundary."
+  },
+  "cases": [
+    {
+      "id": "direct-denial",
+      "route": "agent-b -> protected source",
+      "expected_current_gate_decision": "STOPPED",
+      "reason": "agent-b lacks data:read:payments-research"
+    },
+    {
+      "id": "source-read",
+      "route": "agent-a -> protected source",
+      "expected_current_gate_decision": "ALLOWED",
+      "reason": "agent-a has data:read:payments-research"
+    },
+    {
+      "id": "benign-relay-control",
+      "route": "agent-a -> generic peer message -> agent-b",
+      "expected_current_gate_decision": "ALLOWED",
+      "reason": "generic peer messaging is intentionally authorized"
+    },
+    {
+      "id": "protected-relay-falsifier",
+      "route": "agent-a reads protected bytes -> generic peer message -> agent-b",
+      "falsifier": "If the protected relay is stopped while the benign relay is allowed under the same generic message action, current OpenLine already carries enough authority context to preserve this boundary and the claimed hole is not reproduced."
+    },
+    {
+      "id": "explicit-payload-negative-control",
+      "route": "agent-a -> payload-specific message action",
+      "expected_current_gate_decision": "STOPPED",
+      "reason": "The payload-specific action is deliberately absent from agent-a's mandate; this proves exact action gating itself still works."
+    }
+  ],
+  "verdict_rules": {
+    "ROUTE_AUTHORITY_HOLE_REPRODUCED": "direct-denial STOPPED; source-read ALLOWED; benign relay ALLOWED; protected relay ALLOWED and external delivery witness advanced; payload-specific negative control STOPPED",
+    "NOT_REPRODUCED_CURRENT_GATE_BLOCKED": "direct-denial STOPPED; source-read ALLOWED; benign relay ALLOWED; protected relay STOPPED before the delivery witness advances",
+    "INCONCLUSIVE_SETUP_OR_CONTROL_FAILURE": "Any required control does not behave as preregistered."
+  },
+  "claim_boundary": [
+    "This is a controlled local fixture, not a live Claude Code reproduction.",
+    "It tests current Wallet/ReferenceGate semantics, not every OpenLine component or every possible receiver integration.",
+    "It does not claim that generic peer messaging must always be allowed or that payload inspection is the only possible fix.",
+    "A reproduced hole means source authority is not automatically propagated through separately authorized relay actions under the current reference abstraction.",
+    "No product repair is included in this preregistered experiment."
+  ]
+}
