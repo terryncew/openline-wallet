@@ -91,7 +91,7 @@ jobs:
           persist-credentials: false
 
       - id: gate
-        name: Allow exactly the first activation push
+        name: Allow only an unspent activation marker
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -101,6 +101,8 @@ jobs:
         run: |
           set -euo pipefail
           enabled=false
+          original="proofs/joint-work-speckit-live-001/LIVE_ARM.json"
+          retry="proofs/joint-work-speckit-live-001/LIVE_ARM_RETRY_001.json"
 
           if [[ "$EVENT_NAME" == "push" \
              && "$GIT_REF" == "refs/heads/proof/joint-work-speckit-live-001" \
@@ -111,10 +113,19 @@ jobs:
             git diff --name-only "$BEFORE" "$GITHUB_SHA" > /tmp/speckit-live-changed.txt
             cat /tmp/speckit-live-changed.txt
 
-            if [[ "$(wc -l < /tmp/speckit-live-changed.txt | tr -d ' ')" == "1" ]] \
-               && grep -Fxq "proofs/joint-work-speckit-live-001/LIVE_ARM.json" /tmp/speckit-live-changed.txt; then
-              python proofs/joint-work-speckit-live-001/run.py --validate-activation
-              enabled=true
+            if [[ "$(wc -l < /tmp/speckit-live-changed.txt | tr -d ' ')" == "1" ]]; then
+              changed="$(cat /tmp/speckit-live-changed.txt)"
+
+              if [[ "$changed" == "$original" ]] \
+                 && ! git cat-file -e "$BEFORE:$original" 2>/dev/null; then
+                python proofs/joint-work-speckit-live-001/validate_activation_gate.py original
+                enabled=true
+              elif [[ "$changed" == "$retry" ]] \
+                   && ! git cat-file -e "$BEFORE:$retry" 2>/dev/null \
+                   && git cat-file -e "$BEFORE:$original" 2>/dev/null; then
+                python proofs/joint-work-speckit-live-001/validate_activation_gate.py retry
+                enabled=true
+              fi
             fi
           fi
 

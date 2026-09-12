@@ -1,0 +1,27 @@
+{
+  "activation_commit": "74c4589d2a2477dbac820340dc1e56a7718b78c2",
+  "activation_failure_step": "Allow exactly the first activation push",
+  "activation_job_id": 103501560630,
+  "activation_parent": "11e5e93e3760c1c4b6f1fee61b671bf99172946b",
+  "classification": "INCONCLUSIVE_PROVIDER_SETUP",
+  "experiment_id": "JOINT-WORK-SPECKIT-LIVE-001",
+  "failure": {
+    "cause": "activation gate invoked run.py before the Wallet package was installed in that job",
+    "module": "openline_wallet",
+    "type": "ModuleNotFoundError"
+  },
+  "falsifier_reached": false,
+  "live_job_conclusion": "skipped",
+  "preflight": {
+    "python_3_11": "PASS",
+    "python_3_12": "PASS",
+    "python_3_13": "PASS"
+  },
+  "provider_calls_consumed": 0,
+  "provider_spend_usd": 0.0,
+  "repair_scope": "activation gate only; no provider or experiment logic change",
+  "rerun_original_activation_allowed": false,
+  "schema": "openline.joint-work-speckit-live-001.activation-setup-failure.v1",
+  "scientific_verdict_reached": false,
+  "workflow_run_id": 34674406014
+}
