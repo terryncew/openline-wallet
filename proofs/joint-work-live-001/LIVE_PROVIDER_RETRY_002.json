@@ -1,0 +1,51 @@
+{
+  "cumulative_budget_before_retry": {
+    "claude_calls_consumed": 1,
+    "claude_calls_remaining": 1,
+    "claude_spend_usd": 0.16433475,
+    "claude_usd_remaining": 2.83566525,
+    "openai_calls_consumed": 1,
+    "openai_calls_remaining": 2,
+    "openai_spend_usd": 0.0,
+    "openai_usd_remaining": 10.0
+  },
+  "experiment_id": "JOINT-WORK-LIVE-001",
+  "live_pins": {
+    "claude_code": "2.1.260",
+    "codex_cli": "0.153.0",
+    "codex_model": "gpt-5.6-sol"
+  },
+  "prior_live_attempt": {
+    "artifact_id": 10289794236,
+    "artifact_zip_sha256": "78ea9b241fe89e5b16f02dbdce07563067c0f516d3325d751a3ff2a6f3f85beb",
+    "classification": "INCONCLUSIVE_PROVIDER_SETUP",
+    "experiment_verdict": "NOT_REACHED",
+    "job_id": 103489205488,
+    "workflow_run_id": 34669873686
+  },
+  "repair_green_head": "ab0622b021cf34adf092e8c36f9811785f18e5bb",
+  "repair_validation": {
+    "joint_work_workflow_run_id": 34670477560,
+    "provider_spend_from_repair_commit": 0.0,
+    "real_host_job": "skipped",
+    "scripted_conclusion": "success",
+    "scripted_python": [
+      "3.11",
+      "3.12",
+      "3.13"
+    ]
+  },
+  "retry_contract": {
+    "claude_calls_this_retry_max": 1,
+    "codex_calls_this_retry_max": 2,
+    "no_additional_funds": true,
+    "provider_repair_calls_remaining": 0,
+    "same_airlock_acceptance_gate": true,
+    "same_frozen_webhook_contract": true,
+    "same_negative_control": "FIXED_NONCE_PRODUCER",
+    "same_wallet_authority_boundary": true,
+    "terminal_rule": "If the remaining provider envelope cannot reach the preregistered discriminating result, freeze the resulting inconclusive verdict. Do not add a call, add funds, change the contract, or weaken the acceptance gate."
+  },
+  "retry_id": "LIVE_PROVIDER_RETRY_002",
+  "schema": "openline.joint-work-live-001.provider-retry.v1"
+}
