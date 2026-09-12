@@ -1,0 +1,192 @@
+name: UNTRUSTED-INSTRUCTION-LIVE-001
+
+on:
+  push:
+    branches: [main, "proof/**"]
+    paths:
+      - "proofs/untrusted-instruction-live-001/**"
+      - "UNTRUSTED_INSTRUCTION_LIVE_001.md"
+      - ".github/workflows/untrusted-instruction-live-001.yml"
+      - "proofs/approved-job-live-001/**"
+      - "proofs/approved-job-001/**"
+      - "src/**"
+      - "pyproject.toml"
+  pull_request:
+    paths:
+      - "proofs/untrusted-instruction-live-001/**"
+      - "UNTRUSTED_INSTRUCTION_LIVE_001.md"
+      - ".github/workflows/untrusted-instruction-live-001.yml"
+      - "proofs/approved-job-live-001/**"
+      - "proofs/approved-job-001/**"
+      - "src/**"
+      - "pyproject.toml"
+  workflow_dispatch:
+    inputs:
+      run_real_hosts:
+        description: "Run live untrusted-instruction Claude -> Receiver -> Codex proof"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  controlled-proof:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: terryncew/openline-airlock
+          ref: fb02207f3ac561368beeabf9ff168076bf828824
+          path: .deps/airlock
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install exact evaluator checkout and Wallet MCP support
+        run: python -m pip install -e ".[mcp]" -e .deps/airlock
+
+      - name: Existing Wallet unit suite
+        run: python -m unittest discover -s tests -v
+
+      - name: Run scripted untrusted-instruction composition
+        run: |
+          rm -rf untrusted-instruction-live-artifacts
+          python proofs/untrusted-instruction-live-001/run.py \
+            --output untrusted-instruction-live-artifacts \
+            --mode scripted
+
+      - name: Independently verify scripted evidence
+        run: python proofs/untrusted-instruction-live-001/run.py --verify untrusted-instruction-live-artifacts
+
+      - name: Preserve scripted diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: untrusted-instruction-live-001-${{ matrix.python-version }}
+          path: untrusted-instruction-live-artifacts/
+          if-no-files-found: warn
+
+  real-hosts:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_real_hosts == true
+    runs-on: ubuntu-22.04
+    timeout-minutes: 35
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/checkout@v4
+        with:
+          repository: terryncew/openline-airlock
+          ref: fb02207f3ac561368beeabf9ff168076bf828824
+          path: .deps/airlock
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Require provider credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "${OPENAI_API_KEY:-}" ]]; then
+            echo "::error::OPENAI_API_KEY repository secret is required."
+            exit 2
+          fi
+          if [[ -z "${ANTHROPIC_API_KEY:-}" && -z "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]]; then
+            echo "::error::Set ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN as a repository secret."
+            exit 2
+          fi
+
+      - name: Install Wallet, exact Airlock, and pinned provider hosts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -e ".[mcp]" -e .deps/airlock
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap
+          test "$(command -v bwrap)" = "/usr/bin/bwrap"
+          npm install -g @anthropic-ai/claude-code@2.1.260 @openai/codex@0.153.0
+          echo "CODEX_HOME=$RUNNER_TEMP/codex-home" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/codex-home"
+          claude --version
+          codex --version
+
+      - name: Check Codex sandbox paths before provider calls
+        run: python proofs/approved-job-live-001/run.py --sandbox-preflight untrusted-instruction-sandbox-artifacts
+
+      - name: Authenticate Codex
+        shell: bash
+        run: |
+          set -euo pipefail
+          printenv OPENAI_API_KEY | codex login --with-api-key
+          codex login status
+
+      - name: Verify checkout credentials are absent
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git config --local --get-regexp '^http\..*\.extraheader$' >/dev/null 2>&1; then
+            echo "::error::checkout credential persisted into the real-host workspace"
+            exit 4
+          fi
+
+      - name: Run real untrusted-instruction containment and continuation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf untrusted-instruction-live-real-artifacts
+          python proofs/untrusted-instruction-live-001/run.py \
+            --output untrusted-instruction-live-real-artifacts \
+            --mode real
+
+      - name: Verify real-host evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python proofs/untrusted-instruction-live-001/run.py \
+            --verify untrusted-instruction-live-real-artifacts \
+            --require-real
+
+      - name: Reject accidental private-key evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT=untrusted-instruction-live-real-artifacts
+          if [[ -d "$OUT" ]] && find "$OUT" -type f \( -name '*.key' -o -name 'root.key' -o -name 'epoch.key' \) | grep -q .; then
+            echo "::error::private key entered public evidence directory"
+            exit 3
+          fi
+
+      - name: Preserve real-host evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: untrusted-instruction-live-001-real-hosts
+          path: |
+            untrusted-instruction-live-real-artifacts/
+            untrusted-instruction-sandbox-artifacts/
+          if-no-files-found: warn
+          retention-days: 30
