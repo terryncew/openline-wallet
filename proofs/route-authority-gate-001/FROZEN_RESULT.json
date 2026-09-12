@@ -1,0 +1,216 @@
+{
+  "base_time": "2026-09-12T19:30:00+00:00",
+  "benign_hash": "cde24f0ca703daa2e72d9a70d07b888c77acabc8a1ae4274cb27e35000f50d2f",
+  "bundle_head_hash": "95e74b47088bc2a8e7310386a914114cacfa60ac7f903ed369f0569ba1fd697d",
+  "cases": {
+    "blocked_direct_read": {
+      "action": "records:read:payroll",
+      "decided_at": "2026-09-12T19:30:06Z",
+      "decision": "STOPPED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "route-authority-gate-001",
+      "gate_public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+      "mandate_id": "mandate-blocked",
+      "payload_hash": "a5243b71bdac5ae2ea5ed66bdc30ca74c5fab3bcdfef4f4c5a9bf86d30b685b0",
+      "presentation_hash": "cc34a1a56b61f3038ffccef562ff5c9eb4270847b72cbd93f44762b110628145",
+      "principal_id": "openline:principal:0045b6de129f471a105556e05d1706ad1fa6f26b3340ea18b6f1c4d725e07dfa",
+      "reason_codes": [
+        "ACTION_OUTSIDE_MANDATE"
+      ],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+        "value": "7df8ccc794767a5add3fb5605f66d3d6feff0f7f3115862e852eb9aa5293db9c788e468961fd1797b265e71ab0bdc5ca7a271fbfc900c298153635ef6a8c1a05"
+      },
+      "subject_id": "agent-blocked",
+      "wallet_policy_authority": "NONE"
+    },
+    "clean_sender_action": {
+      "action": "message:send:peer",
+      "decided_at": "2026-09-12T19:30:07Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "route-authority-gate-001",
+      "gate_public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+      "mandate_id": "mandate-clean",
+      "payload_hash": "dabbacaf565b4c7e7ba4516db23d65eef5adfb37ea8bc3f6800388f1b4c31018",
+      "presentation_hash": "29cab3c4d9132908ed0c3681514ad4698f488de6a104278a4b9bb1ba999df40f",
+      "principal_id": "openline:principal:0045b6de129f471a105556e05d1706ad1fa6f26b3340ea18b6f1c4d725e07dfa",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+        "value": "5589169b5ff294e595eefdd82f705f4c1e6117641428d7f39f85f0d3260e1087883343f370b0241d3da0d3e5e132be482a86f2ab28b0059b18bf97b473016703"
+      },
+      "subject_id": "agent-clean",
+      "wallet_policy_authority": "NONE"
+    },
+    "clean_sender_route": {
+      "action": "message:send:peer",
+      "action_receipt_hash": "56c0c73c82fb1452bdd64c29c7c048216e158f51f6b75cb9d011f2451d8d889b",
+      "carried_scopes": [],
+      "decided_at": "2026-09-12T19:30:08Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "route-authority-gate-001",
+      "gate_public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+      "payload_hash": "04a3d69af2b728af715eb3eada1276dfec46da6482283e324e570ed0c54d7161",
+      "principal_id": "openline:principal:0045b6de129f471a105556e05d1706ad1fa6f26b3340ea18b6f1c4d725e07dfa",
+      "reason_codes": [],
+      "recipient_subject_id": "agent-blocked",
+      "schema": "openline.gate.route_receipt.v1",
+      "sender_subject_id": "agent-clean",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+        "value": "605339fb2ef477457501e0c6ecda307ad9314e9dece45a195f74d02f12fe5a8d5ff6efbe688fcef1c84b8f1ffe838491e325c319b43df6bfdc7a4ac057ba6d07"
+      },
+      "wallet_policy_authority": "NONE"
+    },
+    "source_carried_scopes_after_read": [
+      "records:read:payroll"
+    ],
+    "source_generic_send_to_allowed": {
+      "action": "message:send:peer",
+      "decided_at": "2026-09-12T19:30:12Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "route-authority-gate-001",
+      "gate_public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+      "mandate_id": "mandate-source",
+      "payload_hash": "92906a52f406a4226d43c625c77e4ae0f2f68142ed5d5b6f7000efe1e07dabc2",
+      "presentation_hash": "08f7c02fa162abf3577a88d76eb98240cc4e20fddce0f37d657515b0fa35ab11",
+      "principal_id": "openline:principal:0045b6de129f471a105556e05d1706ad1fa6f26b3340ea18b6f1c4d725e07dfa",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+        "value": "972058ed437408e994e3ffc62a5bfc34ea252a9bffaea8c6c68c2d721c2a38ffa258e9fe671ee2db02d1dbb24e9f76ed6461f3060b5b01945453b4789bf5090b"
+      },
+      "subject_id": "agent-source",
+      "wallet_policy_authority": "NONE"
+    },
+    "source_generic_send_to_blocked": {
+      "action": "message:send:peer",
+      "decided_at": "2026-09-12T19:30:10Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "route-authority-gate-001",
+      "gate_public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+      "mandate_id": "mandate-source",
+      "payload_hash": "05c44832b4a494cc23e144de9e328b7affdd0ca9ea95bde1e0b8f3a2e8f5b53d",
+      "presentation_hash": "a7be8c0745654cb053ed25c6d1ed570d778abe08445eca9663e6da98112c4cf8",
+      "principal_id": "openline:principal:0045b6de129f471a105556e05d1706ad1fa6f26b3340ea18b6f1c4d725e07dfa",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+        "value": "75f0316332d0953842f5fbf9d6634aae9be7d655756c0d3815011689cc2d0b8f625442cb6b5069888d9e8eca169d6142517589a5eabe77ec5d35eb6a59bf8406"
+      },
+      "subject_id": "agent-source",
+      "wallet_policy_authority": "NONE"
+    },
+    "source_protected_read": {
+      "action": "records:read:payroll",
+      "decided_at": "2026-09-12T19:30:09Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "route-authority-gate-001",
+      "gate_public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+      "mandate_id": "mandate-source",
+      "payload_hash": "5c134d5cfb641b729bb6e14b1fa7a75ff3a2be8424224c5a58a58b02be97433c",
+      "presentation_hash": "e0082cafbcd78728d4a2f54035e7278699c5931717412500b49c6d67802f2d9a",
+      "principal_id": "openline:principal:0045b6de129f471a105556e05d1706ad1fa6f26b3340ea18b6f1c4d725e07dfa",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+        "value": "5c2855245c4b8b7894ab08c977f779fb7e1325b59b3828b4e4fa09c31efe13bc7f1222c5c79779f6f22ef7eda2f1200dc6e1faa7edce98fdd0b7c12b36293d0e"
+      },
+      "subject_id": "agent-source",
+      "wallet_policy_authority": "NONE"
+    },
+    "source_route_to_allowed": {
+      "action": "message:send:peer",
+      "action_receipt_hash": "6a16e4453504bbba3e6f815f4d15754b92e54e90253883523c7888cb043dd5ff",
+      "carried_scopes": [
+        "records:read:payroll"
+      ],
+      "decided_at": "2026-09-12T19:30:13Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "route-authority-gate-001",
+      "gate_public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+      "payload_hash": "4cd0454ce8845f5d852d9dde10d92e0c566cd63be7557caf4194d51314720f99",
+      "principal_id": "openline:principal:0045b6de129f471a105556e05d1706ad1fa6f26b3340ea18b6f1c4d725e07dfa",
+      "reason_codes": [],
+      "recipient_subject_id": "agent-allowed",
+      "schema": "openline.gate.route_receipt.v1",
+      "sender_subject_id": "agent-source",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+        "value": "428b487f956c9fc3a8f41898c752e8a3ef949932bcb46598d7b12b8b8baa707fe67fc0897c5c8a3556794faf1631003ea770c5f1e0ee9f51caa84888e870bf07"
+      },
+      "wallet_policy_authority": "NONE"
+    },
+    "source_route_to_blocked": {
+      "action": "message:send:peer",
+      "action_receipt_hash": "b5483ea90ad1e0a389b3b6958433174d1fe3dcbce2fd4d3f4a1c30991fc2ad6c",
+      "carried_scopes": [
+        "records:read:payroll"
+      ],
+      "decided_at": "2026-09-12T19:30:11Z",
+      "decision": "STOPPED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "route-authority-gate-001",
+      "gate_public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+      "payload_hash": "919338f85fa6674a77d70ee0149f8145f11ba6371d7e1a56be5a69030f29f5c3",
+      "principal_id": "openline:principal:0045b6de129f471a105556e05d1706ad1fa6f26b3340ea18b6f1c4d725e07dfa",
+      "reason_codes": [
+        "RECIPIENT_LACKS_SOURCE_AUTHORITY"
+      ],
+      "recipient_subject_id": "agent-blocked",
+      "schema": "openline.gate.route_receipt.v1",
+      "sender_subject_id": "agent-source",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "0b63d16d7278914273d17ab37b554d4ef829a7fed5fa9bea7290cedfccfce77a",
+        "value": "bf97b1766c5c0291560a6fdfc50c2614d2a128c5f6c5b62ea1dc625c5726a33da3abd32dac04734d4bbb23e59d5e84df1ba75244ccca5d7f006562ccb7b4f206"
+      },
+      "wallet_policy_authority": "NONE"
+    }
+  },
+  "delivery_witness": [
+    {
+      "kind": "benign-clean-sender",
+      "payload_hash": "cde24f0ca703daa2e72d9a70d07b888c77acabc8a1ae4274cb27e35000f50d2f",
+      "recipient": "agent-blocked"
+    },
+    {
+      "kind": "protected-transform-to-authorized",
+      "payload_hash": "bcd3af9b9bb7c5f3cd8afa648cf405560d99f8b686c09332e2b9eac3ec3446fd",
+      "recipient": "agent-allowed"
+    }
+  ],
+  "experiment_id": "ROUTE-AUTHORITY-GATE-001",
+  "owner_policy": {
+    "declassification_supported": false,
+    "generic_peer_messaging_remains_separately_authorized": true,
+    "protected_source_action": "records:read:payroll",
+    "required_recipient_scopes": [
+      "records:read:payroll"
+    ]
+  },
+  "principal_id": "openline:principal:0045b6de129f471a105556e05d1706ad1fa6f26b3340ea18b6f1c4d725e07dfa",
+  "protected_transform_hash": "bcd3af9b9bb7c5f3cd8afa648cf405560d99f8b686c09332e2b9eac3ec3446fd",
+  "result_hash": "897606d54e4be628b59be8949759c0db1727e54e220fa513963000553ffffc01",
+  "schema": "openline.route_authority_gate.result.v1",
+  "unauthorized_protected_delivery": false,
+  "verdict": "ROUTE_AUTHORITY_REPAIR_PASS"
+}

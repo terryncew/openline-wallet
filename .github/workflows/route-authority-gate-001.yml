@@ -1,0 +1,38 @@
+name: ROUTE-AUTHORITY-GATE-001
+
+on:
+  push:
+    branches: [main, "fix/**", "proof/**"]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  route-authority-gate:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: python -m pip install -e ".[mcp]"
+      - name: Existing and repair unit suite
+        run: python -m unittest discover -s tests -v
+      - name: Run and verify ROUTE-AUTHORITY-GATE-001
+        run: |
+          rm -rf route-authority-gate-artifacts
+          python proofs/route-authority-gate-001/run.py --output route-authority-gate-artifacts
+          python proofs/route-authority-gate-001/verify.py route-authority-gate-artifacts
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: route-authority-gate-${{ matrix.python-version }}
+          path: route-authority-gate-artifacts/
+          if-no-files-found: warn
