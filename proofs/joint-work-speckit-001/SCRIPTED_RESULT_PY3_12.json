@@ -1,0 +1,514 @@
+{
+  "authority": {
+    "cross_scope_probe": {
+      "action": "speckit:T201:e6bbaf6901a2ae50e6763f59",
+      "decided_at": "2026-09-12T04:27:35.701220Z",
+      "decision": "STOPPED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-001",
+      "gate_public_key": "404c817f5a0cd9f25f1f0bd15c3aa1e7695d3a12c8cfd531b441fcc45c3d09ab",
+      "mandate_id": "speckit_worker_a_initial",
+      "payload_hash": "5dd3d524028dc5ace3f63481dc94cfb098523bd118fecc11e6f8ec3f7b50093c",
+      "presentation_hash": "09f4d555e46357cbf7ae7885d1d36e222880d7f733e4f727af3bfca0eb4b47c5",
+      "principal_id": "openline:principal:1c7a1ad5f54cc43c75bdc31c0a36b280a82fad10db5f92563c7cdef3c41da865",
+      "reason_codes": [
+        "ACTION_OUTSIDE_MANDATE"
+      ],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "404c817f5a0cd9f25f1f0bd15c3aa1e7695d3a12c8cfd531b441fcc45c3d09ab",
+        "value": "90a5574ce7ea00d5c0fe495e4c2e3311d0f8f50847123847f833bdc33d6d1a735a036f8f2e595e83f05de3384ff7e8fd88ef8b7653c3457773a37893cf788a09"
+      },
+      "subject_id": "worker-a",
+      "wallet_policy_authority": "NONE"
+    },
+    "initial_grants": {
+      "worker_a": {
+        "data": {
+          "expires_at": "2026-09-12T04:47:35.693821Z",
+          "mandate_id": "speckit_worker_a_initial",
+          "predecessor_mandate_id": null,
+          "scopes": [
+            "speckit:T101:e6bbaf6901a2ae50e6763f59",
+            "speckit:T102:e6bbaf6901a2ae50e6763f59"
+          ],
+          "subject_id": "worker-a",
+          "subject_public_key": "065a3109739c3263c3e71c9a8d139c3f4de61254b1324d05969972c981e6224c"
+        },
+        "event_type": "MANDATE_ISSUED",
+        "issued_at": "2026-09-12T04:27:35.693830Z",
+        "payload_hash": "d24216b3fdf67f8c51de40ea046113cbd7bfd84b9e206475ab879fdb088f8300",
+        "previous_event_hash": null,
+        "principal_id": "openline:principal:1c7a1ad5f54cc43c75bdc31c0a36b280a82fad10db5f92563c7cdef3c41da865",
+        "schema": "openline.wallet.timeline_event.v1",
+        "sequence": 1,
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "eed635ec827448683656acc621b8d5948a6f73d0d619d9cd5bdb12f2f922fd32",
+          "value": "aad95a8b54c836e24bbf7d581c04b59685d076cc6357c4ba7293ea85f0f2d410ef6b68d9b8307949e0650afedfaff46eaa0342791caa734ae0155937ef9ab00f"
+        }
+      },
+      "worker_b": {
+        "data": {
+          "expires_at": "2026-09-12T04:47:35.693821Z",
+          "mandate_id": "speckit_worker_b_initial",
+          "predecessor_mandate_id": null,
+          "scopes": [
+            "speckit:T201:e6bbaf6901a2ae50e6763f59"
+          ],
+          "subject_id": "worker-b",
+          "subject_public_key": "a09b8a2534eaac1b34ea74c99028e278554f6c52ccf6f732941ec78e805995cf"
+        },
+        "event_type": "MANDATE_ISSUED",
+        "issued_at": "2026-09-12T04:27:35.696428Z",
+        "payload_hash": "706e3fb6088083f00c8afe63ae9ec97f5ed86c8372249678047bab397868a2b6",
+        "previous_event_hash": "a07dfd167fd0b0b23b69a8778e1b5df3427e3d16b453e55c556a1c2c42316911",
+        "principal_id": "openline:principal:1c7a1ad5f54cc43c75bdc31c0a36b280a82fad10db5f92563c7cdef3c41da865",
+        "schema": "openline.wallet.timeline_event.v1",
+        "sequence": 2,
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "eed635ec827448683656acc621b8d5948a6f73d0d619d9cd5bdb12f2f922fd32",
+          "value": "632e1901f860f5960628373a210c8665af769eb73e4d0a52670d212c67323b75d43092728a5de9b057b1011a3a82a0382d20c11b5f269b06611430853266c40e"
+        }
+      }
+    },
+    "owner_agreement": {
+      "airlock_pin": "3ef34fb0100516e458cb362a7448c78a72da097b",
+      "experiment_id": "JOINT-WORK-SPECKIT-001",
+      "fixture_base": "36dc89aaae0e42c8a09e9c31690431800fffbd37",
+      "payload_hash": "ef346edaefed769a98a42a3f5229dd0979fa426112a278a0b32aad204bd88068",
+      "protected": [
+        ".gitignore",
+        ".airlock/config.json",
+        ".specify/memory/constitution.md",
+        "specs/001-signed-webhook/spec.md",
+        "specs/001-signed-webhook/plan.md",
+        "specs/001-signed-webhook/tasks.md",
+        "specs/001-signed-webhook/contracts/webhook.md",
+        "tests/test_producer_checkpoint.py",
+        "tests/test_producer.py",
+        "tests/test_receiver.py",
+        "tests/test_convergence.py"
+      ],
+      "schema": "openline.joint-work-speckit.owner-agreement.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "8b1fbc448e582023cc4786fda007b0cbaec9c984822b4dae378f9f74df6a98b5",
+        "value": "e9f03e5130500d012fe2ad71398d295a553d4fb70075f839941689bbd225c302b52ca7f3fcf955062154c57b85587697e2f45b57e2c5198b1c6c2e675263cb02"
+      },
+      "spec_kit_pin": "d848fb4e18f44640ad6b42e60a280551ee90cdce",
+      "spec_root_digest": "e6bbaf6901a2ae50e6763f593402224bbda5fad3d8b12b51920dada07e6d8c50",
+      "task_bindings": {
+        "owner": [
+          "T301"
+        ],
+        "worker-a": [
+          "T101",
+          "T102"
+        ],
+        "worker-b": [
+          "T201"
+        ]
+      }
+    },
+    "post_revocation_T102": {
+      "action": "speckit:T102:e6bbaf6901a2ae50e6763f59",
+      "decided_at": "2026-09-12T04:27:36.163946Z",
+      "decision": "STOPPED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-001",
+      "gate_public_key": "404c817f5a0cd9f25f1f0bd15c3aa1e7695d3a12c8cfd531b441fcc45c3d09ab",
+      "mandate_id": "speckit_worker_a_initial",
+      "payload_hash": "343a2da117fb9ce528cd5f8b8a167248d018487802cb29f70042e461d151ed6b",
+      "presentation_hash": "21502a535db529f567fff37f84d39e3b4ab2df1a55b63414085f671ede570699",
+      "principal_id": "openline:principal:1c7a1ad5f54cc43c75bdc31c0a36b280a82fad10db5f92563c7cdef3c41da865",
+      "reason_codes": [
+        "MANDATE_REVOKED"
+      ],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "404c817f5a0cd9f25f1f0bd15c3aa1e7695d3a12c8cfd531b441fcc45c3d09ab",
+        "value": "7f14de2f67e2030ee74c9fe301ecc3e88127e419b4dd34a80f7c5974b3886b4e595ab99bfc88b77d9038119ccef05d50b069dd41bd2a5fdbbdc4721be5b58b05"
+      },
+      "subject_id": "worker-a",
+      "wallet_policy_authority": "NONE"
+    },
+    "successor_T102": {
+      "action": "speckit:T102:e6bbaf6901a2:handoff:dfa50855e77bbae5",
+      "decided_at": "2026-09-12T04:27:36.175392Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-001",
+      "gate_public_key": "404c817f5a0cd9f25f1f0bd15c3aa1e7695d3a12c8cfd531b441fcc45c3d09ab",
+      "mandate_id": "speckit_worker_a2_successor",
+      "payload_hash": "fd4023866511d4dd2aacf8ebd065bb578a4c4177bc2119c0c40ee325c40b324e",
+      "presentation_hash": "0b7cddfd2acd208f1a59dcf6116d0b400ca5a13db12b123d9280f6d40c536a44",
+      "principal_id": "openline:principal:1c7a1ad5f54cc43c75bdc31c0a36b280a82fad10db5f92563c7cdef3c41da865",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "404c817f5a0cd9f25f1f0bd15c3aa1e7695d3a12c8cfd531b441fcc45c3d09ab",
+        "value": "cbc0b7ac115bcf567e69013a2978fffbd07be2f91f1214484fe9b89689fbf4b06b1c66c4c5ae7ade890cf9a5e2b0206d66e99510b8626dd99dd00098ab478003"
+      },
+      "subject_id": "worker-a2",
+      "wallet_policy_authority": "NONE"
+    },
+    "successor_mandate": {
+      "data": {
+        "expires_at": "2026-09-12T04:47:36.166356Z",
+        "mandate_id": "speckit_worker_a2_successor",
+        "predecessor_mandate_id": null,
+        "scopes": [
+          "speckit:T102:e6bbaf6901a2:handoff:dfa50855e77bbae5"
+        ],
+        "subject_id": "worker-a2",
+        "subject_public_key": "76c52d7d9ec46e43a2b42cc4876f4d75dc1582c1003442bbff5ebde3e7abbfd0"
+      },
+      "event_type": "MANDATE_ISSUED",
+      "issued_at": "2026-09-12T04:27:36.166362Z",
+      "payload_hash": "7da48f7523501ead257d86d441de145236a15184a180752bedc88980d642718c",
+      "previous_event_hash": "e5130be959c2c6d3f81fac37961bc6dd7140f329b5aceb1ee30d47a6e558a0f3",
+      "principal_id": "openline:principal:1c7a1ad5f54cc43c75bdc31c0a36b280a82fad10db5f92563c7cdef3c41da865",
+      "schema": "openline.wallet.timeline_event.v1",
+      "sequence": 4,
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "eed635ec827448683656acc621b8d5948a6f73d0d619d9cd5bdb12f2f922fd32",
+        "value": "9a544990ae6b598a734a8b6029b3d1af630d5164ba35a651a3522d85af2678819769588946e057faa66f5ade4a3342b0138969d7a53875aaa0aa218032899408"
+      }
+    },
+    "worker_a_T101": {
+      "action": "speckit:T101:e6bbaf6901a2ae50e6763f59",
+      "decided_at": "2026-09-12T04:27:35.703435Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-001",
+      "gate_public_key": "404c817f5a0cd9f25f1f0bd15c3aa1e7695d3a12c8cfd531b441fcc45c3d09ab",
+      "mandate_id": "speckit_worker_a_initial",
+      "payload_hash": "a9b4f265e7a7c9637af78dbd2ccf744ff556dc99423d63747f5842eeca305503",
+      "presentation_hash": "a028ad06a8b64c445329b98db014b5130508d099bcc4c5d96e2495178007dc99",
+      "principal_id": "openline:principal:1c7a1ad5f54cc43c75bdc31c0a36b280a82fad10db5f92563c7cdef3c41da865",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "404c817f5a0cd9f25f1f0bd15c3aa1e7695d3a12c8cfd531b441fcc45c3d09ab",
+        "value": "0b559011e27a8c1f35fe2ccbe258ed89cb021c5d0b1bc0c1703d7b9f7dc7bdda9a61fedecd81333dce435a03b2781ed8693b7313b351b614a1d3f5f2af979f09"
+      },
+      "subject_id": "worker-a",
+      "wallet_policy_authority": "NONE"
+    },
+    "worker_a_revocation": {
+      "data": {
+        "mandate_id": "speckit_worker_a_initial",
+        "reason": "WORKER_REPLACED"
+      },
+      "event_type": "MANDATE_REVOKED",
+      "issued_at": "2026-09-12T04:27:36.156001Z",
+      "payload_hash": "070b67a9b5c1a7a4c2ec2708302c561bb17d779f3beb19d8a7361eb22cefabe3",
+      "previous_event_hash": "8949de901abd33141ac846fcce62dba4e47a5645691279f979c8cc46b7e18b3e",
+      "principal_id": "openline:principal:1c7a1ad5f54cc43c75bdc31c0a36b280a82fad10db5f92563c7cdef3c41da865",
+      "schema": "openline.wallet.timeline_event.v1",
+      "sequence": 3,
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "8b1fbc448e582023cc4786fda007b0cbaec9c984822b4dae378f9f74df6a98b5",
+        "value": "c98776081402b9f2d657aad8a6b9a5b8ef649273326ceaf9a510704c6b1d9154635d733850af0160c5a7567e6dc59435e17ad1de9daa5d4bba55dcc344710405"
+      }
+    },
+    "worker_b_T201": {
+      "action": "speckit:T201:e6bbaf6901a2ae50e6763f59",
+      "decided_at": "2026-09-12T04:27:35.706808Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-001",
+      "gate_public_key": "404c817f5a0cd9f25f1f0bd15c3aa1e7695d3a12c8cfd531b441fcc45c3d09ab",
+      "mandate_id": "speckit_worker_b_initial",
+      "payload_hash": "1400b3e2416864408502aed8a430bf5342eaceb9e4c447720431d4f48c3b9a88",
+      "presentation_hash": "22969ccdf8d13c3f7cb399b8e4aa5efd557cb0ee07567316f0bc555ac6006979",
+      "principal_id": "openline:principal:1c7a1ad5f54cc43c75bdc31c0a36b280a82fad10db5f92563c7cdef3c41da865",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "404c817f5a0cd9f25f1f0bd15c3aa1e7695d3a12c8cfd531b441fcc45c3d09ab",
+        "value": "b47bad60f35f6b869cae1d8e5c8249539630b93f2c035f3122290249211a3f9197732676e65d9d2bfbe2dad449a7906c284d1f0f3bc9af54d9fb41e1d35bbe00"
+      },
+      "subject_id": "worker-b",
+      "wallet_policy_authority": "NONE"
+    }
+  },
+  "checkpoints": {
+    "handoff": {
+      "checkpoint_commit": "7f572d7d4ef86096fa06fddf4d5fa98063f5af69",
+      "checkpoint_file_sha256": "1bc99afa96f11cf6ad0d41623852bc63759d32194dfe5d87a6df8e423c72fd2d",
+      "checkpoint_task": "T101",
+      "experiment_id": "JOINT-WORK-SPECKIT-001",
+      "payload_hash": "7b06caa413427c670c7fb09675fb5a15577b99ddeefe9aca07bb77715d45c4a6",
+      "private_provider_chat_transferred": false,
+      "provider_credentials_transferred": false,
+      "schema": "openline.joint-work-speckit.handoff.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "8b1fbc448e582023cc4786fda007b0cbaec9c984822b4dae378f9f74df6a98b5",
+        "value": "b4dcc03f075f486fba66d567074ceaed9810b6c64e1d68f16edf1004fcd752f37a41b8ab32009c78736aefa237117d0eb61ea8a7bdd26bf6dad0d05f14345207"
+      },
+      "spec_kit_pin": "d848fb4e18f44640ad6b42e60a280551ee90cdce",
+      "spec_root_digest": "e6bbaf6901a2ae50e6763f593402224bbda5fad3d8b12b51920dada07e6d8c50",
+      "unresolved_task": "T102",
+      "worker_a_receipt_hash": "d686e8c8cb8d3a1ed51bafa732b8fcbf535fc2e17cdacaac27a6f1ea63a0c561",
+      "worker_b_checkpoint_commit": "a5cb87764a2c4cb1ce9314831dc6c74e13b8d862"
+    },
+    "handoff_hash": "dfa50855e77bbae57b2f708958bd566239153e1a8db57bfe3325cf7534ab2158",
+    "handoff_signature_verified": true,
+    "successor_T102_commit": "d903f16d4ec100a318afb1ea0197d6a1880a6d82",
+    "successor_descends_from_T101": true,
+    "worker_a_T101_commit": "7f572d7d4ef86096fa06fddf4d5fa98063f5af69",
+    "worker_b_T201_commit": "a5cb87764a2c4cb1ce9314831dc6c74e13b8d862"
+  },
+  "earned_claim": "In a zero-provider scripted fixture using a pinned GitHub Spec Kit project definition, Wallet enforced separate task authority and revocation/successor handoff, while Airlock rejected a locally-green cross-task requirement violation and accepted the valid combined implementation.",
+  "experiment_id": "JOINT-WORK-SPECKIT-001",
+  "local_checks": {
+    "T101_checkpoint": {
+      "path": "tests/test_producer_checkpoint.py",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    },
+    "T101_full_before_successor": {
+      "path": "tests/test_producer.py",
+      "returncode": 1,
+      "status": "FAIL",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/speckit-worker-a-oind5jzw/tests/test_producer.py\", line 14, in <module>\n    body, header = build_request(\n                   ^^^^^^^^^^^^^^\n  File \"/tmp/speckit-worker-a-oind5jzw/src/producer.py\", line 19, in build_request\n    raise NotImplementedError(\"T102 required\")\nNotImplementedError: T102 required\n",
+      "stdout": ""
+    },
+    "T102_successor": {
+      "path": "tests/test_producer.py",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    },
+    "T201_receiver": {
+      "path": "tests/test_receiver.py",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    },
+    "negative_producer": {
+      "path": "tests/test_producer.py",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    }
+  },
+  "mode": "scripted_zero_provider",
+  "negative_control": {
+    "acceptance": {
+      "commands": [
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_convergence.py"
+          ],
+          "duration_seconds": 0.025038,
+          "exit_code": 1,
+          "kind": "spec_kit_composition",
+          "stderr_sha256": "53d3c9c0e0410157667ba9c8461f371ab1919f5b10cc1c2a727c00afa77ec90c",
+          "stderr_tail": "Traceback (most recent call last):\n  File \"/tmp/speckit-eval-yu7ia2yy/tests/test_convergence.py\", line 25, in <module>\n    assert status2 == 200 and out2 == {\"status\": \"accepted\"}, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: FR-004 violated: distinct caller nonces must remain distinct end to end\n",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        }
+      ],
+      "rule": "spec_kit_composition",
+      "status": "FAIL"
+    },
+    "airlock_sha": "3ef34fb0100516e458cb362a7448c78a72da097b",
+    "candidate": "9ae9e7a00cdb324fdd8610fdb985b5dc6289a62e",
+    "changed_paths": [
+      "src/producer.py",
+      "src/receiver.py"
+    ],
+    "ordinary": {
+      "commands": [
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_producer.py"
+          ],
+          "duration_seconds": 0.025886,
+          "exit_code": 0,
+          "kind": "ordinary",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_receiver.py"
+          ],
+          "duration_seconds": 0.026119,
+          "exit_code": 0,
+          "kind": "ordinary",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        }
+      ],
+      "rule": "ordinary",
+      "status": "PASS"
+    },
+    "protected": {
+      "rule": "protected_files",
+      "status": "PASS",
+      "touched": []
+    },
+    "status": "REJECTED"
+  },
+  "nonclaims": [
+    "This arm does not run Spec Kit slash commands or reproduce Spec Kit agent reasoning.",
+    "The owner-authored artifacts use the pinned Spec Kit artifact structure and task conventions; they are not claimed to have been generated by the Spec Kit CLI.",
+    "Spec Kit convergence is not used as the final judge; Airlock owns executable composition acceptance.",
+    "This arm makes no claim about Claude, Codex, OpenAI, Anthropic, or any other live provider.",
+    "The fixture has no production or external side effect."
+  ],
+  "parallel": {
+    "overlap_ns": 300082426,
+    "worker_a": {
+      "changed_paths": [
+        "src/producer.py"
+      ],
+      "ended_monotonic_ns": 68307957810,
+      "mode": "scripted",
+      "provider_spend_usd": 0.0,
+      "role": "worker-a",
+      "started_monotonic_ns": 68007737846
+    },
+    "worker_b": {
+      "changed_paths": [
+        "src/receiver.py"
+      ],
+      "ended_monotonic_ns": 68358086524,
+      "mode": "scripted",
+      "provider_spend_usd": 0.0,
+      "role": "worker-b",
+      "started_monotonic_ns": 68007875384
+    }
+  },
+  "pins": {
+    "airlock": "3ef34fb0100516e458cb362a7448c78a72da097b",
+    "spec_kit": "d848fb4e18f44640ad6b42e60a280551ee90cdce",
+    "spec_kit_template_git_blobs": {
+      "templates/constitution-template.md": "a4670ff46919b276a4c9663b4ca51830108fcfc0",
+      "templates/plan-template.md": "36f2eab16880bac670fe43cbe7ef2b9bc8c3aa2f",
+      "templates/spec-template.md": "ceb28776215a098e977650ac090c785dcbf53651",
+      "templates/tasks-template.md": "7fff087cc5a3c51a889d865fd9126607a032d233"
+    },
+    "wallet_preregistered_base": "1d9a8e0514efd55fe9df337f8cfe2ae75f44dc9b",
+    "wallet_runtime_head": "1b957806765d056ca85134de175d3068a0292c7c"
+  },
+  "prereg_sha256": "8dc169296e5204fe98eb7af1dd8fde419100c32906c3ad6c9c8e9ade7b46d8b9",
+  "provider_calls": [],
+  "provider_spend_usd": 0.0,
+  "schema": "openline.joint-work-speckit-001.result.v1",
+  "spec_kit": {
+    "artifact_sha256": {
+      ".specify/memory/constitution.md": "5bb1cd04ca3581ebb3886aec0e80ca8a50fbc09bfb52efd9c171290f2be21ea9",
+      "specs/001-signed-webhook/contracts/webhook.md": "a1edf021dcf49a1b587f32c6c4b620cec11d452713f50b579f3143c8c909f344",
+      "specs/001-signed-webhook/plan.md": "a104430a8126be70985d2022f9272273479b122f8bd0226c36ba1a5aed197a35",
+      "specs/001-signed-webhook/spec.md": "d6d2e1a27fa38e36489019389218801ae76e9d86486d8d0435901161a736bd5d",
+      "specs/001-signed-webhook/tasks.md": "f0eee6066d2f654be288a1f33434a683b59a3e4421eb8e913d5526bb17a935e4"
+    },
+    "frozen_unchanged_through_both_compositions": true,
+    "root_digest": "e6bbaf6901a2ae50e6763f593402224bbda5fad3d8b12b51920dada07e6d8c50",
+    "shape_validation": "PASS"
+  },
+  "valid_composition": {
+    "acceptance": {
+      "commands": [
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_convergence.py"
+          ],
+          "duration_seconds": 0.023538,
+          "exit_code": 0,
+          "kind": "spec_kit_composition",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        }
+      ],
+      "rule": "spec_kit_composition",
+      "status": "PASS"
+    },
+    "airlock_sha": "3ef34fb0100516e458cb362a7448c78a72da097b",
+    "candidate": "47fa9195acd9b24c554166f416142fc507791915",
+    "changed_paths": [
+      "src/producer.py",
+      "src/receiver.py"
+    ],
+    "ordinary": {
+      "commands": [
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_producer.py"
+          ],
+          "duration_seconds": 0.023864,
+          "exit_code": 0,
+          "kind": "ordinary",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_receiver.py"
+          ],
+          "duration_seconds": 0.023953,
+          "exit_code": 0,
+          "kind": "ordinary",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        }
+      ],
+      "rule": "ordinary",
+      "status": "PASS"
+    },
+    "protected": {
+      "rule": "protected_files",
+      "status": "PASS",
+      "touched": []
+    },
+    "status": "ELIGIBLE"
+  },
+  "verdict": "SCRIPTED_SPECKIT_ARM_PASS_LIVE_NOT_RUN"
+}

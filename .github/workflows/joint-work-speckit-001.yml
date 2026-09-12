@@ -1,0 +1,78 @@
+name: JOINT-WORK-SPECKIT-001
+
+on:
+  push:
+    branches:
+      - main
+      - "proof/**"
+      - "research/**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  scripted:
+    name: scripted (${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - name: Checkout Wallet
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Checkout pinned Airlock
+        uses: actions/checkout@v4
+        with:
+          repository: terryncew/openline-airlock
+          ref: 3ef34fb0100516e458cb362a7448c78a72da097b
+          path: _airlock
+          persist-credentials: false
+
+      - name: Checkout pinned GitHub Spec Kit
+        uses: actions/checkout@v4
+        with:
+          repository: github/spec-kit
+          ref: d848fb4e18f44640ad6b42e60a280551ee90cdce
+          path: _spec-kit
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install frozen OpenLine sources
+        run: |
+          python -m pip install -e .
+          python -m pip install -e ./_airlock
+
+      - name: Harness self-test
+        run: python proofs/joint-work-speckit-001/run.py --self-test
+
+      - name: Run zero-provider Spec Kit arm
+        run: |
+          rm -rf "${{ runner.temp }}/joint-work-speckit"
+          python proofs/joint-work-speckit-001/run.py \
+            --spec-kit-root ./_spec-kit \
+            --output "${{ runner.temp }}/joint-work-speckit"
+
+      - name: Verify frozen receipt
+        run: |
+          python proofs/joint-work-speckit-001/verify.py \
+            "${{ runner.temp }}/joint-work-speckit"
+
+      - name: Upload receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: joint-work-speckit-001-${{ matrix.python-version }}
+          path: ${{ runner.temp }}/joint-work-speckit/
+          if-no-files-found: warn
