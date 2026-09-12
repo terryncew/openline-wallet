@@ -1,0 +1,9 @@
+{
+  "claude_max_calls": 2,
+  "claude_max_usd": 3.0,
+  "experiment_id": "JOINT-WORK-LIVE-001",
+  "openai_max_calls": 3,
+  "openai_max_usd": 10.0,
+  "schema": "openline.joint-work-live-001.activation.v1",
+  "scripted_green_head": "849bdb868cbe61444ea0569418e6b09ea8bdd2bd"
+}
