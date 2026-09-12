@@ -1,0 +1,11 @@
+{
+  "earned_live_claim": false,
+  "experiment_id": "JOINT-WORK-LIVE-001",
+  "final_freeze_commit": "11c0bd2700f180ff2b98a29fbbee79c8977c6b37",
+  "main_observed_before_final_integration": "0553d2241aa2023b58e724b64bc431d5622dd15d",
+  "provider_rerun": false,
+  "purpose": "Create one additive Working Copy commit on the already-final local branch so the branch can be pushed without altering the frozen evidence or rerunning providers.",
+  "schema": "openline.joint-work-live-001.final-branch-marker.v1",
+  "status": "FROZEN",
+  "terminal_verdict": "INCONCLUSIVE_PROVIDER_BUDGET"
+}

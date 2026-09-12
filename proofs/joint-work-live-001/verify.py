@@ -13,7 +13,9 @@ from openline_wallet.crypto import record_hash, verify_record
 
 HERE = Path(__file__).resolve().parent
 PREREG = HERE / "prereg.json"
+LIVE_RUN_001 = HERE / "LIVE_RUN_001_SETUP_FAILURE.json"
 EXPERIMENT_ID = "JOINT-WORK-LIVE-001"
+EXPECTED_CODEX_MODEL = "gpt-5.6-sol"
 SCRIPTED_VERDICT = "SCRIPTED_ARM_PASS_LIVE_NOT_RUN"
 LIVE_PASS = "JOINT_WORK_LIVE_PASS"
 ALLOWED_INCONCLUSIVE = {
@@ -188,10 +190,70 @@ def verify_scripted(result: dict[str, Any]) -> None:
         fail("scripted artifact contains a real provider call")
 
 
+def verify_live_accounting(result: dict[str, Any], *, require_complete: bool) -> None:
+    if result.get("prior_live_attempt_sha256") != sha256(LIVE_RUN_001):
+        fail("prior live setup-failure binding mismatch")
+    prior = load(LIVE_RUN_001)
+    if prior.get("classification") != "INCONCLUSIVE_PROVIDER_SETUP":
+        fail("prior live setup-failure classification changed")
+    if prior["claude"]["calls_consumed"] != 1:
+        fail("prior Claude call count changed")
+    if abs(float(prior["claude"]["reported_spend_usd"]) - 0.16433475) > 1e-12:
+        fail("prior Claude spend changed")
+    if prior["openai"]["calls_consumed"] != 1:
+        fail("prior Codex call count changed")
+
+    providers = result.get("providers")
+    if not isinstance(providers, dict):
+        fail("live provider accounting missing")
+    if providers.get("codex_model") != EXPECTED_CODEX_MODEL:
+        fail("live Codex replacement model mismatch")
+
+    counts = providers.get("call_counts", {})
+    claude_calls = counts.get("claude")
+    codex_calls = counts.get("codex")
+    if not isinstance(claude_calls, int) or claude_calls > 2:
+        fail("cumulative Claude call count exceeded cap")
+    if not isinstance(codex_calls, int) or codex_calls > 3:
+        fail("cumulative Codex call count exceeded cap")
+
+    spend = providers.get("spend_usd", {})
+    claude = spend.get("claude")
+    openai = spend.get("openai_codex_calculated_from_usage")
+    if isinstance(claude, (int, float)) and claude > 3.0 + 1e-9:
+        fail("cumulative Claude spend exceeded cap")
+    if isinstance(openai, (int, float)) and openai > 10.0 + 1e-9:
+        fail("cumulative OpenAI spend exceeded cap")
+
+    for call in providers.get("calls", []):
+        if call.get("other_provider_credentials_forwarded"):
+            fail("provider saw other provider credentials")
+        if call.get("forbidden_env_forwarded"):
+            fail("provider saw repository/SSH credential")
+        if call.get("provider_home_isolated") is not True:
+            fail("provider home isolation failed")
+        if call.get("provider_home_below_system_temp") is not False:
+            fail("provider HOME remained below system temp")
+        if call.get("provider") == "codex" and call.get("codex_home_below_system_temp") is not False:
+            fail("CODEX_HOME remained below system temp")
+
+    if require_complete:
+        if claude_calls != 2 or codex_calls != 3:
+            fail("live PASS did not consume the frozen cumulative call sequence")
+        current = providers.get("current_call_counts", {})
+        if current.get("claude") != 1 or current.get("codex") != 2:
+            fail("live PASS current retry call sequence mismatch")
+        if not isinstance(claude, (int, float)) or claude < 0:
+            fail("Claude cumulative spend missing")
+        if not isinstance(openai, (int, float)) or openai < 0:
+            fail("OpenAI cumulative spend missing")
+
+
 def verify_live(result: dict[str, Any]) -> None:
     if result.get("mode") != "real":
         fail("expected live mode")
     verdict = result.get("verdict")
+    verify_live_accounting(result, require_complete=verdict == LIVE_PASS)
     if verdict in ALLOWED_INCONCLUSIVE:
         print(f"JOINT-WORK-LIVE-001 verified: {verdict}")
         return
@@ -201,35 +263,17 @@ def verify_live(result: dict[str, Any]) -> None:
         fail("earned claim changed")
 
     providers = result["providers"]
-    claude = providers["spend_usd"]["claude"]
-    openai = providers["spend_usd"]["openai_codex_calculated_from_usage"]
-    if not isinstance(claude, (int, float)) or claude < 0 or claude > 3.0 + 1e-9:
-        fail("Claude spend outside frozen cap")
-    if not isinstance(openai, (int, float)) or openai < 0 or openai > 10.0 + 1e-9:
-        fail("OpenAI spend outside frozen cap")
-    if providers["call_counts"]["claude"] > 2:
-        fail("Claude call count exceeded cap")
-    if providers["call_counts"]["codex"] > 3:
-        fail("Codex call count exceeded cap")
-
     calls = providers["calls"]
     roles = [call.get("role") for call in calls]
     if "worker-a" not in roles or "worker-b" not in roles or "worker-a2" not in roles:
         fail("missing required live worker role")
-    if not any(call.get("provider") == "claude" for call in calls):
-        fail("no Claude live call")
-    if len([call for call in calls if call.get("provider") == "codex"]) < 2:
-        fail("missing Codex Worker B/successor calls")
+    if len([call for call in calls if call.get("provider") == "claude"]) != 1:
+        fail("current retry must contain exactly one remaining Claude call")
+    if len([call for call in calls if call.get("provider") == "codex"]) != 2:
+        fail("current retry must contain exactly Worker B and successor Codex calls")
     for call in calls:
-        if call.get("other_provider_credentials_forwarded"):
-            fail("provider saw other provider credentials")
-        if call.get("forbidden_env_forwarded"):
-            fail("provider saw repository/SSH credential")
-        if call.get("provider_home_isolated") is not True:
-            fail("provider home isolation failed")
         if call.get("provider") == "codex" and call.get("usage") is None:
             fail("Codex usage missing from live PASS")
-
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
@@ -251,6 +295,8 @@ def main(argv: list[str] | None = None) -> int:
             fail("inconclusive prereg hash mismatch")
         if args.require_live and result.get("mode") != "real":
             fail("live verifier received non-live inconclusive artifact")
+        if result.get("mode") == "real":
+            verify_live_accounting(result, require_complete=False)
         print(f"JOINT-WORK-LIVE-001 verified: {result['verdict']}")
         return 0
 

@@ -1,0 +1,298 @@
+{
+  "airlock_sha": "3ef34fb0100516e458cb362a7448c78a72da097b",
+  "claim": "NONE_INCONCLUSIVE",
+  "contract_sha256": "b9e8381bc5b81792c9527f64bc81bfa86af638c9efc01f16c9b13017d2e92cdf",
+  "experiment_id": "JOINT-WORK-LIVE-001",
+  "initial_gate_receipts": {
+    "cross_scope_probe": {
+      "action": "joint:b-complete:b9e8381bc5b81792c9527f64bc81bfa8",
+      "decided_at": "2026-09-12T03:35:57.309884Z",
+      "decision": "STOPPED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-live-001",
+      "gate_public_key": "224d6b64b5797a631eac53dec3ba50e5174e44577edcdf3ee9cc08df801c390f",
+      "mandate_id": "joint_worker_a_initial",
+      "payload_hash": "5b936b999acdea75c31383c96fc75d721611d71e40ace3a17322482f73dd430a",
+      "presentation_hash": "d71a3a291a7dfe03018c5d6889d4ee6e2f60f401ff359e4b8b5ed2c4cfa487ef",
+      "principal_id": "openline:principal:45e556ac68ec26fb9dffe10e009bfa8568273df0f4eedf17699465257843a153",
+      "reason_codes": [
+        "ACTION_OUTSIDE_MANDATE"
+      ],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "224d6b64b5797a631eac53dec3ba50e5174e44577edcdf3ee9cc08df801c390f",
+        "value": "8dc16facf16ee1dd7bd6d8f3c452e0ff476ef1096297ead6e8c03f0fd0d0d8ae36ec7e08a1278bc7b45d7812eb3713d56dd130f9d2755a105497d5d726e6470d"
+      },
+      "subject_id": "worker-a",
+      "wallet_policy_authority": "NONE"
+    },
+    "worker_a": {
+      "action": "joint:a-checkpoint:b9e8381bc5b81792c9527f64bc81bfa8",
+      "decided_at": "2026-09-12T03:35:57.311780Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-live-001",
+      "gate_public_key": "224d6b64b5797a631eac53dec3ba50e5174e44577edcdf3ee9cc08df801c390f",
+      "mandate_id": "joint_worker_a_initial",
+      "payload_hash": "6e47a256759432ef3ed7cccd5eb23dca2148ff9e2b2a0c6e17114c255a4880ad",
+      "presentation_hash": "a2ea3a7c02462b4d3ee753f1cddde35d583628f6311e1ac786566b7a95d99015",
+      "principal_id": "openline:principal:45e556ac68ec26fb9dffe10e009bfa8568273df0f4eedf17699465257843a153",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "224d6b64b5797a631eac53dec3ba50e5174e44577edcdf3ee9cc08df801c390f",
+        "value": "f58addca57cd2243b7a4d6a351fd3ada8021000c069be0dc9aafd784ad9e76dcffe17960afe8588a98e365ecbfb40f97094c8a3a24b4c2b30732d646bbb60703"
+      },
+      "subject_id": "worker-a",
+      "wallet_policy_authority": "NONE"
+    },
+    "worker_b": {
+      "action": "joint:b-complete:b9e8381bc5b81792c9527f64bc81bfa8",
+      "decided_at": "2026-09-12T03:35:57.313734Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-live-001",
+      "gate_public_key": "224d6b64b5797a631eac53dec3ba50e5174e44577edcdf3ee9cc08df801c390f",
+      "mandate_id": "joint_worker_b_initial",
+      "payload_hash": "c7ca1bf0277709617f86a31539c8c0b53d48ab266c7af200751af9e7ec9b986d",
+      "presentation_hash": "8d33fc6b2a8d3005c63d21d8d9de3e7f6b7fe38a7e9819487b8e034250d6bcb7",
+      "principal_id": "openline:principal:45e556ac68ec26fb9dffe10e009bfa8568273df0f4eedf17699465257843a153",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "224d6b64b5797a631eac53dec3ba50e5174e44577edcdf3ee9cc08df801c390f",
+        "value": "d73ef14077c84c1a299e08405dc119d6331695d83525c5935d4ee80aba75f3850928d63844b786367cf5a8cef787f0dc2e5bd171777ba9bcb7a6eda004b0e80f"
+      },
+      "subject_id": "worker-b",
+      "wallet_policy_authority": "NONE"
+    }
+  },
+  "initial_grants": {
+    "worker_a": {
+      "data": {
+        "expires_at": "2026-09-12T03:55:57.300848Z",
+        "mandate_id": "joint_worker_a_initial",
+        "predecessor_mandate_id": null,
+        "scopes": [
+          "joint:a-checkpoint:b9e8381bc5b81792c9527f64bc81bfa8",
+          "joint:a-continue:b9e8381bc5b81792c9527f64bc81bfa8"
+        ],
+        "subject_id": "worker-a",
+        "subject_public_key": "b508944ae892f96ba94976d08cc8df7c35065a8be8095854bf7e70498068a730"
+      },
+      "event_type": "MANDATE_ISSUED",
+      "issued_at": "2026-09-12T03:35:57.300866Z",
+      "payload_hash": "c52dbd5b0b9b574251d23de0fcde6f9a0b7a37c687c01cfa311d1aa10746bd0c",
+      "previous_event_hash": null,
+      "principal_id": "openline:principal:45e556ac68ec26fb9dffe10e009bfa8568273df0f4eedf17699465257843a153",
+      "schema": "openline.wallet.timeline_event.v1",
+      "sequence": 1,
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "a5f662ed81dd08920c3cc8e5677ee66facaa6ff595bcd812708d599275df6ebd",
+        "value": "159524ae9b5abe1c055b43affd842e6c29a266e57b5ebc0905d44034aaf3b6a9babbab740daf29a9ed4e3953baac74f3032574a8a6fe0067b7807c954d39c806"
+      }
+    },
+    "worker_b": {
+      "data": {
+        "expires_at": "2026-09-12T03:55:57.300848Z",
+        "mandate_id": "joint_worker_b_initial",
+        "predecessor_mandate_id": null,
+        "scopes": [
+          "joint:b-complete:b9e8381bc5b81792c9527f64bc81bfa8"
+        ],
+        "subject_id": "worker-b",
+        "subject_public_key": "a8717977306799dff1201102871e1f286062db6b1a34d7daf59fd9f90bdf833e"
+      },
+      "event_type": "MANDATE_ISSUED",
+      "issued_at": "2026-09-12T03:35:57.303456Z",
+      "payload_hash": "e173cd6ae16623ea2cf47331d42237aa8d85b0806794a525be2f1528d774c70b",
+      "previous_event_hash": "a84eae9166933d0f343e0fb33786ca750341650e92eacf97ca6763d8cea87ed4",
+      "principal_id": "openline:principal:45e556ac68ec26fb9dffe10e009bfa8568273df0f4eedf17699465257843a153",
+      "schema": "openline.wallet.timeline_event.v1",
+      "sequence": 2,
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "a5f662ed81dd08920c3cc8e5677ee66facaa6ff595bcd812708d599275df6ebd",
+        "value": "1e0682ecfb72c5597ea2d52b2b7a887d2f7a85b601584109da7f11bb24930058d123c79464935dba89cb4bbacfdb2228bddbfa10527d2d88e19af693a9327100"
+      }
+    }
+  },
+  "live_activation": {
+    "claude_max_calls": 2,
+    "claude_max_usd": 3.0,
+    "experiment_id": "JOINT-WORK-LIVE-001",
+    "openai_max_calls": 3,
+    "openai_max_usd": 10.0,
+    "schema": "openline.joint-work-live-001.activation.v1",
+    "scripted_green_head": "849bdb868cbe61444ea0569418e6b09ea8bdd2bd"
+  },
+  "mode": "real",
+  "owner_agreement": {
+    "airlock_sha": "3ef34fb0100516e458cb362a7448c78a72da097b",
+    "contract_sha256": "b9e8381bc5b81792c9527f64bc81bfa86af638c9efc01f16c9b13017d2e92cdf",
+    "experiment_id": "JOINT-WORK-LIVE-001",
+    "payload_hash": "49a1030d013eab8a060e9d58df31c55459bf57b2ea14acfa3e392da2adc6c9a2",
+    "producer_allowed": [
+      "producer/webhook_producer.py"
+    ],
+    "protected": [
+      ".gitignore",
+      "contract.json",
+      ".airlock/config.json",
+      "producer/check_checkpoint.py",
+      "producer/test_producer.py",
+      "receiver/test_receiver.py",
+      "tests/test_integration.py"
+    ],
+    "receiver_allowed": [
+      "receiver/webhook_receiver.py"
+    ],
+    "repository_base": "6c84cad23e0a5afde111be2ac7743983e5c4d2b7",
+    "schema": "joint-work.owner-agreement.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "ecd412aaa5f3b95db8b8a5b94ee1b01b2a1d68b38106b551e3324e9f67d33790",
+      "value": "df529571bf443e0883d62b91d4e9d86e25a1fd5c1f6e924ea6095d0fdb802d43ab76ddb779745259dd1961d0ea2355f7e26d25d99d09ff7d78332868a777fa08"
+    }
+  },
+  "parallel_overlap_ns": 10664965512,
+  "partial_local_checks": {
+    "worker_a_checkpoint": {
+      "path": "producer/check_checkpoint.py",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    },
+    "worker_a_full": {
+      "path": "producer/test_producer.py",
+      "returncode": 1,
+      "status": "FAIL",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/joint-worker-a-qslrxyr_/producer/test_producer.py\", line 13, in <module>\n    body, header = build_request(\n                   ^^^^^^^^^^^^^^\n  File \"/tmp/joint-worker-a-qslrxyr_/producer/webhook_producer.py\", line 22, in build_request\n    raise NotImplementedError(\"successor continuation required\")\nNotImplementedError: successor continuation required\n",
+      "stdout": ""
+    },
+    "worker_b": {
+      "path": "receiver/test_receiver.py",
+      "returncode": 1,
+      "status": "FAIL",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/joint-worker-b-9olm0_av/receiver/test_receiver.py\", line 27, in <module>\n    status, out = receiver.receive(body, sig, now)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/joint-worker-b-9olm0_av/receiver/webhook_receiver.py\", line 10, in receive\n    raise NotImplementedError(\"worker B required\")\nNotImplementedError: worker B required\n",
+      "stdout": ""
+    }
+  },
+  "phase": "initial_parallel",
+  "prereg_sha256": "5ae0109bffdfa7d1b1fddcca163eb3129a84e7c4b8b9977281df7cb0dfd0770b",
+  "prior_live_attempt_sha256": "a2a6d7e3f88ae51e0d42d7a2e6b65776be49abdfc2b13cecba42b8fb8d9b16ed",
+  "providers": {
+    "call_caps": {
+      "claude": 2,
+      "codex": 3
+    },
+    "call_counts": {
+      "claude": 2,
+      "codex": 2
+    },
+    "calls": [
+      {
+        "accounting_error": false,
+        "changed_paths": [
+          "producer/webhook_producer.py"
+        ],
+        "codex_home_below_system_temp": false,
+        "command": "claude -p [bounded producer checkpoint]",
+        "credential_env_names": [
+          "ANTHROPIC_API_KEY"
+        ],
+        "ended_monotonic_ns": 96483121540,
+        "forbidden_env_forwarded": [],
+        "mode": "real",
+        "other_provider_credentials_forwarded": false,
+        "provider": "claude",
+        "provider_home_below_system_temp": false,
+        "provider_home_isolated": true,
+        "provider_spend_usd": 0.20485725,
+        "returncode": 0,
+        "role": "worker-a",
+        "started_monotonic_ns": 54991360011,
+        "usage": null,
+        "version": "2.1.260 (Claude Code)"
+      },
+      {
+        "accounting_error": false,
+        "changed_paths": [],
+        "codex_home_below_system_temp": false,
+        "command": "codex exec --model gpt-5.6-sol [bounded worker-b]",
+        "credential_env_names": [
+          "OPENAI_API_KEY"
+        ],
+        "ended_monotonic_ns": 65656791442,
+        "forbidden_env_forwarded": [],
+        "mode": "real",
+        "other_provider_credentials_forwarded": false,
+        "provider": "codex",
+        "provider_home_below_system_temp": false,
+        "provider_home_isolated": true,
+        "provider_spend_usd": 0.0832144,
+        "returncode": 0,
+        "role": "worker-b",
+        "started_monotonic_ns": 54991825930,
+        "usage": {
+          "cache_write_input_tokens": 11376,
+          "cached_input_tokens": 33166,
+          "input_tokens": 44554,
+          "output_tokens": 511,
+          "reasoning_output_tokens": 140
+        },
+        "version": "codex-cli 0.153.0"
+      }
+    ],
+    "caps_usd": {
+      "claude": 3.0,
+      "openai": 10.0
+    },
+    "codex_model": "gpt-5.6-sol",
+    "codex_rates_usd_per_million_tokens": {
+      "cache_write_input": 5.0,
+      "cached_input": 0.4,
+      "input": 4.0,
+      "output": 20.0
+    },
+    "current_call_counts": {
+      "claude": 1,
+      "codex": 1
+    },
+    "current_spend_usd": {
+      "claude": 0.20485725,
+      "openai_codex_calculated_from_usage": 0.0832144
+    },
+    "original_codex_model": "gpt-5.1-codex-mini",
+    "prior_live_run": {
+      "artifact_id": 10289794236,
+      "artifact_zip_sha256": "78ea9b241fe89e5b16f02dbdce07563067c0f516d3325d751a3ff2a6f3f85beb",
+      "classification": "INCONCLUSIVE_PROVIDER_SETUP",
+      "record_sha256": "a2a6d7e3f88ae51e0d42d7a2e6b65776be49abdfc2b13cecba42b8fb8d9b16ed",
+      "workflow_run_id": 34669873686
+    },
+    "spend_usd": {
+      "claude": 0.36919199999999996,
+      "openai_codex_calculated_from_usage": 0.0832144
+    }
+  },
+  "repair_history": {
+    "no_additional_repair_calls": true,
+    "prior_setup_failure": {
+      "artifact_id": 10289794236,
+      "artifact_zip_sha256": "78ea9b241fe89e5b16f02dbdce07563067c0f516d3325d751a3ff2a6f3f85beb",
+      "head_sha": "1b426372369c66b6edc3124794927892520abc20",
+      "job_id": 103489205488,
+      "workflow_run_id": 34669873686
+    }
+  },
+  "schema": "openline.joint-work-live-001.result.v1",
+  "verdict": "INCONCLUSIVE_PROVIDER_BUDGET",
+  "wallet_base": "7e9e24f72c9fd9d9b0db97f1c1ac83ddcc7a0d10",
+  "wallet_head": "3f6027f5a700bc62884da8fb99431d7ed70313b6"
+}

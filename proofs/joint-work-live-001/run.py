@@ -36,6 +36,7 @@ EXPERIMENT_ID = "JOINT-WORK-LIVE-001"
 HERE = Path(__file__).resolve().parent
 PREREG = HERE / "prereg.json"
 LIVE_ACTIVATION = HERE / "LIVE_ARM.json"
+LIVE_RUN_001 = HERE / "LIVE_RUN_001_SETUP_FAILURE.json"
 
 SCRIPTED_VERDICT = "SCRIPTED_ARM_PASS_LIVE_NOT_RUN"
 LIVE_PASS = "JOINT_WORK_LIVE_PASS"
@@ -56,10 +57,18 @@ PROTECTED = [
 PRODUCER_ALLOWED = ["producer/webhook_producer.py"]
 RECEIVER_ALLOWED = ["receiver/webhook_receiver.py"]
 
-CODEX_MODEL = "gpt-5.1-codex-mini"
-CODEX_RATES = {"input": 0.25, "cached_input": 0.025, "output": 2.0}
+ORIGINAL_CODEX_MODEL = "gpt-5.1-codex-mini"
+CODEX_MODEL = "gpt-5.6-sol"
+CODEX_RATES = {
+    "input": 4.0,
+    "cached_input": 0.4,
+    "cache_write_input": 5.0,
+    "output": 20.0,
+}
 CLAUDE_CAP = 3.0
 OPENAI_CAP = 10.0
+CLAUDE_CALL_CAP = 2
+OPENAI_CALL_CAP = 3
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -865,12 +874,16 @@ def _codex_usage(stdout: str) -> dict[str, int] | None:
 
 
 def _codex_cost(usage: dict[str, int]) -> float:
-    cached = min(usage["cached_input_tokens"], usage["input_tokens"])
-    uncached = usage["input_tokens"] - cached
+    total_input = usage["input_tokens"]
+    cached = min(usage["cached_input_tokens"], total_input)
+    remaining = max(0, total_input - cached)
+    cache_write = min(usage["cache_write_input_tokens"], remaining)
+    uncached = max(0, remaining - cache_write)
     billed_output = usage["output_tokens"] + usage["reasoning_output_tokens"]
     return (
         uncached * CODEX_RATES["input"]
         + cached * CODEX_RATES["cached_input"]
+        + cache_write * CODEX_RATES["cache_write_input"]
         + billed_output * CODEX_RATES["output"]
     ) / 1_000_000.0
 
@@ -916,10 +929,11 @@ def _claude_prompt(repair: str | None = None) -> str:
         "producer/webhook_producer.py. Implement canonical_payload and signature_header exactly "
         "to the frozen contract. Leave build_request raising NotImplementedError so the accepted "
         "checkpoint has real unresolved successor work. Do not modify tests, contract, .airlock, "
-        "receiver files, git config/history, or commit. Do not use network tools or inspect credentials."
+        "receiver files, git config/history, or commit. Do not use network tools or inspect credentials. "
+        "Do not run shell commands or tests; the owner harness performs verification after you stop."
     )
     if repair:
-        base += "\nThe owner check failed with this bounded diagnostic; repair only your file:\n" + repair[-3000:]
+        base += "\nRecovery/repair context; still edit only your authorized file:\n" + repair[-3000:]
     return base
 
 
@@ -983,6 +997,7 @@ def invoke_live(
     home = provider_root / role
     env, credential_names = provider_env(provider, home)
     started = time.monotonic_ns()
+    setup_error: str | None = None
 
     if provider == "claude":
         if not shutil.which("claude", path=env.get("PATH")):
@@ -1057,7 +1072,18 @@ def invoke_live(
     log = redacted(
         (proc.stdout or "") + ("\n" if proc.stdout and proc.stderr else "") + (proc.stderr or "")
     )[-20000:]
-    return {
+    paths = changed_paths(repo)
+    if not paths:
+        if provider == "codex" and (
+            proc.returncode != 0
+            or '"type":"turn.failed"' in (proc.stdout or "").replace(" ", "")
+            or '"type": "turn.failed"' in (proc.stdout or "")
+        ):
+            setup_error = "CODEX_PROVIDER_COMMAND_FAILED_NO_PROGRESS"
+        elif provider == "claude" and proc.returncode != 0:
+            setup_error = "CLAUDE_PROVIDER_COMMAND_FAILED_NO_PROGRESS"
+
+    result = {
         "role": role,
         "provider": provider,
         "mode": "real",
@@ -1074,16 +1100,28 @@ def invoke_live(
         ),
         "provider_home": str(home),
         "provider_home_isolated": Path(env["HOME"]).resolve() == home.resolve(),
+        "provider_home_below_system_temp": (
+            str(home.resolve()).startswith(str(Path(tempfile.gettempdir()).resolve()) + os.sep)
+        ),
         "codex_home": env.get("CODEX_HOME"),
+        "codex_home_below_system_temp": (
+            bool(env.get("CODEX_HOME"))
+            and str(Path(env["CODEX_HOME"]).resolve()).startswith(
+                str(Path(tempfile.gettempdir()).resolve()) + os.sep
+            )
+        ),
         "started_monotonic_ns": started,
         "ended_monotonic_ns": ended,
-        "changed_paths": changed_paths(repo),
+        "changed_paths": paths,
         "usage": usage,
         "provider_spend_usd": cost,
         "accounting_error": accounting_error,
         "login": login,
         "log": log,
     }
+    if setup_error is not None:
+        result["setup_error"] = setup_error
+    return result
 
 
 def overlap_ns(a: Mapping[str, Any], b: Mapping[str, Any]) -> int:
@@ -1211,6 +1249,35 @@ def _write_provider_log(output: Path, label: str, info: Mapping[str, Any]) -> No
     (output / f"{label}.log").write_text(str(info.get("log", "")) + "\n", encoding="utf-8")
 
 
+def _load_prior_live_attempt() -> dict[str, Any]:
+    if not LIVE_RUN_001.exists():
+        raise RuntimeError("LIVE_RUN_001_SETUP_FAILURE_RECORD_MISSING")
+    record = json.loads(LIVE_RUN_001.read_text(encoding="utf-8"))
+    if record.get("schema") != "openline.joint-work-live-001.live-setup-failure.v1":
+        raise RuntimeError("LIVE_RUN_001_SETUP_FAILURE_SCHEMA_INVALID")
+    if record.get("experiment_id") != EXPERIMENT_ID:
+        raise RuntimeError("LIVE_RUN_001_SETUP_FAILURE_EXPERIMENT_MISMATCH")
+    if record.get("classification") != INCONCLUSIVE_SETUP:
+        raise RuntimeError("LIVE_RUN_001_SETUP_FAILURE_CLASSIFICATION_INVALID")
+    return record
+
+
+def _prior_provider_accounting(prior: Mapping[str, Any] | None) -> dict[str, float | int]:
+    if prior is None:
+        return {
+            "claude_calls": 0,
+            "claude_spend_usd": 0.0,
+            "codex_calls": 0,
+            "codex_spend_usd": 0.0,
+        }
+    return {
+        "claude_calls": int(prior["claude"]["calls_consumed"]),
+        "claude_spend_usd": float(prior["claude"]["reported_spend_usd"]),
+        "codex_calls": int(prior["openai"]["calls_consumed"]),
+        "codex_spend_usd": float(prior["openai"]["reported_spend_usd"]),
+    }
+
+
 def _check_live_isolation(info: Mapping[str, Any]) -> None:
     if info.get("other_provider_credentials_forwarded"):
         raise RuntimeError("OTHER_PROVIDER_CREDENTIAL_FORWARDED")
@@ -1245,6 +1312,8 @@ def _local_diagnostic(check: Mapping[str, Any]) -> str:
 
 def _ensure_attempt_scope(info: Mapping[str, Any], allowed: list[str]) -> None:
     paths = sorted(str(p) for p in info.get("changed_paths", []))
+    if not paths:
+        raise RuntimeError("WORKER_MADE_NO_CHANGES")
     if paths != sorted(allowed):
         raise RuntimeError("WORKER_CHANGED_OUTSIDE_SCOPE:" + ",".join(paths))
 
@@ -1311,14 +1380,148 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
     wallet_head = wallet_source_pin()
     airlock_sha = airlock_pin()
     prereg_sha = sha256_file(PREREG)
+    prior_live = _load_prior_live_attempt() if mode == "real" else None
+    prior = _prior_provider_accounting(prior_live)
 
     provider_infos: list[dict[str, Any]] = []
     setup_inconclusive = False
     accounting_inconclusive = False
     budget_inconclusive = False
-    openai_repair_used = False
 
-    with tempfile.TemporaryDirectory(prefix="joint-work-live-001-") as root_s:
+    def provider_summary() -> dict[str, Any]:
+        current_claude_spend = _budget_total(provider_infos, "claude")
+        current_codex_spend = _budget_total(provider_infos, "codex")
+        current_claude_calls = len(
+            [i for i in provider_infos if i.get("provider") == "claude"]
+        )
+        current_codex_calls = len(
+            [i for i in provider_infos if i.get("provider") == "codex"]
+        )
+        cumulative_claude_spend = (
+            None
+            if current_claude_spend is None
+            else float(prior["claude_spend_usd"]) + current_claude_spend
+        )
+        cumulative_codex_spend = (
+            None
+            if current_codex_spend is None
+            else float(prior["codex_spend_usd"]) + current_codex_spend
+        )
+        return {
+            "calls": [_provider_public(i) for i in provider_infos],
+            "current_call_counts": {
+                "claude": current_claude_calls,
+                "codex": current_codex_calls,
+            },
+            "call_counts": {
+                "claude": int(prior["claude_calls"]) + current_claude_calls,
+                "codex": int(prior["codex_calls"]) + current_codex_calls,
+            },
+            "current_spend_usd": {
+                "claude": current_claude_spend,
+                "openai_codex_calculated_from_usage": current_codex_spend,
+            },
+            "spend_usd": {
+                "claude": cumulative_claude_spend,
+                "openai_codex_calculated_from_usage": cumulative_codex_spend,
+            },
+            "prior_live_run": (
+                {
+                    "workflow_run_id": prior_live["run"]["workflow_run_id"],
+                    "artifact_id": prior_live["run"]["artifact_id"],
+                    "artifact_zip_sha256": prior_live["run"]["artifact_zip_sha256"],
+                    "classification": prior_live["classification"],
+                    "record_sha256": sha256_file(LIVE_RUN_001),
+                }
+                if prior_live is not None
+                else None
+            ),
+            "caps_usd": {"claude": CLAUDE_CAP, "openai": OPENAI_CAP},
+            "call_caps": {"claude": CLAUDE_CALL_CAP, "codex": OPENAI_CALL_CAP},
+            "original_codex_model": ORIGINAL_CODEX_MODEL,
+            "codex_model": CODEX_MODEL,
+            "codex_rates_usd_per_million_tokens": CODEX_RATES,
+        }
+
+    def freeze_partial(
+        *,
+        phase: str,
+        fixture: Mapping[str, Any],
+        authority: AuthoritySession,
+        grants: Mapping[str, Any],
+        a_auth: Mapping[str, Any],
+        b_auth: Mapping[str, Any],
+        cross_scope: Mapping[str, Any],
+        overlap: int,
+        local_checks: Mapping[str, Any],
+        extra: Mapping[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        verdict = (
+            INCONCLUSIVE_SETUP
+            if setup_inconclusive
+            else INCONCLUSIVE_BUDGET
+            if budget_inconclusive
+            else INCONCLUSIVE_LIVE
+        )
+        partial: dict[str, Any] = {
+            "schema": "openline.joint-work-live-001.result.v1",
+            "experiment_id": EXPERIMENT_ID,
+            "mode": mode,
+            "verdict": verdict,
+            "phase": phase,
+            "wallet_base": WALLET_BASE,
+            "wallet_head": wallet_head,
+            "airlock_sha": airlock_sha,
+            "prereg_sha256": prereg_sha,
+            "prior_live_attempt_sha256": (
+                sha256_file(LIVE_RUN_001) if prior_live is not None else None
+            ),
+            "contract_sha256": fixture["contract_sha256"],
+            "owner_agreement": authority.agreement,
+            "initial_grants": {
+                "worker_a": grants["worker_a_event"],
+                "worker_b": grants["worker_b_event"],
+            },
+            "initial_gate_receipts": {
+                "worker_a": a_auth["receipt"],
+                "worker_b": b_auth["receipt"],
+                "cross_scope_probe": cross_scope,
+            },
+            "parallel_overlap_ns": overlap,
+            "providers": provider_summary(),
+            "partial_local_checks": dict(local_checks),
+            "claim": "NONE_INCONCLUSIVE",
+        }
+        if extra:
+            partial.update(dict(extra))
+        write_json(output / "result.json", partial)
+        write_json(output / "owner-contract.json", fixture["contract"])
+        write_json(output / "owner-agreement.json", authority.agreement)
+        write_json(
+            output / "wallet-authority.json",
+            {
+                "initial_grants": {
+                    "worker_a": grants["worker_a_event"],
+                    "worker_b": grants["worker_b_event"],
+                },
+                "receipts": authority.receipts,
+                "final_bundle": authority.bundles[-1],
+            },
+        )
+        write_json(output / "providers.json", partial["providers"])
+        _finish_manifest(output)
+        return partial
+
+    # Keep provider homes out of the OS temp tree. Codex 0.153.0 refuses to
+    # create its helper aliases when CODEX_HOME is below /tmp. This follows the
+    # already-proved APPROVED-JOB-LIVE-001 pattern while preserving isolated,
+    # role-specific homes.
+    with tempfile.TemporaryDirectory(
+        prefix=".joint-work-provider-", dir=Path.home()
+    ) as provider_root_s, tempfile.TemporaryDirectory(
+        prefix="joint-work-live-001-"
+    ) as root_s:
+        provider_root = Path(provider_root_s)
         root = Path(root_s)
         fixture = initialize_fixture(root)
         repo: Path = fixture["repo"]
@@ -1326,8 +1529,6 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
         grants = authority.initial_grants()
         cross_scope = authority.cross_scope_probe()
 
-        # Authorize both initial workers before provider execution. The same
-        # frozen owner bundle carries separate subjects/scopes.
         a_auth = authority.authorize("worker-a", "a_checkpoint")
         b_auth = authority.authorize("worker-b", "b_complete")
         if a_auth["receipt"]["decision"] != "ALLOWED":
@@ -1348,18 +1549,35 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
             branch="joint/worker-b",
             prefix="joint-worker-b-",
         ) as b_wt:
-            provider_root = root / "provider-homes"
             with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
                 if mode == "scripted":
                     fa = pool.submit(invoke_scripted, "worker-a", a_wt)
                     fb = pool.submit(invoke_scripted, "worker-b", b_wt)
                 else:
+                    if int(prior["claude_calls"]) >= CLAUDE_CALL_CAP:
+                        budget_inconclusive = True
+                        raise RuntimeError("CLAUDE_CALL_CAP_ALREADY_EXHAUSTED")
+                    if int(prior["codex_calls"]) >= OPENAI_CALL_CAP:
+                        budget_inconclusive = True
+                        raise RuntimeError("OPENAI_CALL_CAP_ALREADY_EXHAUSTED")
+                    claude_remaining_usd = CLAUDE_CAP - float(prior["claude_spend_usd"])
+                    if claude_remaining_usd <= 0:
+                        budget_inconclusive = True
+                        raise RuntimeError("CLAUDE_DOLLAR_CAP_ALREADY_EXHAUSTED")
+                    recovery = (
+                        "Live run 001 consumed the original Claude attempt, but a Worker B provider "
+                        "setup failure aborted the harness before the producer checkpoint could be "
+                        "verified or preserved. This is the one remaining Claude repair/recovery call. "
+                        "Recreate the producer checkpoint from the frozen contract; no private state "
+                        "from the discarded run is available."
+                    )
                     fa = pool.submit(
                         invoke_live,
                         "worker-a",
                         a_wt,
                         provider_root,
-                        claude_budget_usd=1.75,
+                        repair=recovery,
+                        claude_budget_usd=min(1.75, claude_remaining_usd),
                     )
                     fb = pool.submit(
                         invoke_live,
@@ -1371,126 +1589,74 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
                 b_info = fb.result()
 
             provider_infos.extend([a_info, b_info])
-            _write_provider_log(output, "worker-a-attempt-1", a_info)
-            _write_provider_log(output, "worker-b-attempt-1", b_info)
+            _write_provider_log(output, "worker-a-attempt-2", a_info)
+            _write_provider_log(output, "worker-b-attempt-2", b_info)
             overlap = overlap_ns(a_info, b_info)
 
             if mode == "real":
-                if _attempt_needs_setup_stop(a_info) or _attempt_needs_setup_stop(b_info):
-                    setup_inconclusive = True
-                else:
-                    _check_live_isolation(a_info)
-                    _check_live_isolation(b_info)
+                for info in (a_info, b_info):
+                    if _attempt_needs_setup_stop(info):
+                        setup_inconclusive = True
+                    else:
+                        _check_live_isolation(info)
+
+                # A true wrong-path edit remains a falsifier. Empty progress
+                # after a provider/setup failure is not misreported as one.
+                if not setup_inconclusive:
+                    if not a_info.get("changed_paths") or not b_info.get("changed_paths"):
+                        budget_inconclusive = True
+                    else:
+                        _ensure_attempt_scope(a_info, PRODUCER_ALLOWED)
+                        _ensure_attempt_scope(b_info, RECEIVER_ALLOWED)
+
+                if not setup_inconclusive:
                     if a_info.get("accounting_error") or b_info.get("accounting_error"):
                         accounting_inconclusive = True
-
-            # Out-of-scope edits are experiment falsifiers, never repairable.
-            if not setup_inconclusive:
-                _ensure_attempt_scope(a_info, PRODUCER_ALLOWED)
-                _ensure_attempt_scope(b_info, RECEIVER_ALLOWED)
 
             a_checkpoint = run_python_check(a_wt, "producer/check_checkpoint.py")
             a_full_before = run_python_check(a_wt, "producer/test_producer.py")
             b_local = run_python_check(b_wt, "receiver/test_receiver.py")
 
-            if mode == "real" and not setup_inconclusive and not accounting_inconclusive:
-                # At most one Claude repair, and the second call gets only the
-                # unspent portion of the frozen $3 cap.
-                if a_checkpoint["status"] != "PASS" or a_full_before["status"] != "FAIL":
-                    claude_spend = _budget_total(provider_infos, "claude")
-                    if claude_spend is None:
-                        accounting_inconclusive = True
-                    else:
-                        remaining = CLAUDE_CAP - claude_spend
-                        if remaining <= 0:
-                            budget_inconclusive = True
-                        else:
-                            repair_diag = (
-                                _local_diagnostic(a_checkpoint)
-                                + "\nFull producer check should still be unresolved:\n"
-                                + _local_diagnostic(a_full_before)
-                            )
-                            a_repair = invoke_live(
-                                "worker-a",
-                                a_wt,
-                                provider_root,
-                                repair=repair_diag,
-                                claude_budget_usd=min(remaining, 1.0),
-                            )
-                            provider_infos.append(a_repair)
-                            _write_provider_log(output, "worker-a-repair", a_repair)
-                            if _attempt_needs_setup_stop(a_repair):
-                                setup_inconclusive = True
-                            else:
-                                _check_live_isolation(a_repair)
-                                if a_repair.get("accounting_error"):
-                                    accounting_inconclusive = True
-                                _ensure_attempt_scope(a_repair, PRODUCER_ALLOWED)
-                            a_checkpoint = run_python_check(a_wt, "producer/check_checkpoint.py")
-                            a_full_before = run_python_check(a_wt, "producer/test_producer.py")
-
-                if b_local["status"] != "PASS" and not setup_inconclusive and not accounting_inconclusive:
-                    if openai_repair_used:
-                        raise RuntimeError("OPENAI_REPAIR_LIMIT_EXCEEDED")
-                    b_repair = invoke_live(
-                        "worker-b",
-                        b_wt,
-                        provider_root,
-                        repair=_local_diagnostic(b_local),
-                    )
-                    openai_repair_used = True
-                    provider_infos.append(b_repair)
-                    _write_provider_log(output, "worker-b-repair", b_repair)
-                    if _attempt_needs_setup_stop(b_repair):
-                        setup_inconclusive = True
-                    else:
-                        _check_live_isolation(b_repair)
-                        if b_repair.get("accounting_error"):
-                            accounting_inconclusive = True
-                        _ensure_attempt_scope(b_repair, RECEIVER_ALLOWED)
-                    b_local = run_python_check(b_wt, "receiver/test_receiver.py")
+            if (
+                mode == "real"
+                and not setup_inconclusive
+                and not accounting_inconclusive
+                and not budget_inconclusive
+                and (
+                    a_checkpoint["status"] != "PASS"
+                    or a_full_before["status"] != "FAIL"
+                    or b_local["status"] != "PASS"
+                )
+            ):
+                # The prior run already consumed the one optional repair slot.
+                # Worker B and successor also consume the two remaining OpenAI
+                # calls. Do not add another provider call.
+                budget_inconclusive = True
 
             if setup_inconclusive or accounting_inconclusive or budget_inconclusive:
-                # Do not make additional provider calls once we cannot account
-                # for setup/spend. We still freeze the partial authority evidence.
-                partial = {
-                    "schema": "openline.joint-work-live-001.result.v1",
-                    "experiment_id": EXPERIMENT_ID,
-                    "mode": mode,
-                    "verdict": (
-                        INCONCLUSIVE_SETUP if setup_inconclusive
-                        else INCONCLUSIVE_BUDGET if budget_inconclusive
-                        else INCONCLUSIVE_LIVE
-                    ),
-                    "wallet_base": WALLET_BASE,
-                    "wallet_head": wallet_head,
-                    "airlock_sha": airlock_sha,
-                    "prereg_sha256": prereg_sha,
-                    "contract_sha256": fixture["contract_sha256"],
-                    "owner_agreement": authority.agreement,
-                    "initial_grants": {
-                        "worker_a": grants["worker_a_event"],
-                        "worker_b": grants["worker_b_event"],
-                    },
-                    "initial_gate_receipts": {
-                        "worker_a": a_auth["receipt"],
-                        "worker_b": b_auth["receipt"],
-                        "cross_scope_probe": cross_scope,
-                    },
-                    "parallel_overlap_ns": overlap,
-                    "provider_calls": [_provider_public(i) for i in provider_infos],
-                    "partial_local_checks": {
+                return freeze_partial(
+                    phase="initial_parallel",
+                    fixture=fixture,
+                    authority=authority,
+                    grants=grants,
+                    a_auth=a_auth,
+                    b_auth=b_auth,
+                    cross_scope=cross_scope,
+                    overlap=overlap,
+                    local_checks={
                         "worker_a_checkpoint": a_checkpoint,
                         "worker_a_full": a_full_before,
                         "worker_b": b_local,
                     },
-                    "claim": "NONE_INCONCLUSIVE",
-                }
-                write_json(output / "result.json", partial)
-                write_json(output / "owner-contract.json", fixture["contract"])
-                write_json(output / "owner-agreement.json", authority.agreement)
-                _finish_manifest(output)
-                return partial
+                    extra={
+                        "repair_history": {
+                            "prior_setup_failure": (
+                                prior_live["run"] if prior_live is not None else None
+                            ),
+                            "no_additional_repair_calls": mode == "real",
+                        }
+                    },
+                )
 
             if a_checkpoint["status"] != "PASS" or a_full_before["status"] != "FAIL":
                 raise RuntimeError("WORKER_A_DID_NOT_REACH_DISCRIMINATING_CHECKPOINT")
@@ -1508,7 +1674,6 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
                 "Worker B receiver implementation",
             )
 
-        # Freeze exact accepted producer checkpoint and owner-signed handoff.
         checkpoint_file_sha = sha256_bytes(
             subprocess.check_output(
                 ["git", "-C", str(repo), "show", f"{a_commit}:{PRODUCER_ALLOWED[0]}"]
@@ -1546,8 +1711,7 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
             [i for i in provider_infos if i.get("provider") == "claude"]
         )
 
-        # Remove Claude's isolated provider home before successor continuation.
-        claude_home = root / "provider-homes" / "worker-a"
+        claude_home = provider_root / "worker-a"
         if claude_home.exists():
             shutil.rmtree(claude_home)
         claude_home_removed = not claude_home.exists()
@@ -1562,54 +1726,89 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
             if mode == "scripted":
                 a2_info = invoke_scripted("worker-a2", a2_wt)
             else:
+                current_codex_calls = len(
+                    [i for i in provider_infos if i.get("provider") == "codex"]
+                )
+                if int(prior["codex_calls"]) + current_codex_calls >= OPENAI_CALL_CAP:
+                    budget_inconclusive = True
+                    return freeze_partial(
+                        phase="successor_before_provider_call",
+                        fixture=fixture,
+                        authority=authority,
+                        grants=grants,
+                        a_auth=a_auth,
+                        b_auth=b_auth,
+                        cross_scope=cross_scope,
+                        overlap=overlap,
+                        local_checks={
+                            "worker_a_checkpoint": a_checkpoint,
+                            "worker_a_full": a_full_before,
+                            "worker_b": b_local,
+                        },
+                        extra={
+                            "handoff": handoff,
+                            "revocation": revocation,
+                            "successor_authority": successor_auth,
+                        },
+                    )
                 a2_info = invoke_live(
                     "worker-a2",
                     a2_wt,
-                    root / "provider-homes",
+                    provider_root,
                     handoff=handoff,
                 )
             provider_infos.append(a2_info)
-            _write_provider_log(output, "worker-a2-attempt-1", a2_info)
+            _write_provider_log(output, "worker-a2-attempt-2", a2_info)
 
             if mode == "real":
                 if _attempt_needs_setup_stop(a2_info):
                     setup_inconclusive = True
                 else:
                     _check_live_isolation(a2_info)
+                    if not a2_info.get("changed_paths"):
+                        budget_inconclusive = True
+                    else:
+                        _ensure_attempt_scope(a2_info, PRODUCER_ALLOWED)
                     if a2_info.get("accounting_error"):
                         accounting_inconclusive = True
-                    _ensure_attempt_scope(a2_info, PRODUCER_ALLOWED)
 
             a2_local = run_python_check(a2_wt, "producer/test_producer.py")
             if (
                 mode == "real"
-                and a2_local["status"] != "PASS"
                 and not setup_inconclusive
                 and not accounting_inconclusive
+                and a2_local["status"] != "PASS"
             ):
-                if openai_repair_used:
-                    raise RuntimeError("OPENAI_REPAIR_LIMIT_EXCEEDED")
-                a2_repair = invoke_live(
-                    "worker-a2",
-                    a2_wt,
-                    root / "provider-homes",
-                    handoff=handoff,
-                    repair=_local_diagnostic(a2_local),
-                )
-                openai_repair_used = True
-                provider_infos.append(a2_repair)
-                _write_provider_log(output, "worker-a2-repair", a2_repair)
-                if _attempt_needs_setup_stop(a2_repair):
-                    setup_inconclusive = True
-                else:
-                    _check_live_isolation(a2_repair)
-                    if a2_repair.get("accounting_error"):
-                        accounting_inconclusive = True
-                    _ensure_attempt_scope(a2_repair, PRODUCER_ALLOWED)
-                a2_local = run_python_check(a2_wt, "producer/test_producer.py")
+                budget_inconclusive = True
 
-            if setup_inconclusive or accounting_inconclusive:
-                raise RuntimeError("LIVE_CONTINUATION_BECAME_INCONCLUSIVE_AFTER_CHECKPOINT")
+            if setup_inconclusive or accounting_inconclusive or budget_inconclusive:
+                return freeze_partial(
+                    phase="successor",
+                    fixture=fixture,
+                    authority=authority,
+                    grants=grants,
+                    a_auth=a_auth,
+                    b_auth=b_auth,
+                    cross_scope=cross_scope,
+                    overlap=overlap,
+                    local_checks={
+                        "worker_a_checkpoint": a_checkpoint,
+                        "worker_a_full": a_full_before,
+                        "worker_b": b_local,
+                        "worker_a2": a2_local,
+                    },
+                    extra={
+                        "handoff": {
+                            "record": handoff,
+                            "record_hash": handoff_hash,
+                            "signature_verified": bool(handoff_valid),
+                            "claude_home_removed_before_successor": claude_home_removed,
+                        },
+                        "revocation": revocation,
+                        "successor_authority": successor_auth,
+                    },
+                )
+
             if a2_local["status"] != "PASS":
                 raise RuntimeError("SUCCESSOR_LOCAL_CHECK_FAILED")
             a2_commit = commit_scope(
@@ -1618,7 +1817,6 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
                 "Successor completes producer from accepted checkpoint",
             )
 
-        # Prove the successor commit descends from the accepted checkpoint.
         successor_from_checkpoint = (
             subprocess.run(
                 ["git", "-C", str(repo), "merge-base", "--is-ancestor", a_commit, a2_commit],
@@ -1629,7 +1827,6 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
         if not successor_from_checkpoint:
             raise RuntimeError("SUCCESSOR_NOT_DESCENDANT_OF_ACCEPTED_CHECKPOINT")
 
-        # Preregistered locally-green producer violation.
         negative_producer, negative_local = make_negative_producer(repo, a2_commit)
         negative_candidate = combine_candidate(
             repo,
@@ -1677,13 +1874,19 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
         if claude_calls_after_stop != claude_calls_before_stop:
             raise RuntimeError("CLAUDE_PROVIDER_CALLED_AFTER_REVOCATION")
 
-        claude_spend = _budget_total(provider_infos, "claude")
-        openai_spend = _budget_total(provider_infos, "codex")
+        providers = provider_summary()
         if mode == "real":
+            claude_spend = providers["spend_usd"]["claude"]
+            openai_spend = providers["spend_usd"]["openai_codex_calculated_from_usage"]
             if claude_spend is None or openai_spend is None:
                 accounting_inconclusive = True
             else:
-                if claude_spend > CLAUDE_CAP + 1e-9 or openai_spend > OPENAI_CAP + 1e-9:
+                if (
+                    claude_spend > CLAUDE_CAP + 1e-9
+                    or openai_spend > OPENAI_CAP + 1e-9
+                    or providers["call_counts"]["claude"] > CLAUDE_CALL_CAP
+                    or providers["call_counts"]["codex"] > OPENAI_CALL_CAP
+                ):
                     budget_inconclusive = True
 
         verdict = _classify_terminal(
@@ -1711,6 +1914,9 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
             "airlock_sha": airlock_sha,
             "openline_agents_inspected_sha": AGENTS_SHA,
             "prereg_sha256": prereg_sha,
+            "prior_live_attempt_sha256": (
+                sha256_file(LIVE_RUN_001) if prior_live is not None else None
+            ),
             "contract_sha256": fixture["contract_sha256"],
             "owner_agreement_hash": record_hash(authority.agreement),
             "base_commit": fixture["base"],
@@ -1753,20 +1959,7 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
             "negative_control": negative_eval,
             "final_composition": valid_eval,
             "contract_and_protected_rules_unchanged": contract_unchanged,
-            "providers": {
-                "calls": [_provider_public(i) for i in provider_infos],
-                "call_counts": {
-                    "claude": len([i for i in provider_infos if i.get("provider") == "claude"]),
-                    "codex": len([i for i in provider_infos if i.get("provider") == "codex"]),
-                },
-                "spend_usd": {
-                    "claude": claude_spend,
-                    "openai_codex_calculated_from_usage": openai_spend,
-                },
-                "caps_usd": {"claude": CLAUDE_CAP, "openai": OPENAI_CAP},
-                "codex_model": CODEX_MODEL,
-                "codex_rates_usd_per_million_tokens": CODEX_RATES,
-            },
+            "providers": providers,
             "earned_claim": (
                 "Two independently operated AI workers completed different parts of one approved job "
                 "in parallel under separate authority. One worker was revoked and replaced during "
@@ -1796,17 +1989,13 @@ def reproduce(output: Path, mode: str) -> dict[str, Any]:
                 "final_bundle": authority.bundles[-1],
             },
         )
-        write_json(
-            output / "local-verification.json",
-            result["local_checks"],
-        )
+        write_json(output / "local-verification.json", result["local_checks"])
         write_json(output / "negative-control.json", negative_eval)
         write_json(output / "composition.json", valid_eval)
         write_json(output / "providers.json", result["providers"])
         write_json(output / "result.json", result)
         _finish_manifest(output)
         return result
-
 
 def _finish_manifest(output: Path) -> None:
     manifest = {}
@@ -1892,7 +2081,17 @@ def self_test() -> None:
         "output_tokens": 200,
         "reasoning_output_tokens": 50,
     }
-    assert abs(_codex_cost(usage) - 0.00066) < 1e-12
+    assert abs(_codex_cost(usage) - 0.00766) < 1e-12
+
+    repair = prereg["live_repair_001"]
+    assert prereg["pins"]["codex_model"] == ORIGINAL_CODEX_MODEL
+    assert repair["model_repair"]["replacement_pin"] == CODEX_MODEL
+    assert repair["prior_live_run"]["frozen_setup_failure_record_sha256"] == sha256_file(LIVE_RUN_001)
+    prior = _prior_provider_accounting(_load_prior_live_attempt())
+    assert prior["claude_calls"] == 1
+    assert abs(float(prior["claude_spend_usd"]) - 0.16433475) < 1e-12
+    assert prior["codex_calls"] == 1
+    assert float(prior["codex_spend_usd"]) == 0.0
 
     # The frozen negative-control mutation must target exactly the nonce field.
     assert '"nonce": nonce,' in PRODUCER_FINAL_IMPL

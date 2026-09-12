@@ -1,0 +1,17 @@
+{
+  "accidental_merge": {
+    "merge_commit": "0553d2241aa2023b58e724b64bc431d5622dd15d",
+    "pr": 29
+  },
+  "experiment_id": "JOINT-WORK-LIVE-001",
+  "reason": "BRANCH_RECREATED_AFTER_ACCIDENTAL_MERGE",
+  "retry_rule": "Changing this exact retry marker on proof/joint-work-live-001 may enable one bounded live run only while LIVE_ARM.json is present. Later freeze commits do not touch this marker and therefore cannot spend again.",
+  "schema": "openline.joint-work-live-001.activation-retry.v1",
+  "skipped_activation": {
+    "activation_commit": "ca6678662d09206f1c531cb2c52358e4eca41e91",
+    "github_push_before": "0000000000000000000000000000000000000000",
+    "live_job_conclusion": "skipped",
+    "provider_job_started": false,
+    "workflow_run_id": 34669695928
+  }
+}
