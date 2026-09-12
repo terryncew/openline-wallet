@@ -1,11 +1,11 @@
 # ROUTE-AUTHORITY-GATE-001 — smallest general route-invariant repair
 
-Status: **preregistered repair experiment**
+Status: **FROZEN — ROUTE_AUTHORITY_REPAIR_PASS**
 
 ## Parent result
 
 This experiment follows the frozen negative receipt `ROUTE-AUTHORITY-COLD-001`.
-That receipt is not modified or rerun.
+That receipt remains unchanged.
 
 The parent falsifier established one narrow hole: an unauthorized recipient could
 not directly read a protected source, yet the same protected information could
@@ -14,7 +14,7 @@ generic peer-message action.
 
 ## Repair
 
-The receiver owner may now register a source action with the authority that any
+The receiver owner may register a source action with the authority that any
 later recipient must independently hold.
 
 When a subject successfully uses that protected source action, the Gate records
@@ -71,25 +71,65 @@ The experiment requires all of the following:
 - a fresh generic message action from the same exposed sender may route to `agent-allowed`;
 - route receipts verify under the receiver Gate key.
 
-PASS:
+## Frozen result
+
+Parent negative merge:
+
+`434f107a5a6bf3183fc3c11ceacbb3c78815bbf9`
+
+Repair head:
+
+`4503fdd5823550684aee0862cc376237a73db5f6`
+
+PR:
+
+`#35`
+
+Conclusive workflow run:
+
+`34713157773`
+
+Python 3.11, 3.12, and 3.13 all passed the full unit suite, the fresh
+ROUTE-AUTHORITY-GATE-001 experiment, and the independent verifier.
+
+Terminal verdict on all three:
 
 `ROUTE_AUTHORITY_REPAIR_PASS`
 
-FAIL:
+The fresh falsifier behaved as required:
 
-`ROUTE_AUTHORITY_REPAIR_FAILED`
+- unauthorized direct payroll read stopped;
+- clean sender -> unauthorized recipient ordinary message remained allowed;
+- protected read by `agent-source` created the carried payroll scope;
+- generic send by that exposed sender remained action-authorized;
+- route to `agent-blocked` stopped with `RECIPIENT_LACKS_SOURCE_AUTHORITY`;
+- the delivery witness recorded no protected transformed payload at `agent-blocked`;
+- a fresh generic send from the exposed sender routed successfully to `agent-allowed`.
 
-Any broken control:
+All other Wallet workflows on the same head also completed successfully:
+CI, AUTHORITY-IN-TIME-001, STOP-BARRIER-COLD-001, ROUTE-AUTHORITY-COLD-001,
+AGT-EXIT-COLD-001, APPROVED-JOB-001, APPROVED-JOB-LIVE-001, COORDINATOR-001,
+JOINT-WORK-LIVE-001, JOINT-WORK-SPECKIT-001, and JOINT-WORK-SPECKIT-LIVE-001.
 
-`INCONCLUSIVE_SETUP_OR_CONTROL_FAILURE`
+The three result hashes differ because each matrix run creates fresh ephemeral
+keys and therefore different signed receipt bytes. The semantic verdict and
+all preregistered outcome predicates were the same across Python versions.
+Python 3.12 is frozen as the canonical result artifact.
 
-## Claim boundary if PASS
+## Earned claim
 
 > In one bounded local fixture, a receiver-owned carried-authority check made the
 > consequence invariant to the tested route: after a worker observed a protected
 > source, a separately authorized generic send could not deliver a transformed
 > result to a recipient lacking that source authority, while unexposed messaging
 > and delivery to an independently authorized recipient still worked.
+
+## Nonclaims
+
+This does not prove byte-level provenance, safe declassification, cross-Gate
+propagation, cross-principal federation, durable restart recovery of carried
+authority, or a production deployment. It does not claim the worker can
+self-report trustworthy lineage.
 
 ## Run
 

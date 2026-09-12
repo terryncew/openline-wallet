@@ -1,0 +1,104 @@
+{
+  "conclusive_run": {
+    "conclusion": "success",
+    "matrix": {
+      "3.11": {
+        "artifact_digest": "sha256:28129c455bc02ebc4d0369853cd1063b9888bb50f9e82650adf15c67f2be2900",
+        "artifact_id": 10303639325,
+        "result_file_sha256": "f14b8d62553887a898d8768bcb2125afe97ea6043e70a0ff27056243d306fb38",
+        "result_hash": "089d440305c1c60101b568ce169246cc895cbc992f47e97c442de9b967181d3e",
+        "verdict": "ROUTE_AUTHORITY_REPAIR_PASS"
+      },
+      "3.12": {
+        "artifact_digest": "sha256:77de86b4f559d9f6516d890955c4dfe2d9b21374142e464929af20d79252c1f4",
+        "artifact_id": 10303639363,
+        "canonical_frozen_result": true,
+        "result_file_sha256": "7d50114adc7acd4dfa13e0a294ddec4935bf22ebc2cfce62c050afad262fc341",
+        "result_hash": "897606d54e4be628b59be8949759c0db1727e54e220fa513963000553ffffc01",
+        "verdict": "ROUTE_AUTHORITY_REPAIR_PASS"
+      },
+      "3.13": {
+        "artifact_digest": "sha256:e2b95d01799fb2c6c8619179bbee580b30cbf4b0ad98327feaeb74ae2b1ee6fd",
+        "artifact_id": 10303429738,
+        "result_file_sha256": "79e694b7feb216cb6dcb1d7cf07b71a61c63a2b9e978e061261956e2f84f2d89",
+        "result_hash": "c2b161d6b0504bc3b36df0948858c89a4100195458b694983fb14711e20babc7",
+        "verdict": "ROUTE_AUTHORITY_REPAIR_PASS"
+      }
+    },
+    "workflow_run_id": 34713157773
+  },
+  "earned_claim": "In one bounded local fixture, a receiver-owned carried-authority check made the consequence invariant to the tested route: after a worker observed a protected source, a separately authorized generic send could not deliver a transformed result to a recipient lacking that source authority, while unexposed messaging and delivery to an independently authorized recipient still worked.",
+  "experiment_id": "ROUTE-AUTHORITY-GATE-001",
+  "nonclaims": [
+    "No byte-level provenance claim.",
+    "No safe-declassification claim.",
+    "No cross-Gate propagation claim.",
+    "No cross-principal federation claim.",
+    "No durable restart-recovery claim for carried authority.",
+    "No production deployment claim.",
+    "No claim that worker self-reported lineage is trusted."
+  ],
+  "observations": {
+    "blocked_direct_read": "STOPPED_ACTION_OUTSIDE_MANDATE",
+    "clean_sender_to_blocked_recipient": "ALLOWED",
+    "generic_send_from_exposed_sender": "ALLOWED",
+    "protected_read_creates_carried_scope": [
+      "records:read:payroll"
+    ],
+    "route_to_recipient_with_source_authority": "ALLOWED",
+    "route_to_recipient_without_source_authority": "STOPPED_RECIPIENT_LACKS_SOURCE_AUTHORITY",
+    "unauthorized_protected_delivery": false
+  },
+  "parallel_workflows_on_repair_head": {
+    "agt_exit_cold_001": {
+      "conclusion": "success",
+      "run_id": 34713157728
+    },
+    "approved_job_001": {
+      "conclusion": "success",
+      "run_id": 34713157750
+    },
+    "approved_job_live_001": {
+      "conclusion": "success",
+      "run_id": 34713157739
+    },
+    "authority_in_time_001": {
+      "conclusion": "success",
+      "run_id": 34713157756
+    },
+    "ci": {
+      "conclusion": "success",
+      "run_id": 34713157752
+    },
+    "coordinator_001": {
+      "conclusion": "success",
+      "run_id": 34713157768
+    },
+    "joint_work_live_001": {
+      "conclusion": "success",
+      "run_id": 34713157731
+    },
+    "joint_work_speckit_001": {
+      "conclusion": "success",
+      "run_id": 34713157720
+    },
+    "joint_work_speckit_live_001": {
+      "conclusion": "success",
+      "run_id": 34713157748
+    },
+    "route_authority_cold_001": {
+      "conclusion": "success",
+      "run_id": 34713157727
+    },
+    "stop_barrier_cold_001": {
+      "conclusion": "success",
+      "run_id": 34713157747
+    }
+  },
+  "parent_negative_merge": "434f107a5a6bf3183fc3c11ceacbb3c78815bbf9",
+  "pr": 35,
+  "repair_head": "4503fdd5823550684aee0862cc376237a73db5f6",
+  "schema": "openline.route-authority-gate-001.freeze-receipt.v1",
+  "status": "FROZEN",
+  "terminal_verdict": "ROUTE_AUTHORITY_REPAIR_PASS"
+}
