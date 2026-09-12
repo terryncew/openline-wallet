@@ -1,6 +1,6 @@
 # JOINT-WORK-LIVE-001
 
-Status: **preregistered; scripted arm first; live arm not activated by this commit**
+Status: **scripted arm passed; first live attempt frozen as provider setup failure; repair commit is zero-spend**
 
 This is an additive proof that composes existing OpenLine Wallet authority with
 Airlock protected acceptance. It does not add an orchestrator, planner, policy
@@ -15,7 +15,8 @@ OpenLine Airlock  3ef34fb0100516e458cb362a7448c78a72da097b
 OpenLine Agents   c4c349e999558adcb22ccb7b6fd98811a6843f2a  (inspected only)
 Claude Code       2.1.260                       (live arm)
 Codex CLI         0.153.0                       (live arm)
-Codex model       gpt-5.1-codex-mini            (live arm)
+Codex model       gpt-5.1-codex-mini            (original live pin; failed 404)
+Codex model R1    gpt-5.6-sol                   (provider-setup repair)
 ```
 
 ## Question
@@ -150,14 +151,28 @@ Claude   <= $3 total, max 2 calls
 OpenAI   <= $10 total, max 3 Codex calls
 ```
 
-Claude's first call gets a $1.75 CLI budget. If and only if the owner checkpoint
-needs repair, the one repair is capped at the smaller of the unspent remainder or $1.00.
-That leaves additional headroom below the $3 total ceiling rather than trying to spend to it.
+The original live plan allowed one Claude producer attempt plus one repair and
+three total Codex calls for Worker B, successor, and at most one repair. Live run 001
+has now consumed one Claude call and one Codex call. The remaining frozen envelope is:
 
-Codex uses `gpt-5.1-codex-mini`. The harness records exact usage events and
-calculates the token charge from the frozen public tariff in the
-preregistration. Worker B and successor get independent ephemeral Codex homes;
-one shared repair call is available only if necessary.
+```text
+Claude   1 call remaining; $2.83566525 remaining
+OpenAI   2 Codex calls remaining; $10.00 recorded remaining
+```
+
+No provider repair calls remain. The next explicit live retry, if activated, gets exactly
+one Claude producer recovery call, one Codex Worker B call, and one Codex successor call.
+If any of those fails before the discriminating result, freeze the appropriate inconclusive
+result. Do not add another call.
+
+The original Codex pin `gpt-5.1-codex-mini` returned 404 before inference. Repair R1
+uses `gpt-5.6-sol`, which is current and already completed the repository's earlier
+`APPROVED-JOB-LIVE-001` successor arm with Codex CLI 0.153.0. The model change does
+not alter the frozen webhook contract, Wallet mandates, negative control, or Airlock judge.
+
+The harness records Codex usage and calculates cost from the frozen R1 tariff in the
+preregistration. Worker B and successor get separate ephemeral HOME/CODEX_HOME trees
+outside the operating-system temp directory.
 
 No model is used to judge, coordinate, plan, or run integration.
 
@@ -198,6 +213,34 @@ bounded real-host job **skipped**; no provider job started.
 retry when that marker itself changes on `proof/joint-work-live-001` and the original
 `LIVE_ARM.json` is still present. Subsequent freeze commits and merges do not touch the
 retry marker and cannot trigger provider spend.
+
+## Live run 001 — frozen setup failure
+
+Workflow run `34669873686` reached the real-host job at head
+`1b426372369c66b6edc3124794927892520abc20`.
+
+Claude Code 2.1.260 made producer-scope progress. The provider reported exactly
+`$0.16433475` for that call. The CLI stopped at its six-turn ceiling after denied Bash
+attempts; the harness had not yet run the owner checkpoint when the other arm failed, so
+there is **no accepted Claude checkpoint from this run**.
+
+Codex CLI 0.153.0 attempted Worker B with the original pin
+`gpt-5.1-codex-mini`. The Responses request returned 404 before inference and emitted no
+`turn.completed` usage event. Worker B therefore changed no file. The harness then raised
+`WORKER_CHANGED_OUTSIDE_SCOPE:` because it incorrectly treated empty provider progress as
+an out-of-scope edit.
+
+That is not an OpenLine falsifier. The contract, revocation path, negative composition,
+and final Airlock gate were never reached. `LIVE_RUN_001_SETUP_FAILURE.json` freezes the
+event as `INCONCLUSIVE_PROVIDER_SETUP` / `experiment_verdict=NOT_REACHED`.
+
+Repair R1 is limited to four things: preserve cumulative call/spend accounting; replace
+the inaccessible model pin; move isolated Codex homes out of `/tmp` using the already
+proved APPROVED-JOB pattern; and classify provider failure with zero edits as setup rather
+than a worker scope violation. A real wrong-path edit remains a falsifier.
+
+This repair commit itself does not contain `LIVE_PROVIDER_RETRY_002.json`, so it cannot
+start another provider run.
 
 ## Terminal live claim
 

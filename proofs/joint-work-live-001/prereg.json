@@ -82,6 +82,48 @@
     ],
     "timestamp": "integer Unix seconds; absolute skew <= 300 seconds"
   },
+  "live_repair_001": {
+    "budget_carryover": {
+      "caps_unchanged": true,
+      "claude": {
+        "prior_calls": 1,
+        "prior_spend_usd": 0.16433475,
+        "remaining_calls": 1,
+        "remaining_usd": 2.83566525
+      },
+      "openai": {
+        "prior_calls": 1,
+        "prior_spend_usd": 0.0,
+        "prior_usage_event": "NONE_404_BEFORE_INFERENCE",
+        "remaining_calls": 2,
+        "remaining_usd": 10.0
+      }
+    },
+    "classification": "HARNESS_AND_PROVIDER_SETUP_REPAIR_ONLY",
+    "model_repair": {
+      "basis": "gpt-5.6-sol is current, supports the Responses API, and already completed the repo's APPROVED-JOB-LIVE-001 successor arm with Codex CLI 0.153.0.",
+      "frozen_token_rates_usd_per_million": {
+        "cache_write_input": 5.0,
+        "cached_input": 0.4,
+        "input": 4.0,
+        "output": 20.0
+      },
+      "observed_failure": "404 before inference; no Worker B file progress",
+      "original_pin": "gpt-5.1-codex-mini",
+      "replacement_pin": "gpt-5.6-sol"
+    },
+    "original_prereg_sha256": "41dda8b430f8778b021641ab7d68c37abb14b892b78ae02f4c0d5f05385082c8",
+    "prior_live_run": {
+      "artifact_id": 10289794236,
+      "artifact_zip_sha256": "78ea9b241fe89e5b16f02dbdce07563067c0f516d3325d751a3ff2a6f3f85beb",
+      "experiment_verdict": "NOT_REACHED",
+      "frozen_setup_failure_record_sha256": "a2a6d7e3f88ae51e0d42d7a2e6b65776be49abdfc2b13cecba42b8fb8d9b16ed",
+      "head_sha": "1b426372369c66b6edc3124794927892520abc20",
+      "job_id": 103489205488,
+      "workflow_run_id": 34669873686
+    },
+    "retry_rule": "The repair commit is zero-spend. A later explicit retry marker may run exactly one remaining Claude producer recovery call, one Codex Worker B call, and one Codex successor call. No provider repair calls remain. Any failure before the discriminating result freezes an inconclusive terminal result rather than adding calls."
+  },
   "negative_control": {
     "change": "After a locally valid producer exists, replace the caller-supplied nonce in build_request with the valid constant nonce-fixed-0001 and re-sign the payload.",
     "expected_composition": "FAIL because two distinct caller nonces collapse to one receiver replay nonce",

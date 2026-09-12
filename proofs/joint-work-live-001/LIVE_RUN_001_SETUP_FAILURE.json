@@ -1,0 +1,55 @@
+{
+  "budget_carryover": {
+    "claude_remaining_calls": 1,
+    "claude_remaining_usd": 2.83566525,
+    "claude_total_call_cap": 2,
+    "claude_total_cap_usd": 3.0,
+    "openai_remaining_calls": 2,
+    "openai_remaining_usd": 10.0,
+    "openai_total_call_cap": 3,
+    "openai_total_cap_usd": 10.0
+  },
+  "classification": "INCONCLUSIVE_PROVIDER_SETUP",
+  "claude": {
+    "accepted_checkpoint": false,
+    "calls_consumed": 1,
+    "checkpoint_verification": "NOT_RUN_BECAUSE_HARNESS_ABORTED_ON_WORKER_B",
+    "cli_version": "2.1.260",
+    "reported_spend_usd": 0.16433475,
+    "scope_check": "PASS_PRODUCER_FILE_ONLY",
+    "terminal_reason": "max_turns"
+  },
+  "experiment_id": "JOINT-WORK-LIVE-001",
+  "experiment_verdict": "NOT_REACHED",
+  "harness_failure": {
+    "actual_boundary": "Worker B made no file change because the provider call failed before inference. The harness incorrectly classified empty progress as a scope violation.",
+    "contract_or_acceptance_reached": false,
+    "observed_exception": "WORKER_CHANGED_OUTSIDE_SCOPE:"
+  },
+  "openai": {
+    "calls_consumed": 1,
+    "codex_cli_version": "0.153.0",
+    "provider_error": "404 Not Found: model gpt-5.1-codex-mini does not exist or the API credential does not have access",
+    "reported_spend_usd": 0.0,
+    "requested_model": "gpt-5.1-codex-mini",
+    "secondary_setup_warning": "Codex refused PATH helper aliases because the isolated CODEX_HOME was created under /tmp",
+    "usage_basis": "NO_TURN_COMPLETED_USAGE_EVENT; 404 before inference",
+    "worker_progress": "NONE"
+  },
+  "repair_scope": [
+    "Preserve the failed run as setup evidence; do not call it an experiment failure.",
+    "Replace only the inaccessible OpenAI model pin with a current model already proven with Codex CLI 0.153.0 in this repo.",
+    "Keep Codex isolated HOME/CODEX_HOME outside system temp.",
+    "Classify provider failure with zero changes as provider setup, not worker scope violation.",
+    "Carry prior call counts and spend into the unchanged total caps.",
+    "No live retry is triggered by the repair commit."
+  ],
+  "run": {
+    "artifact_id": 10289794236,
+    "artifact_zip_sha256": "78ea9b241fe89e5b16f02dbdce07563067c0f516d3325d751a3ff2a6f3f85beb",
+    "head_sha": "1b426372369c66b6edc3124794927892520abc20",
+    "job_id": 103489205488,
+    "workflow_run_id": 34669873686
+  },
+  "schema": "openline.joint-work-live-001.live-setup-failure.v1"
+}
