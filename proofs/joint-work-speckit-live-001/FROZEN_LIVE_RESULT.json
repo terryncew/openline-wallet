@@ -1,0 +1,1120 @@
+{
+  "airlock_sha": "3ef34fb0100516e458cb362a7448c78a72da097b",
+  "anthropic_calls_after_terminal": 1,
+  "anthropic_calls_before_revocation": 1,
+  "claim": "LIVE_BOUNDED_CLAIM_EARNED",
+  "experiment_id": "JOINT-WORK-SPECKIT-LIVE-001",
+  "gate_receipts": {
+    "T101": {
+      "action": "speckit:T101:e6bbaf6901a2ae50e6763f59",
+      "decided_at": "2026-09-12T05:08:30.477942Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-live-001",
+      "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+      "mandate_id": "speckit_live_worker_a_T101",
+      "payload_hash": "ca460b27ca8996411155cee1444540fb0bfc628ee7ce316690ca532c17b29669",
+      "presentation_hash": "72c5904843047d8c3b8f43753283306cdc02a6ff7c14e03f707ee98074ee60b1",
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+        "value": "6e442d1cfc902009057d5a447c42087f2ab25a50f16bfc77c25c656931251b542ea6122ca0aca33ef728b2bc44b3d4348c009b03d620c77c9d7d1e9d63f57f03"
+      },
+      "subject_id": "worker-a",
+      "wallet_policy_authority": "NONE"
+    },
+    "T201": {
+      "action": "speckit:T201:e6bbaf6901a2ae50e6763f59",
+      "decided_at": "2026-09-12T05:08:30.479635Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-live-001",
+      "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+      "mandate_id": "speckit_live_worker_b_T201",
+      "payload_hash": "b07cd9d66dee602e4ed9223079257bb59844daf0e9ce5e9494a2214ce1a0c39d",
+      "presentation_hash": "27f03e72fbe6c13f10c88059960a31f10247c25136fc4228500836fa04bbf2d3",
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+        "value": "84b79383c6abbe14ba1c3ea2722ab9c8ce990307ef353fcc2ebc31d86a73f19b6c4397400965bea85697b13c956c660cdaddf4de7d2293c8018b2e83778c060d"
+      },
+      "subject_id": "worker-b",
+      "wallet_policy_authority": "NONE"
+    },
+    "cross_scope": {
+      "action": "speckit:T201:e6bbaf6901a2ae50e6763f59",
+      "decided_at": "2026-09-12T05:08:30.476304Z",
+      "decision": "STOPPED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-live-001",
+      "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+      "mandate_id": "speckit_live_worker_a_T101",
+      "payload_hash": "3988ba52b32f82747ebb43b2e339430ab48bd58a87b3f75e0c890d1fc370458f",
+      "presentation_hash": "d2e4f3a41314d2d61eeab505533aa00a30ccbfb1221996ad4a14518a042351c8",
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "reason_codes": [
+        "ACTION_OUTSIDE_MANDATE"
+      ],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+        "value": "59f75ff0fe20d7cd43305e35049eb338a7567321748c7c6b5f0e789818329e38dc7d20723fc917877c6d254e6ebf5f19274c2e19a2d23641ec01d726f469ff05"
+      },
+      "subject_id": "worker-a",
+      "wallet_policy_authority": "NONE"
+    },
+    "post_revocation_T102": {
+      "action": "speckit:T102:e6bbaf6901a2ae50e6763f59",
+      "decided_at": "2026-09-12T05:08:59.042068Z",
+      "decision": "STOPPED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-live-001",
+      "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+      "mandate_id": "speckit_live_worker_a_T101",
+      "payload_hash": "4c2e4c1050e525e4fb90ef031ccfe543f896128a434c0d7f27038f13335c4f77",
+      "presentation_hash": "1930628fa089207d1b5839c458197a76fa62644424a263e21733f4b2c79cfd68",
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "reason_codes": [
+        "MANDATE_REVOKED"
+      ],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+        "value": "a700a6b92d4f31852458ce8228dbfb04c4b2997f85bfe70ed7b3203126c9c016e0c9e5f24c28aebd00fbdc89a624e6b91d838d556d44fa899da99acebab81b08"
+      },
+      "subject_id": "worker-a",
+      "wallet_policy_authority": "NONE"
+    },
+    "successor_T102": {
+      "action": "speckit:T102:e6bbaf6901a2:handoff:84365ee936a11a09",
+      "decided_at": "2026-09-12T05:08:59.057770Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-live-001",
+      "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+      "mandate_id": "speckit_live_worker_a2_T102",
+      "payload_hash": "ef7379242805399b0ab73ed92b83e36b695c613fed473f16a3ec31e320a3b08a",
+      "presentation_hash": "e18b94a089d4f3a2c985e90a3b04fae7d1b9814c4cdb0f2f091ac9ce6a903b9f",
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+        "value": "a5b6d5226e307dd0b8ceb9be54f6602eff882712e9d5097a67fbbb14d6cf00339d1dedee4844ecd414702a16e9ea35a9737346222e493d78f04b6baa50c7bb03"
+      },
+      "subject_id": "worker-a2",
+      "wallet_policy_authority": "NONE"
+    }
+  },
+  "handoff": {
+    "anthropic_credentials_transferred": false,
+    "anthropic_raw_response_transferred": false,
+    "record": {
+      "T101_checkpoint_check": "PASS",
+      "T101_checkpoint_commit": "5f4b4ab53c6b1c29dff73964eb7f5abe30d88fd9",
+      "T101_file_sha256": "f24fa8d4cebbda9b56c09b6686a396435c54a0e81a608e8c7ea8b114568b8f9e",
+      "T101_gate_receipt_hash": "ebc74437efbd6d6d2e050f0254004c131f3019d1f4487ac9dc59c05963c1e34b",
+      "T102_status": "UNRESOLVED",
+      "T201_checkpoint_commit": "3efee36ed29bcf27f75c8472acb20e613705fa3a",
+      "anthropic_raw_response_included": false,
+      "experiment_id": "JOINT-WORK-SPECKIT-LIVE-001",
+      "payload_hash": "8a006f85c18a7163fc99286000b15abf6e452cb8b25f1a13ca208a9b6de2284e",
+      "provider_credentials_included": false,
+      "provider_private_transcript_included": false,
+      "schema": "openline.joint-work-speckit-live.handoff.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+        "value": "569c73f4d319c62848f8fced50e3a6c8271dcffc9b20ce16dc1a9d0cd1d2532e3afc792482898df157249ecb2329f8a53bdffa90344e3eeb2a32853c88317c0e"
+      },
+      "spec_root_digest": "e6bbaf6901a2ae50e6763f593402224bbda5fad3d8b12b51920dada07e6d8c50"
+    },
+    "record_hash": "84365ee936a11a0990d0a76d245b771f95ea64c9635306d34cfc5315c6efe10e",
+    "signature_verified": true,
+    "successor_descends_from_T101": true
+  },
+  "initial_grants": {
+    "bundle": {
+      "canonicalization": "olp-canonical-json-int-v1",
+      "decision_authority": "RECEIVER_GATE",
+      "epoch_certificate": {
+        "authority": "ISSUE_AND_NARROW_MANDATES",
+        "epoch_id": "epoch_8e903f4039879948",
+        "epoch_public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+        "expires_at": "2027-09-13T05:08:30.463546Z",
+        "issued_at": "2026-09-12T05:08:30.463546Z",
+        "payload_hash": "0538dbba80ff3abe0cbc3ca3f6a8760d44b11f511a309badd096b1b3986ca5e0",
+        "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+        "schema": "openline.wallet.epoch_certificate.v1",
+        "sequence": 1,
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+          "value": "1135386350dc9481e764b4d1a0b7b447b586c462a0fd702076a909deccdcf0d2deab110edfda3abe229dde55ef6bd170a9616a575b8a5632110a584f50d07d05"
+        }
+      },
+      "events": [
+        {
+          "data": {
+            "expires_at": "2026-09-12T05:28:30.468284Z",
+            "mandate_id": "speckit_live_worker_a_T101",
+            "predecessor_mandate_id": null,
+            "scopes": [
+              "speckit:T101:e6bbaf6901a2ae50e6763f59",
+              "speckit:T102:e6bbaf6901a2ae50e6763f59"
+            ],
+            "subject_id": "worker-a",
+            "subject_public_key": "5de8a396183b39a3246d984f902620790b9325c2ce41115e7016879013a46847"
+          },
+          "event_type": "MANDATE_ISSUED",
+          "issued_at": "2026-09-12T05:08:30.468298Z",
+          "payload_hash": "151a08e40dd17184d0842819ce2d60ecca2fc6545f08f0ec167f7ddad453afc3",
+          "previous_event_hash": null,
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "schema": "openline.wallet.timeline_event.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+            "value": "6c0569c60022550464ffd458f132e10ac5498bd5fcdd87d94112703bdc5b2b2868c2e138d3c6c7112e1cb8bf92cbc0a2d0e93c8302d8c1fb31e68bf17b0be70c"
+          }
+        },
+        {
+          "data": {
+            "expires_at": "2026-09-12T05:28:30.468284Z",
+            "mandate_id": "speckit_live_worker_b_T201",
+            "predecessor_mandate_id": null,
+            "scopes": [
+              "speckit:T201:e6bbaf6901a2ae50e6763f59"
+            ],
+            "subject_id": "worker-b",
+            "subject_public_key": "33b8c52054f7301630297a10cd51e7dbe8ad368e02910e3bed0c0a523605a6e0"
+          },
+          "event_type": "MANDATE_ISSUED",
+          "issued_at": "2026-09-12T05:08:30.470512Z",
+          "payload_hash": "4c67916201841ddaed4b64e4f3ae332eb22ad0a824d7ee2abed4d4fbe0a42334",
+          "previous_event_hash": "fae265d69515f6446ef092a3c8bd669c26ef07357058538aeb1a61ee6e8881be",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "schema": "openline.wallet.timeline_event.v1",
+          "sequence": 2,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+            "value": "f397d6120cc414f4d91e082d7c525cc66e2cd4005629f5c83902b760f1cf8b71bb414e6f015269c0d986509d915e0be5a3d897d515b4b4616af0a0583b4c360a"
+          }
+        }
+      ],
+      "expires_at": "2026-09-12T05:18:30.473375Z",
+      "head": {
+        "event_hash": "28dd5a763b63a04ea65cfb96e8dd282c44b650417141a5686f0caf9dc47311fd",
+        "sequence": 2
+      },
+      "issued_at": "2026-09-12T05:08:30.473375Z",
+      "payload_hash": "d093b296818712e30d3c2b48a786be36008bd9832903cec5527656897c3bd0bb",
+      "principal": {
+        "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+        "root_public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61"
+      },
+      "receipts": [],
+      "schema": "openline.wallet.receiver_bundle.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+        "value": "910ff93901a0b3609bd421a2fadcf9eb5768ee3fdd9830286bf19640d6677ef5ee1bc1d35cff90e8a5a3375089843cf9b897ec099217f604917cbe84ec6ab50e"
+      },
+      "wallet_policy_authority": "NONE"
+    },
+    "worker_a": {
+      "data": {
+        "expires_at": "2026-09-12T05:28:30.468284Z",
+        "mandate_id": "speckit_live_worker_a_T101",
+        "predecessor_mandate_id": null,
+        "scopes": [
+          "speckit:T101:e6bbaf6901a2ae50e6763f59",
+          "speckit:T102:e6bbaf6901a2ae50e6763f59"
+        ],
+        "subject_id": "worker-a",
+        "subject_public_key": "5de8a396183b39a3246d984f902620790b9325c2ce41115e7016879013a46847"
+      },
+      "event_type": "MANDATE_ISSUED",
+      "issued_at": "2026-09-12T05:08:30.468298Z",
+      "payload_hash": "151a08e40dd17184d0842819ce2d60ecca2fc6545f08f0ec167f7ddad453afc3",
+      "previous_event_hash": null,
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "schema": "openline.wallet.timeline_event.v1",
+      "sequence": 1,
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+        "value": "6c0569c60022550464ffd458f132e10ac5498bd5fcdd87d94112703bdc5b2b2868c2e138d3c6c7112e1cb8bf92cbc0a2d0e93c8302d8c1fb31e68bf17b0be70c"
+      }
+    },
+    "worker_b": {
+      "data": {
+        "expires_at": "2026-09-12T05:28:30.468284Z",
+        "mandate_id": "speckit_live_worker_b_T201",
+        "predecessor_mandate_id": null,
+        "scopes": [
+          "speckit:T201:e6bbaf6901a2ae50e6763f59"
+        ],
+        "subject_id": "worker-b",
+        "subject_public_key": "33b8c52054f7301630297a10cd51e7dbe8ad368e02910e3bed0c0a523605a6e0"
+      },
+      "event_type": "MANDATE_ISSUED",
+      "issued_at": "2026-09-12T05:08:30.470512Z",
+      "payload_hash": "4c67916201841ddaed4b64e4f3ae332eb22ad0a824d7ee2abed4d4fbe0a42334",
+      "previous_event_hash": "fae265d69515f6446ef092a3c8bd669c26ef07357058538aeb1a61ee6e8881be",
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "schema": "openline.wallet.timeline_event.v1",
+      "sequence": 2,
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+        "value": "f397d6120cc414f4d91e082d7c525cc66e2cd4005629f5c83902b760f1cf8b71bb414e6f015269c0d986509d915e0be5a3d897d515b4b4616af0a0583b4c360a"
+      }
+    }
+  },
+  "local_checks": {
+    "T101_checkpoint": {
+      "path": "tests/test_producer_checkpoint.py",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    },
+    "T101_full_before_T102": {
+      "path": "tests/test_producer.py",
+      "returncode": 1,
+      "status": "FAIL",
+      "stderr": "Traceback (most recent call last):\n  File \"/tmp/speckit-live-a-usslsxnc/tests/test_producer.py\", line 14, in <module>\n    body, header = build_request(\n                   ^^^^^^^^^^^^^^\n  File \"/tmp/speckit-live-a-usslsxnc/src/producer.py\", line 33, in build_request\n    raise NotImplementedError(\"T102 required\")\nNotImplementedError: T102 required\n",
+      "stdout": ""
+    },
+    "T102_successor": {
+      "path": "tests/test_producer.py",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    },
+    "T201_receiver": {
+      "path": "tests/test_receiver.py",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    },
+    "negative_producer": {
+      "path": "tests/test_producer.py",
+      "returncode": 0,
+      "status": "PASS",
+      "stderr": "",
+      "stdout": ""
+    }
+  },
+  "mode": "real",
+  "negative_airlock": {
+    "acceptance": {
+      "commands": [
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_convergence.py"
+          ],
+          "duration_seconds": 0.041526,
+          "exit_code": 1,
+          "kind": "spec_kit_composition",
+          "stderr_sha256": "e0507eda05fb6388e12c48c3a37ab8d340df0d5433b06d5279a2c61dab59faca",
+          "stderr_tail": "Traceback (most recent call last):\n  File \"/tmp/speckit-eval-mfxlqs80/tests/test_convergence.py\", line 25, in <module>\n    assert status2 == 200 and out2 == {\"status\": \"accepted\"}, (\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: FR-004 violated: distinct caller nonces must remain distinct end to end\n",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        }
+      ],
+      "rule": "spec_kit_composition",
+      "status": "FAIL"
+    },
+    "airlock_sha": "3ef34fb0100516e458cb362a7448c78a72da097b",
+    "candidate": "188d9668360a1d1d4ff1a7aa3f66b53bd7567410",
+    "changed_paths": [
+      "src/producer.py",
+      "src/receiver.py"
+    ],
+    "ordinary": {
+      "commands": [
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_producer.py"
+          ],
+          "duration_seconds": 0.034782,
+          "exit_code": 0,
+          "kind": "ordinary",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_receiver.py"
+          ],
+          "duration_seconds": 0.041199,
+          "exit_code": 0,
+          "kind": "ordinary",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        }
+      ],
+      "rule": "ordinary",
+      "status": "PASS"
+    },
+    "protected": {
+      "rule": "protected_files",
+      "status": "PASS",
+      "touched": []
+    },
+    "status": "REJECTED"
+  },
+  "owner_agreement": {
+    "airlock_pin": "3ef34fb0100516e458cb362a7448c78a72da097b",
+    "experiment_id": "JOINT-WORK-SPECKIT-LIVE-001",
+    "fixture_base": "2b252270a3eb08a3951dd52f3a1103a3d4779532",
+    "payload_hash": "9e12ba373085d8d3d48cc74ed1cacf069b9d6a3d580524e35c3ea60fba765da9",
+    "protected": [
+      ".gitignore",
+      ".airlock/config.json",
+      ".specify/memory/constitution.md",
+      "specs/001-signed-webhook/spec.md",
+      "specs/001-signed-webhook/plan.md",
+      "specs/001-signed-webhook/tasks.md",
+      "specs/001-signed-webhook/contracts/webhook.md",
+      "tests/test_producer_checkpoint.py",
+      "tests/test_producer.py",
+      "tests/test_receiver.py",
+      "tests/test_convergence.py"
+    ],
+    "provider_bindings": {
+      "worker-a": "Anthropic/claude-sonnet-4-6",
+      "worker-a2": "OpenAI/gpt-5.6-sol",
+      "worker-b": "OpenAI/gpt-5.6-sol"
+    },
+    "schema": "openline.joint-work-speckit-live.owner-agreement.v1",
+    "scripted_experiment": "JOINT-WORK-SPECKIT-001",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+      "value": "d88b64b07be8e9ad91d8237e191fb0a975e5c29e54d2ae31915c7db98309013db3f21092a66af55d980021c1942746f415cd09b86d5be16f893e74ac6b601102"
+    },
+    "spec_kit_pin": "d848fb4e18f44640ad6b42e60a280551ee90cdce",
+    "spec_root_digest": "e6bbaf6901a2ae50e6763f593402224bbda5fad3d8b12b51920dada07e6d8c50",
+    "task_bindings": {
+      "owner": [
+        "T301"
+      ],
+      "worker-a": [
+        "T101",
+        "T102"
+      ],
+      "worker-a2": [
+        "T102 successor after revocation"
+      ],
+      "worker-b": [
+        "T201"
+      ]
+    },
+    "wallet_merged_base": "d6cf339495790fe1f3a1822921c0819694cd773e"
+  },
+  "parallel_overlap_ns": 5059518801,
+  "protected_unchanged": true,
+  "provider_accounting": {
+    "anthropic_call_cap": 1,
+    "anthropic_calls": 1,
+    "anthropic_upper_bound_usd": 0.01656,
+    "anthropic_upper_bound_usd_cap": 1.0,
+    "openai_call_cap": 2,
+    "openai_calls": 2,
+    "openai_upper_bound_usd": 0.06893200000000001,
+    "openai_upper_bound_usd_cap": 1.0
+  },
+  "provider_calls": [
+    {
+      "model": "claude-sonnet-4-6",
+      "provider": "anthropic",
+      "request_sha256": "49be5c38e2356debfbee89ae31ce13476d2ddb61f034ff1006221df754a436e0",
+      "role": "worker-a",
+      "started_monotonic_ns": 101632458873
+    },
+    {
+      "anthropic_credential_included": false,
+      "anthropic_transcript_included": false,
+      "model": "gpt-5.6-sol",
+      "provider": "openai",
+      "request_sha256": "7abb360eee4aaa0c6dbbd23dc3d726426b9d0b736625eef6a7bf8f5c9fd70dc7",
+      "role": "worker-b",
+      "started_monotonic_ns": 101632561743
+    },
+    {
+      "anthropic_credential_included": false,
+      "anthropic_transcript_included": false,
+      "model": "gpt-5.6-sol",
+      "provider": "openai",
+      "request_sha256": "a8b93ebf74d1fe060c9081ad91b6c1fbb172b651ba5764446bede4baaa72d2bf",
+      "role": "worker-a2",
+      "started_monotonic_ns": 130191375152
+    }
+  ],
+  "provider_results": [
+    {
+      "changed_paths": [
+        "src/producer.py"
+      ],
+      "credential_transmitted": "ANTHROPIC_API_KEY only",
+      "ended_monotonic_ns": 106692080544,
+      "model": "claude-sonnet-4-6",
+      "proposal_path": "src/producer.py",
+      "proposal_sha256": "29f316941396e1cd90cd6c858eb1ad262e8fa78ff4b55ee6332139db49998b01",
+      "provider": "anthropic",
+      "provider_call": true,
+      "repository_credentials_transmitted": false,
+      "response_sha256": "2022ca78360e8a1890d695594a3bcc00718043cf02fba5bd615632287084ee78",
+      "returncode": 0,
+      "role": "worker-a",
+      "started_monotonic_ns": 101632458873,
+      "upper_bound_cost_usd": 0.01656,
+      "usage": {
+        "input_tokens": 4045,
+        "output_tokens": 295
+      }
+    },
+    {
+      "anthropic_credential_included": false,
+      "anthropic_transcript_included": false,
+      "changed_paths": [
+        "src/receiver.py"
+      ],
+      "credential_transmitted": "OPENAI_API_KEY only",
+      "ended_monotonic_ns": 130010090806,
+      "model": "gpt-5.6-sol",
+      "proposal_path": "src/receiver.py",
+      "proposal_sha256": "a65863ed6c5d494eed4591204100f50f6bf8e73d15597d6b3760e6254a749770",
+      "provider": "openai",
+      "provider_call": true,
+      "repository_credentials_transmitted": false,
+      "response_sha256": "9bf937e795c096f34257df9b360a49d48f2d609cacdd847ae1633836f916e1f9",
+      "returncode": 0,
+      "role": "worker-b",
+      "started_monotonic_ns": 101632561743,
+      "upper_bound_cost_usd": 0.046364,
+      "usage": {
+        "input_tokens": 3736,
+        "output_tokens": 1571
+      }
+    },
+    {
+      "anthropic_credential_included": false,
+      "anthropic_transcript_included": false,
+      "changed_paths": [
+        "src/producer.py"
+      ],
+      "credential_transmitted": "OPENAI_API_KEY only",
+      "ended_monotonic_ns": 133720077570,
+      "model": "gpt-5.6-sol",
+      "proposal_path": "src/producer.py",
+      "proposal_sha256": "a6cac745e74092bda1b5f1f877327adb41c841b1547776f4400eb26b3dd8371d",
+      "provider": "openai",
+      "provider_call": true,
+      "repository_credentials_transmitted": false,
+      "response_sha256": "0b72c36694e28dfe120e5f297c07f780ff36c1b7de51dea6c785a8917eb12df7",
+      "returncode": 0,
+      "role": "worker-a2",
+      "started_monotonic_ns": 130191375152,
+      "upper_bound_cost_usd": 0.022568,
+      "usage": {
+        "input_tokens": 4212,
+        "output_tokens": 286
+      }
+    }
+  ],
+  "revocation": {
+    "bundle": {
+      "canonicalization": "olp-canonical-json-int-v1",
+      "decision_authority": "RECEIVER_GATE",
+      "epoch_certificate": {
+        "authority": "ISSUE_AND_NARROW_MANDATES",
+        "epoch_id": "epoch_8e903f4039879948",
+        "epoch_public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+        "expires_at": "2027-09-13T05:08:30.463546Z",
+        "issued_at": "2026-09-12T05:08:30.463546Z",
+        "payload_hash": "0538dbba80ff3abe0cbc3ca3f6a8760d44b11f511a309badd096b1b3986ca5e0",
+        "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+        "schema": "openline.wallet.epoch_certificate.v1",
+        "sequence": 1,
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+          "value": "1135386350dc9481e764b4d1a0b7b447b586c462a0fd702076a909deccdcf0d2deab110edfda3abe229dde55ef6bd170a9616a575b8a5632110a584f50d07d05"
+        }
+      },
+      "events": [
+        {
+          "data": {
+            "expires_at": "2026-09-12T05:28:30.468284Z",
+            "mandate_id": "speckit_live_worker_a_T101",
+            "predecessor_mandate_id": null,
+            "scopes": [
+              "speckit:T101:e6bbaf6901a2ae50e6763f59",
+              "speckit:T102:e6bbaf6901a2ae50e6763f59"
+            ],
+            "subject_id": "worker-a",
+            "subject_public_key": "5de8a396183b39a3246d984f902620790b9325c2ce41115e7016879013a46847"
+          },
+          "event_type": "MANDATE_ISSUED",
+          "issued_at": "2026-09-12T05:08:30.468298Z",
+          "payload_hash": "151a08e40dd17184d0842819ce2d60ecca2fc6545f08f0ec167f7ddad453afc3",
+          "previous_event_hash": null,
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "schema": "openline.wallet.timeline_event.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+            "value": "6c0569c60022550464ffd458f132e10ac5498bd5fcdd87d94112703bdc5b2b2868c2e138d3c6c7112e1cb8bf92cbc0a2d0e93c8302d8c1fb31e68bf17b0be70c"
+          }
+        },
+        {
+          "data": {
+            "expires_at": "2026-09-12T05:28:30.468284Z",
+            "mandate_id": "speckit_live_worker_b_T201",
+            "predecessor_mandate_id": null,
+            "scopes": [
+              "speckit:T201:e6bbaf6901a2ae50e6763f59"
+            ],
+            "subject_id": "worker-b",
+            "subject_public_key": "33b8c52054f7301630297a10cd51e7dbe8ad368e02910e3bed0c0a523605a6e0"
+          },
+          "event_type": "MANDATE_ISSUED",
+          "issued_at": "2026-09-12T05:08:30.470512Z",
+          "payload_hash": "4c67916201841ddaed4b64e4f3ae332eb22ad0a824d7ee2abed4d4fbe0a42334",
+          "previous_event_hash": "fae265d69515f6446ef092a3c8bd669c26ef07357058538aeb1a61ee6e8881be",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "schema": "openline.wallet.timeline_event.v1",
+          "sequence": 2,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+            "value": "f397d6120cc414f4d91e082d7c525cc66e2cd4005629f5c83902b760f1cf8b71bb414e6f015269c0d986509d915e0be5a3d897d515b4b4616af0a0583b4c360a"
+          }
+        },
+        {
+          "data": {
+            "mandate_id": "speckit_live_worker_a_T101",
+            "reason": "WORKER_REPLACED"
+          },
+          "event_type": "MANDATE_REVOKED",
+          "issued_at": "2026-09-12T05:08:59.030295Z",
+          "payload_hash": "d15a44f5a301bf95f136e43722a94d9523f271f01f2b9932aa5d716e74964565",
+          "previous_event_hash": "28dd5a763b63a04ea65cfb96e8dd282c44b650417141a5686f0caf9dc47311fd",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "schema": "openline.wallet.timeline_event.v1",
+          "sequence": 3,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+            "value": "c49fda4d3b957d4487b75b0b442ca6b23e008d07772edf042a395158b38f44ab246e626e6f64eb3bdeb2022352c9ec11e9aa38878e1f1ab2f5d4e7b0ae5ed401"
+          }
+        }
+      ],
+      "expires_at": "2026-09-12T05:18:59.036375Z",
+      "head": {
+        "event_hash": "e2731c77253abda85b03331766b1ee80797771381223aa5b7ae3e520e5ceba97",
+        "sequence": 3
+      },
+      "issued_at": "2026-09-12T05:08:59.036375Z",
+      "payload_hash": "d9ef962b566250e9794cdaa8c846a9e91942afafba58f455afe963ee1b022829",
+      "principal": {
+        "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+        "root_public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61"
+      },
+      "receipts": [
+        {
+          "action": "speckit:T201:e6bbaf6901a2ae50e6763f59",
+          "decided_at": "2026-09-12T05:08:30.476304Z",
+          "decision": "STOPPED",
+          "decision_authority": "RECEIVER_GATE",
+          "gate_id": "joint-work-speckit-live-001",
+          "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+          "mandate_id": "speckit_live_worker_a_T101",
+          "payload_hash": "3988ba52b32f82747ebb43b2e339430ab48bd58a87b3f75e0c890d1fc370458f",
+          "presentation_hash": "d2e4f3a41314d2d61eeab505533aa00a30ccbfb1221996ad4a14518a042351c8",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "reason_codes": [
+            "ACTION_OUTSIDE_MANDATE"
+          ],
+          "schema": "openline.gate.action_receipt.v1",
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+            "value": "59f75ff0fe20d7cd43305e35049eb338a7567321748c7c6b5f0e789818329e38dc7d20723fc917877c6d254e6ebf5f19274c2e19a2d23641ec01d726f469ff05"
+          },
+          "subject_id": "worker-a",
+          "wallet_policy_authority": "NONE"
+        },
+        {
+          "action": "speckit:T101:e6bbaf6901a2ae50e6763f59",
+          "decided_at": "2026-09-12T05:08:30.477942Z",
+          "decision": "ALLOWED",
+          "decision_authority": "RECEIVER_GATE",
+          "gate_id": "joint-work-speckit-live-001",
+          "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+          "mandate_id": "speckit_live_worker_a_T101",
+          "payload_hash": "ca460b27ca8996411155cee1444540fb0bfc628ee7ce316690ca532c17b29669",
+          "presentation_hash": "72c5904843047d8c3b8f43753283306cdc02a6ff7c14e03f707ee98074ee60b1",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "reason_codes": [],
+          "schema": "openline.gate.action_receipt.v1",
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+            "value": "6e442d1cfc902009057d5a447c42087f2ab25a50f16bfc77c25c656931251b542ea6122ca0aca33ef728b2bc44b3d4348c009b03d620c77c9d7d1e9d63f57f03"
+          },
+          "subject_id": "worker-a",
+          "wallet_policy_authority": "NONE"
+        },
+        {
+          "action": "speckit:T201:e6bbaf6901a2ae50e6763f59",
+          "decided_at": "2026-09-12T05:08:30.479635Z",
+          "decision": "ALLOWED",
+          "decision_authority": "RECEIVER_GATE",
+          "gate_id": "joint-work-speckit-live-001",
+          "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+          "mandate_id": "speckit_live_worker_b_T201",
+          "payload_hash": "b07cd9d66dee602e4ed9223079257bb59844daf0e9ce5e9494a2214ce1a0c39d",
+          "presentation_hash": "27f03e72fbe6c13f10c88059960a31f10247c25136fc4228500836fa04bbf2d3",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "reason_codes": [],
+          "schema": "openline.gate.action_receipt.v1",
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+            "value": "84b79383c6abbe14ba1c3ea2722ab9c8ce990307ef353fcc2ebc31d86a73f19b6c4397400965bea85697b13c956c660cdaddf4de7d2293c8018b2e83778c060d"
+          },
+          "subject_id": "worker-b",
+          "wallet_policy_authority": "NONE"
+        }
+      ],
+      "schema": "openline.wallet.receiver_bundle.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+        "value": "a4feb87266d4c1d2617e8d2a7590e3576a643096be8a84bc40be89f8676b37d4c7f1cc4c22de49b27d9a7bd766c349f41f3267e3d25da143526e48b97728ef08"
+      },
+      "wallet_policy_authority": "NONE"
+    },
+    "revocation": {
+      "data": {
+        "mandate_id": "speckit_live_worker_a_T101",
+        "reason": "WORKER_REPLACED"
+      },
+      "event_type": "MANDATE_REVOKED",
+      "issued_at": "2026-09-12T05:08:59.030295Z",
+      "payload_hash": "d15a44f5a301bf95f136e43722a94d9523f271f01f2b9932aa5d716e74964565",
+      "previous_event_hash": "28dd5a763b63a04ea65cfb96e8dd282c44b650417141a5686f0caf9dc47311fd",
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "schema": "openline.wallet.timeline_event.v1",
+      "sequence": 3,
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+        "value": "c49fda4d3b957d4487b75b0b442ca6b23e008d07772edf042a395158b38f44ab246e626e6f64eb3bdeb2022352c9ec11e9aa38878e1f1ab2f5d4e7b0ae5ed401"
+      }
+    },
+    "stopped": {
+      "action": "speckit:T102:e6bbaf6901a2ae50e6763f59",
+      "decided_at": "2026-09-12T05:08:59.042068Z",
+      "decision": "STOPPED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-live-001",
+      "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+      "mandate_id": "speckit_live_worker_a_T101",
+      "payload_hash": "4c2e4c1050e525e4fb90ef031ccfe543f896128a434c0d7f27038f13335c4f77",
+      "presentation_hash": "1930628fa089207d1b5839c458197a76fa62644424a263e21733f4b2c79cfd68",
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "reason_codes": [
+        "MANDATE_REVOKED"
+      ],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+        "value": "a700a6b92d4f31852458ce8228dbfb04c4b2997f85bfe70ed7b3203126c9c016e0c9e5f24c28aebd00fbdc89a624e6b91d838d556d44fa899da99acebab81b08"
+      },
+      "subject_id": "worker-a",
+      "wallet_policy_authority": "NONE"
+    }
+  },
+  "schema": "openline.joint-work-speckit-live-001.result.v1",
+  "scripted_freeze_sha256": "53ffcd7132124322965ebe092d61492955cc1549e2f6494349edc06ac48e3054",
+  "scripted_frozen_verdict": "SCRIPTED_SPECKIT_ARM_PASS_LIVE_NOT_RUN",
+  "spec_kit_sha": "d848fb4e18f44640ad6b42e60a280551ee90cdce",
+  "spec_root_digest": "e6bbaf6901a2ae50e6763f593402224bbda5fad3d8b12b51920dada07e6d8c50",
+  "successor_authority": {
+    "action": "speckit:T102:e6bbaf6901a2:handoff:84365ee936a11a09",
+    "bundle": {
+      "canonicalization": "olp-canonical-json-int-v1",
+      "decision_authority": "RECEIVER_GATE",
+      "epoch_certificate": {
+        "authority": "ISSUE_AND_NARROW_MANDATES",
+        "epoch_id": "epoch_8e903f4039879948",
+        "epoch_public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+        "expires_at": "2027-09-13T05:08:30.463546Z",
+        "issued_at": "2026-09-12T05:08:30.463546Z",
+        "payload_hash": "0538dbba80ff3abe0cbc3ca3f6a8760d44b11f511a309badd096b1b3986ca5e0",
+        "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+        "schema": "openline.wallet.epoch_certificate.v1",
+        "sequence": 1,
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+          "value": "1135386350dc9481e764b4d1a0b7b447b586c462a0fd702076a909deccdcf0d2deab110edfda3abe229dde55ef6bd170a9616a575b8a5632110a584f50d07d05"
+        }
+      },
+      "events": [
+        {
+          "data": {
+            "expires_at": "2026-09-12T05:28:30.468284Z",
+            "mandate_id": "speckit_live_worker_a_T101",
+            "predecessor_mandate_id": null,
+            "scopes": [
+              "speckit:T101:e6bbaf6901a2ae50e6763f59",
+              "speckit:T102:e6bbaf6901a2ae50e6763f59"
+            ],
+            "subject_id": "worker-a",
+            "subject_public_key": "5de8a396183b39a3246d984f902620790b9325c2ce41115e7016879013a46847"
+          },
+          "event_type": "MANDATE_ISSUED",
+          "issued_at": "2026-09-12T05:08:30.468298Z",
+          "payload_hash": "151a08e40dd17184d0842819ce2d60ecca2fc6545f08f0ec167f7ddad453afc3",
+          "previous_event_hash": null,
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "schema": "openline.wallet.timeline_event.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+            "value": "6c0569c60022550464ffd458f132e10ac5498bd5fcdd87d94112703bdc5b2b2868c2e138d3c6c7112e1cb8bf92cbc0a2d0e93c8302d8c1fb31e68bf17b0be70c"
+          }
+        },
+        {
+          "data": {
+            "expires_at": "2026-09-12T05:28:30.468284Z",
+            "mandate_id": "speckit_live_worker_b_T201",
+            "predecessor_mandate_id": null,
+            "scopes": [
+              "speckit:T201:e6bbaf6901a2ae50e6763f59"
+            ],
+            "subject_id": "worker-b",
+            "subject_public_key": "33b8c52054f7301630297a10cd51e7dbe8ad368e02910e3bed0c0a523605a6e0"
+          },
+          "event_type": "MANDATE_ISSUED",
+          "issued_at": "2026-09-12T05:08:30.470512Z",
+          "payload_hash": "4c67916201841ddaed4b64e4f3ae332eb22ad0a824d7ee2abed4d4fbe0a42334",
+          "previous_event_hash": "fae265d69515f6446ef092a3c8bd669c26ef07357058538aeb1a61ee6e8881be",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "schema": "openline.wallet.timeline_event.v1",
+          "sequence": 2,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+            "value": "f397d6120cc414f4d91e082d7c525cc66e2cd4005629f5c83902b760f1cf8b71bb414e6f015269c0d986509d915e0be5a3d897d515b4b4616af0a0583b4c360a"
+          }
+        },
+        {
+          "data": {
+            "mandate_id": "speckit_live_worker_a_T101",
+            "reason": "WORKER_REPLACED"
+          },
+          "event_type": "MANDATE_REVOKED",
+          "issued_at": "2026-09-12T05:08:59.030295Z",
+          "payload_hash": "d15a44f5a301bf95f136e43722a94d9523f271f01f2b9932aa5d716e74964565",
+          "previous_event_hash": "28dd5a763b63a04ea65cfb96e8dd282c44b650417141a5686f0caf9dc47311fd",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "schema": "openline.wallet.timeline_event.v1",
+          "sequence": 3,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+            "value": "c49fda4d3b957d4487b75b0b442ca6b23e008d07772edf042a395158b38f44ab246e626e6f64eb3bdeb2022352c9ec11e9aa38878e1f1ab2f5d4e7b0ae5ed401"
+          }
+        },
+        {
+          "data": {
+            "expires_at": "2026-09-12T05:28:59.043962Z",
+            "mandate_id": "speckit_live_worker_a2_T102",
+            "predecessor_mandate_id": null,
+            "scopes": [
+              "speckit:T102:e6bbaf6901a2:handoff:84365ee936a11a09"
+            ],
+            "subject_id": "worker-a2",
+            "subject_public_key": "7941c62e7a547745fd3fec6d93ea0f3939b695385a032c3af704edc2885be91b"
+          },
+          "event_type": "MANDATE_ISSUED",
+          "issued_at": "2026-09-12T05:08:59.043968Z",
+          "payload_hash": "b1bf61ec90f6f5486e43f559a5190249d5ecae47b7ec29f8d59e9cc0d28763b7",
+          "previous_event_hash": "e2731c77253abda85b03331766b1ee80797771381223aa5b7ae3e520e5ceba97",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "schema": "openline.wallet.timeline_event.v1",
+          "sequence": 4,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+            "value": "84abdce16ef586b490d719b4a9a6d56253b88c6a20c1eb2f5ab99956aea570c68321d0170a9b31d700cd75a8c87bfefc5db48d25911a2b5502450e19e0434d04"
+          }
+        }
+      ],
+      "expires_at": "2026-09-12T05:18:59.050035Z",
+      "head": {
+        "event_hash": "18f6f063d12aba5e3bed809bbaad245e1c0d5370762eb8a388f5c6966412702c",
+        "sequence": 4
+      },
+      "issued_at": "2026-09-12T05:08:59.050035Z",
+      "payload_hash": "642ac284b709cfc1405bcf6a3464feb2474447baf5d27ce34c88e527fbfbf617",
+      "principal": {
+        "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+        "root_public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61"
+      },
+      "receipts": [
+        {
+          "action": "speckit:T201:e6bbaf6901a2ae50e6763f59",
+          "decided_at": "2026-09-12T05:08:30.476304Z",
+          "decision": "STOPPED",
+          "decision_authority": "RECEIVER_GATE",
+          "gate_id": "joint-work-speckit-live-001",
+          "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+          "mandate_id": "speckit_live_worker_a_T101",
+          "payload_hash": "3988ba52b32f82747ebb43b2e339430ab48bd58a87b3f75e0c890d1fc370458f",
+          "presentation_hash": "d2e4f3a41314d2d61eeab505533aa00a30ccbfb1221996ad4a14518a042351c8",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "reason_codes": [
+            "ACTION_OUTSIDE_MANDATE"
+          ],
+          "schema": "openline.gate.action_receipt.v1",
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+            "value": "59f75ff0fe20d7cd43305e35049eb338a7567321748c7c6b5f0e789818329e38dc7d20723fc917877c6d254e6ebf5f19274c2e19a2d23641ec01d726f469ff05"
+          },
+          "subject_id": "worker-a",
+          "wallet_policy_authority": "NONE"
+        },
+        {
+          "action": "speckit:T101:e6bbaf6901a2ae50e6763f59",
+          "decided_at": "2026-09-12T05:08:30.477942Z",
+          "decision": "ALLOWED",
+          "decision_authority": "RECEIVER_GATE",
+          "gate_id": "joint-work-speckit-live-001",
+          "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+          "mandate_id": "speckit_live_worker_a_T101",
+          "payload_hash": "ca460b27ca8996411155cee1444540fb0bfc628ee7ce316690ca532c17b29669",
+          "presentation_hash": "72c5904843047d8c3b8f43753283306cdc02a6ff7c14e03f707ee98074ee60b1",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "reason_codes": [],
+          "schema": "openline.gate.action_receipt.v1",
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+            "value": "6e442d1cfc902009057d5a447c42087f2ab25a50f16bfc77c25c656931251b542ea6122ca0aca33ef728b2bc44b3d4348c009b03d620c77c9d7d1e9d63f57f03"
+          },
+          "subject_id": "worker-a",
+          "wallet_policy_authority": "NONE"
+        },
+        {
+          "action": "speckit:T201:e6bbaf6901a2ae50e6763f59",
+          "decided_at": "2026-09-12T05:08:30.479635Z",
+          "decision": "ALLOWED",
+          "decision_authority": "RECEIVER_GATE",
+          "gate_id": "joint-work-speckit-live-001",
+          "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+          "mandate_id": "speckit_live_worker_b_T201",
+          "payload_hash": "b07cd9d66dee602e4ed9223079257bb59844daf0e9ce5e9494a2214ce1a0c39d",
+          "presentation_hash": "27f03e72fbe6c13f10c88059960a31f10247c25136fc4228500836fa04bbf2d3",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "reason_codes": [],
+          "schema": "openline.gate.action_receipt.v1",
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+            "value": "84b79383c6abbe14ba1c3ea2722ab9c8ce990307ef353fcc2ebc31d86a73f19b6c4397400965bea85697b13c956c660cdaddf4de7d2293c8018b2e83778c060d"
+          },
+          "subject_id": "worker-b",
+          "wallet_policy_authority": "NONE"
+        },
+        {
+          "action": "speckit:T102:e6bbaf6901a2ae50e6763f59",
+          "decided_at": "2026-09-12T05:08:59.042068Z",
+          "decision": "STOPPED",
+          "decision_authority": "RECEIVER_GATE",
+          "gate_id": "joint-work-speckit-live-001",
+          "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+          "mandate_id": "speckit_live_worker_a_T101",
+          "payload_hash": "4c2e4c1050e525e4fb90ef031ccfe543f896128a434c0d7f27038f13335c4f77",
+          "presentation_hash": "1930628fa089207d1b5839c458197a76fa62644424a263e21733f4b2c79cfd68",
+          "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+          "reason_codes": [
+            "MANDATE_REVOKED"
+          ],
+          "schema": "openline.gate.action_receipt.v1",
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+            "value": "a700a6b92d4f31852458ce8228dbfb04c4b2997f85bfe70ed7b3203126c9c016e0c9e5f24c28aebd00fbdc89a624e6b91d838d556d44fa899da99acebab81b08"
+          },
+          "subject_id": "worker-a",
+          "wallet_policy_authority": "NONE"
+        }
+      ],
+      "schema": "openline.wallet.receiver_bundle.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3e5039da8faa9c0ea3d4327e5c0872d32619bb7f6cae8af8c0a3bce6d5c48c61",
+        "value": "5b893629e0a6cdb91515cc6c7e816512b755d1b5e7caaa431bb9eebb74ed0405cc2a2d32f407c504ff37bc84b36ee33d7a8154983055a0aeed06099c77a39300"
+      },
+      "wallet_policy_authority": "NONE"
+    },
+    "event": {
+      "data": {
+        "expires_at": "2026-09-12T05:28:59.043962Z",
+        "mandate_id": "speckit_live_worker_a2_T102",
+        "predecessor_mandate_id": null,
+        "scopes": [
+          "speckit:T102:e6bbaf6901a2:handoff:84365ee936a11a09"
+        ],
+        "subject_id": "worker-a2",
+        "subject_public_key": "7941c62e7a547745fd3fec6d93ea0f3939b695385a032c3af704edc2885be91b"
+      },
+      "event_type": "MANDATE_ISSUED",
+      "issued_at": "2026-09-12T05:08:59.043968Z",
+      "payload_hash": "b1bf61ec90f6f5486e43f559a5190249d5ecae47b7ec29f8d59e9cc0d28763b7",
+      "previous_event_hash": "e2731c77253abda85b03331766b1ee80797771381223aa5b7ae3e520e5ceba97",
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "schema": "openline.wallet.timeline_event.v1",
+      "sequence": 4,
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "446f7986d32044511e75c178049ef8cf0a1c83e78b74ca27137b7c084b961ce6",
+        "value": "84abdce16ef586b490d719b4a9a6d56253b88c6a20c1eb2f5ab99956aea570c68321d0170a9b31d700cd75a8c87bfefc5db48d25911a2b5502450e19e0434d04"
+      }
+    },
+    "receipt": {
+      "action": "speckit:T102:e6bbaf6901a2:handoff:84365ee936a11a09",
+      "decided_at": "2026-09-12T05:08:59.057770Z",
+      "decision": "ALLOWED",
+      "decision_authority": "RECEIVER_GATE",
+      "gate_id": "joint-work-speckit-live-001",
+      "gate_public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+      "mandate_id": "speckit_live_worker_a2_T102",
+      "payload_hash": "ef7379242805399b0ab73ed92b83e36b695c613fed473f16a3ec31e320a3b08a",
+      "presentation_hash": "e18b94a089d4f3a2c985e90a3b04fae7d1b9814c4cdb0f2f091ac9ce6a903b9f",
+      "principal_id": "openline:principal:70984cd67d070b9cdffbad50bc8af52d7bfc42128d8c57e1bc476d740add1ee7",
+      "reason_codes": [],
+      "schema": "openline.gate.action_receipt.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3cdb592a31969548a825399530abef2ac5cd5f663fffca0cb3fba8094a313cc4",
+        "value": "a5b6d5226e307dd0b8ceb9be54f6602eff882712e9d5097a67fbbb14d6cf00339d1dedee4844ecd414702a16e9ea35a9737346222e493d78f04b6baa50c7bb03"
+      },
+      "subject_id": "worker-a2",
+      "wallet_policy_authority": "NONE"
+    }
+  },
+  "valid_airlock": {
+    "acceptance": {
+      "commands": [
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_convergence.py"
+          ],
+          "duration_seconds": 0.041499,
+          "exit_code": 0,
+          "kind": "spec_kit_composition",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        }
+      ],
+      "rule": "spec_kit_composition",
+      "status": "PASS"
+    },
+    "airlock_sha": "3ef34fb0100516e458cb362a7448c78a72da097b",
+    "candidate": "2f4c46bb1c2898b7305eec358ca6b839d7d4dec5",
+    "changed_paths": [
+      "src/producer.py",
+      "src/receiver.py"
+    ],
+    "ordinary": {
+      "commands": [
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_producer.py"
+          ],
+          "duration_seconds": 0.034406,
+          "exit_code": 0,
+          "kind": "ordinary",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        },
+        {
+          "argv": [
+            "/opt/hostedtoolcache/Python/3.12.14/x64/bin/python",
+            "-B",
+            "tests/test_receiver.py"
+          ],
+          "duration_seconds": 0.04082,
+          "exit_code": 0,
+          "kind": "ordinary",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_tail": "",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_tail": "",
+          "timed_out": false
+        }
+      ],
+      "rule": "ordinary",
+      "status": "PASS"
+    },
+    "protected": {
+      "rule": "protected_files",
+      "status": "PASS",
+      "touched": []
+    },
+    "status": "ELIGIBLE"
+  },
+  "verdict": "JOINT_WORK_SPECKIT_LIVE_PASS",
+  "wallet_head": "a4de3106ad3a1306864d0c9b306b3e51bd4e7ff5",
+  "wallet_merged_base": "d6cf339495790fe1f3a1822921c0819694cd773e"
+}

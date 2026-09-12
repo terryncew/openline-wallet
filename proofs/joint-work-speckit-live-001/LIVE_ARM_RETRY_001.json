@@ -1,0 +1,15 @@
+{
+  "activation": "AUTHORIZED_ONCE_AFTER_SETUP_REPAIR",
+  "experiment_id": "JOINT-WORK-SPECKIT-LIVE-001",
+  "failure_record_sha256": "d683fccae339155e5109ba476b3a658625ff170dfdcd31f4ce7547c3cc365bb1",
+  "prior_activation_commit": "74c4589d2a2477dbac820340dc1e56a7718b78c2",
+  "prior_failure_job_id": 103501560630,
+  "prior_failure_run_id": 34674406014,
+  "prior_provider_calls": 0,
+  "provider_call_caps": {
+    "anthropic": 1,
+    "openai": 2
+  },
+  "repair_calls": 0,
+  "retry_prereg_sha256": "9e9f649d9a02122a819598d33d2773043c3c4606cfee44038a6b3929ae5e65ca"
+}

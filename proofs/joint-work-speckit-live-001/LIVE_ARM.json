@@ -1,0 +1,10 @@
+{
+  "activation": "AUTHORIZED_ONCE",
+  "base_merge_commit": "d6cf339495790fe1f3a1822921c0819694cd773e",
+  "experiment_id": "JOINT-WORK-SPECKIT-LIVE-001",
+  "provider_call_caps": {
+    "anthropic": 1,
+    "openai": 2
+  },
+  "repair_calls": 0
+}

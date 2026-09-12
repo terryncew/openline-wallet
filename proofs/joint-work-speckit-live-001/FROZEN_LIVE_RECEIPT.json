@@ -1,0 +1,69 @@
+{
+  "activation_history": {
+    "additional_provider_rerun_allowed": false,
+    "first_activation_commit": "74c4589d2a2477dbac820340dc1e56a7718b78c2",
+    "first_activation_provider_calls": 0,
+    "first_activation_verdict": "INCONCLUSIVE_PROVIDER_SETUP",
+    "repair_commit": "e52ac7989313c157301f780877e69d80544d33d4",
+    "retry_commit": "a4de3106ad3a1306864d0c9b306b3e51bd4e7ff5"
+  },
+  "artifact_file_hashes": {
+    "handoff.json": "7502f640ed29465d6f2030bfc058251f2f5fdce52f159936f4e9bca13cc8f323",
+    "owner-agreement.json": "52f820737e9a05ae0b06fdba8833ce22881fa28cfbc69f3aabc583ac254d7693",
+    "result.json": "5c55cb56153d1414759976b0dbb63e604956da74574ef8931e314419c7a47c9d"
+  },
+  "artifact_id": 10291574375,
+  "artifact_name": "joint-work-speckit-live-001-live",
+  "artifact_zip_sha256": "28fd36112408c4410d28a92a9b9a55256548eca7f792d1fa2db0a0640fb062a5",
+  "checks": {
+    "T101_checkpoint": "PASS",
+    "T102_unresolved_at_checkpoint": true,
+    "T201_local": "PASS",
+    "anthropic_calls_at_terminal": 1,
+    "anthropic_calls_before_revocation": 1,
+    "anthropic_credential_transferred": false,
+    "anthropic_transcript_transferred": false,
+    "cross_scope_worker_a_to_T201": "STOPPED_ACTION_OUTSIDE_MANDATE",
+    "handoff_signature_verified": true,
+    "negative_airlock": "REJECTED",
+    "negative_local": "PASS",
+    "protected_unchanged": true,
+    "revoked_worker_a_T102": "STOPPED_MANDATE_REVOKED",
+    "successor_descends_from_T101": true,
+    "valid_airlock": "ELIGIBLE"
+  },
+  "earned_claim": "LIVE_BOUNDED_CLAIM_EARNED",
+  "experiment_id": "JOINT-WORK-SPECKIT-LIVE-001",
+  "frozen_result_sha256": "5c55cb56153d1414759976b0dbb63e604956da74574ef8931e314419c7a47c9d",
+  "live_job_id": 103502635108,
+  "measured_parallel_overlap_ns": 5059518801,
+  "pins": {
+    "airlock": "3ef34fb0100516e458cb362a7448c78a72da097b",
+    "scripted_freeze_sha256": "53ffcd7132124322965ebe092d61492955cc1549e2f6494349edc06ac48e3054",
+    "spec_kit": "d848fb4e18f44640ad6b42e60a280551ee90cdce",
+    "spec_root_digest": "e6bbaf6901a2ae50e6763f593402224bbda5fad3d8b12b51920dada07e6d8c50"
+  },
+  "provider_accounting": {
+    "anthropic_call_cap": 1,
+    "anthropic_calls": 1,
+    "anthropic_upper_bound_usd": 0.01656,
+    "anthropic_upper_bound_usd_cap": 1.0,
+    "openai_call_cap": 2,
+    "openai_calls": 2,
+    "openai_upper_bound_usd": 0.06893200000000001,
+    "openai_upper_bound_usd_cap": 1.0
+  },
+  "schema": "openline.joint-work-speckit-live-001.frozen-receipt.v1",
+  "scope": [
+    "bounded GitHub-hosted fixture",
+    "direct provider APIs used only as proposal sources",
+    "no provider repository credentials, shell, or filesystem tool",
+    "no production or external consequential effect",
+    "no general provider-replaceability or category-superiority claim"
+  ],
+  "status": "FROZEN",
+  "terminal_verdict": "JOINT_WORK_SPECKIT_LIVE_PASS",
+  "wallet_head": "a4de3106ad3a1306864d0c9b306b3e51bd4e7ff5",
+  "wallet_merged_base": "d6cf339495790fe1f3a1822921c0819694cd773e",
+  "workflow_run_id": 34674793661
+}
