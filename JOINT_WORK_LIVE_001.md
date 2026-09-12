@@ -186,6 +186,19 @@ That result earns no real-provider claim. It only proves the complete harness,
 Wallet transitions, checkpoint/replacement path, negative control, and Airlock
 composition gate before any provider money is spent.
 
+## Activation repair R1
+
+PR #29 was accidentally merged after the zero-spend scripted arm. GitHub deleted the
+proof branch, so recreating it with the already-approved `LIVE_ARM.json` produced a push
+event whose `before` SHA was all zeroes. The original activation gate deliberately treated
+that as a non-activation event. Workflow run `34669695928` therefore completed with the
+bounded real-host job **skipped**; no provider job started.
+
+`LIVE_ARM_RETRY_001.json` freezes that exact setup event. The repaired gate permits one
+retry when that marker itself changes on `proof/joint-work-live-001` and the original
+`LIVE_ARM.json` is still present. Subsequent freeze commits and merges do not touch the
+retry marker and cannot trigger provider spend.
+
 ## Terminal live claim
 
 Only `JOINT_WORK_LIVE_PASS` earns:

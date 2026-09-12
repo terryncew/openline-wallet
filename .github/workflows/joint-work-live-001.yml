@@ -81,7 +81,7 @@ jobs:
           persist-credentials: false
 
       - id: gate
-        name: Allow one live run only when activation file changes on proof branch
+        name: Allow one live run from activation or the frozen branch-recreation retry
         shell: bash
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -90,15 +90,34 @@ jobs:
         run: |
           set -euo pipefail
           enabled=false
+          : > /tmp/joint-changed.txt
+
           if [[ "$EVENT_NAME" == "push" && "$GIT_REF" == "refs/heads/proof/joint-work-live-001" ]]; then
             if [[ -n "${BEFORE:-}" && "$BEFORE" != "0000000000000000000000000000000000000000" ]]; then
               git diff --name-only "$BEFORE" "$GITHUB_SHA" > /tmp/joint-changed.txt
-              cat /tmp/joint-changed.txt
-              if grep -Fxq "proofs/joint-work-live-001/LIVE_ARM.json" /tmp/joint-changed.txt; then
-                enabled=true
-              fi
+            else
+              # GitHub reports an all-zero `before` when a deleted proof branch is
+              # recreated. The first activation push hit that case after PR #29 was
+              # accidentally merged, so the live job was correctly skipped.
+              git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" > /tmp/joint-changed.txt
+            fi
+
+            cat /tmp/joint-changed.txt
+
+            activation_changed=false
+            if grep -Fxq "proofs/joint-work-live-001/LIVE_ARM.json" /tmp/joint-changed.txt; then
+              activation_changed=true
+            fi
+            if grep -Fxq "proofs/joint-work-live-001/LIVE_ARM_RETRY_001.json" /tmp/joint-changed.txt; then
+              activation_changed=true
+            fi
+
+            if [[ "$activation_changed" == "true" ]]; then
+              test -f proofs/joint-work-live-001/LIVE_ARM.json
+              enabled=true
             fi
           fi
+
           echo "enabled=$enabled" >> "$GITHUB_OUTPUT"
 
   live:
