@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 import re
 import secrets
-from typing import Any, Mapping
+from typing import Any, Mapping, Sequence
 
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
@@ -29,6 +29,7 @@ from .wallet import (
 
 
 PRESENTATION_SCHEMA = "openline.wallet.holder_presentation.v1"
+ROUTE_RECEIPT_SCHEMA = "openline.gate.route_receipt.v1"
 _ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$")
 
 
@@ -76,6 +77,13 @@ class ReferenceGate:
     It pins principal roots, admits only monotonic fresh bundle heads, issues
     one-use challenges, and signs every allow/stop decision. The class performs
     no side effect itself; a receiver may act only after an ``ALLOWED`` receipt.
+
+    A receiver may additionally register source actions whose successful use
+    creates carried authority requirements. Those requirements attach to the
+    subject that observed the protected source. Before a routed consequence,
+    ``evaluate_route`` checks the current recipient against those requirements.
+    This is deliberately conservative dynamic information-flow control: the
+    reference Gate provides no declassification operation.
     """
 
     def __init__(
@@ -100,6 +108,9 @@ class ReferenceGate:
         self._admitted: dict[str, _AdmittedBundle] = {}
         self._quarantined: set[str] = set()
         self._challenges: dict[str, dict[str, Any]] = {}
+        self._protected_actions: dict[str, frozenset[str]] = {}
+        self._carried_scopes: dict[tuple[str, str], set[str]] = {}
+        self._routed_action_receipts: set[str] = set()
 
     @property
     def public_key(self) -> str:
@@ -113,6 +124,40 @@ class ReferenceGate:
         if existing is not None and existing != root:
             raise WalletError("PINNED_ROOT_CONFLICT")
         self._trusted_roots[principal_id] = root
+
+    def protect_action(
+        self,
+        action: str,
+        *,
+        required_recipient_scopes: Sequence[str],
+    ) -> None:
+        """Declare what authority a recipient must hold after this source is used.
+
+        The policy is configured by the receiver, not inferred by the worker.
+        Requirements are monotonic for the lifetime of this Gate instance.
+        """
+        if not isinstance(action, str) or _ID.fullmatch(action) is None:
+            raise WalletError("PROTECTED_ACTION_INVALID")
+        if isinstance(required_recipient_scopes, (str, bytes)) or not required_recipient_scopes:
+            raise WalletError("RECIPIENT_SCOPES_REQUIRED")
+        normalized: list[str] = []
+        for value in required_recipient_scopes:
+            if not isinstance(value, str) or _ID.fullmatch(value) is None:
+                raise WalletError("RECIPIENT_SCOPE_INVALID")
+            normalized.append(value)
+        if len(set(normalized)) != len(normalized):
+            raise WalletError("RECIPIENT_SCOPE_DUPLICATE")
+        if len(normalized) > 32:
+            raise WalletError("TOO_MANY_RECIPIENT_SCOPES")
+        required = frozenset(normalized)
+        previous = self._protected_actions.get(action)
+        if previous is not None and previous != required:
+            raise WalletError("PROTECTED_ACTION_CONFLICT")
+        self._protected_actions[action] = required
+
+    def carried_scopes(self, principal_id: str, subject_id: str) -> tuple[str, ...]:
+        """Return the Gate's current conservative exposure set for one subject."""
+        return tuple(sorted(self._carried_scopes.get((principal_id, subject_id), set())))
 
     def admit_bundle(
         self,
@@ -210,6 +255,39 @@ class ReferenceGate:
             self.gate_key,
         )
 
+    def _route_receipt(
+        self,
+        *,
+        decision: str,
+        reasons: list[str],
+        principal_id: str,
+        sender_subject_id: str | None,
+        recipient_subject_id: str,
+        action: str,
+        action_receipt_hash: str | None,
+        carried_scopes: Sequence[str],
+        now: datetime,
+    ) -> dict[str, Any]:
+        return sign_record(
+            {
+                "schema": ROUTE_RECEIPT_SCHEMA,
+                "gate_id": self.gate_id,
+                "gate_public_key": self.public_key,
+                "principal_id": principal_id,
+                "sender_subject_id": sender_subject_id,
+                "recipient_subject_id": recipient_subject_id,
+                "action": action,
+                "action_receipt_hash": action_receipt_hash,
+                "carried_scopes": sorted(carried_scopes),
+                "decision": decision,
+                "reason_codes": reasons,
+                "decided_at": isoformat(now),
+                "wallet_policy_authority": WALLET_POLICY_AUTHORITY,
+                "decision_authority": DECISION_AUTHORITY,
+            },
+            self.gate_key,
+        )
+
     def evaluate(
         self,
         presentation: Mapping[str, Any],
@@ -300,6 +378,11 @@ class ReferenceGate:
             return stop("SUBJECT_BINDING_MISMATCH")
         if expected_action not in mandate["scopes"]:
             return stop("ACTION_OUTSIDE_MANDATE")
+
+        requirements = self._protected_actions.get(expected_action)
+        if requirements:
+            self._carried_scopes.setdefault((principal, subject_id), set()).update(requirements)
+
         return self._receipt(
             decision="ALLOWED",
             reasons=[],
@@ -308,5 +391,126 @@ class ReferenceGate:
             subject_id=subject_id,
             action=expected_action,
             presentation_hash=presentation_hash,
+            now=current,
+        )
+
+    def evaluate_route(
+        self,
+        action_receipt: Mapping[str, Any],
+        *,
+        expected_action: str,
+        recipient_subject_id: str,
+        now: datetime | None = None,
+    ) -> dict[str, Any]:
+        """Decide whether one already-authorized action may route to a recipient.
+
+        This is a second consequence check. An ALLOWED exact-action receipt is
+        necessary but not sufficient when the sender has observed a protected
+        source. The current recipient must independently hold every carried
+        scope before the effect is released.
+        """
+        current = as_utc(now or utc_now(), "route evaluation time")
+        principal = str(action_receipt.get("principal_id", "")) if isinstance(action_receipt, Mapping) else ""
+        sender = str(action_receipt.get("subject_id", "")) if isinstance(action_receipt, Mapping) else ""
+        action_receipt_hash: str | None = None
+        carried: tuple[str, ...] = ()
+
+        def stop(reason: str) -> dict[str, Any]:
+            return self._route_receipt(
+                decision="STOPPED",
+                reasons=[reason],
+                principal_id=principal,
+                sender_subject_id=sender or None,
+                recipient_subject_id=recipient_subject_id,
+                action=expected_action,
+                action_receipt_hash=action_receipt_hash,
+                carried_scopes=carried,
+                now=current,
+            )
+
+        if not isinstance(recipient_subject_id, str) or _ID.fullmatch(recipient_subject_id) is None:
+            return stop("ROUTE_RECIPIENT_INVALID")
+
+        expected_shape = {
+            "schema",
+            "gate_id",
+            "gate_public_key",
+            "principal_id",
+            "mandate_id",
+            "subject_id",
+            "action",
+            "decision",
+            "reason_codes",
+            "presentation_hash",
+            "decided_at",
+            "wallet_policy_authority",
+            "decision_authority",
+            "payload_hash",
+            "signature",
+        }
+        if not isinstance(action_receipt, Mapping) or set(action_receipt) != expected_shape:
+            return stop("ROUTE_ACTION_RECEIPT_SHAPE_INVALID")
+        if action_receipt.get("schema") != GATE_RECEIPT_SCHEMA:
+            return stop("ROUTE_ACTION_RECEIPT_SCHEMA_INVALID")
+        if action_receipt.get("gate_id") != self.gate_id:
+            return stop("ROUTE_GATE_ID_MISMATCH")
+        if action_receipt.get("gate_public_key") != self.public_key:
+            return stop("ROUTE_GATE_KEY_MISMATCH")
+        valid, reason = verify_record(action_receipt, expected_public_key=self.public_key)
+        if valid is not True:
+            return stop(reason or "ROUTE_ACTION_RECEIPT_SIGNATURE_INVALID")
+        action_receipt_hash = record_hash(action_receipt)
+        if action_receipt_hash in self._routed_action_receipts:
+            return stop("ROUTE_ACTION_RECEIPT_REPLAYED")
+        if action_receipt.get("decision") != "ALLOWED":
+            return stop("ROUTE_REQUIRES_ALLOWED_ACTION")
+        if action_receipt.get("action") != expected_action:
+            return stop("ROUTE_ACTION_BINDING_MISMATCH")
+        if action_receipt.get("decision_authority") != DECISION_AUTHORITY:
+            return stop("ROUTE_DECISION_AUTHORITY_INVALID")
+        if action_receipt.get("wallet_policy_authority") != WALLET_POLICY_AUTHORITY:
+            return stop("ROUTE_WALLET_AUTHORITY_INVALID")
+        try:
+            decided = parse_time(action_receipt.get("decided_at"), "action receipt decided_at")
+        except WalletError:
+            return stop("ROUTE_ACTION_RECEIPT_TIME_INVALID")
+        if decided > current + timedelta(seconds=5):
+            return stop("ROUTE_ACTION_RECEIPT_FROM_FUTURE")
+
+        if principal in self._quarantined:
+            return stop("PRINCIPAL_FORK_QUARANTINED")
+        admitted = self._admitted.get(principal)
+        if admitted is None:
+            return stop("BUNDLE_NOT_ADMITTED")
+        if parse_time(admitted.bundle["expires_at"]) <= current:
+            return stop("ADMITTED_BUNDLE_EXPIRED")
+
+        carried = self.carried_scopes(principal, sender)
+        self._routed_action_receipts.add(action_receipt_hash)
+
+        if carried:
+            recipient_mandate_id = admitted.timeline.active_by_subject.get(recipient_subject_id)
+            recipient_mandate = (
+                admitted.timeline.mandates.get(recipient_mandate_id)
+                if recipient_mandate_id is not None
+                else None
+            )
+            if (
+                recipient_mandate is None
+                or recipient_mandate.get("status") != "ACTIVE"
+                or parse_time(recipient_mandate["expires_at"]) <= current
+                or not set(carried).issubset(set(recipient_mandate["scopes"]))
+            ):
+                return stop("RECIPIENT_LACKS_SOURCE_AUTHORITY")
+
+        return self._route_receipt(
+            decision="ALLOWED",
+            reasons=[],
+            principal_id=principal,
+            sender_subject_id=sender,
+            recipient_subject_id=recipient_subject_id,
+            action=expected_action,
+            action_receipt_hash=action_receipt_hash,
+            carried_scopes=carried,
             now=current,
         )
