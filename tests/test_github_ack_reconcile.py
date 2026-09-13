@@ -60,6 +60,42 @@ class AcknowledgedGitHubSettlementTests(unittest.TestCase):
         self.assertEqual(closure["unattributed_merge_observations"], [])
         self.assertEqual(self.client.mutation_count, 1)
 
+    def test_null_pr_merge_sha_can_confirm_exact_acknowledged_commit(self):
+        """Reproduce LIVE-002: PR SHA lags after a successful acknowledgement."""
+        self._force_immediate_settlement_timeout()
+
+        # GitHub already acknowledged fixture.MERGE_SHA, but the later PR read
+        # still exposes a null merge_commit_sha. The exact commit itself is
+        # available and binds the original base plus reviewed head.
+        self.client.merge_sha = None
+
+        settled = settle_acknowledged_merges(
+            self.receiver, now=self.at(5), wait_seconds=0
+        )
+        self.assertEqual(settled[0]["status"], "CONFIRMED")
+        effect = settled[0]["effect_receipt"]
+        self.assertIsNone(effect["after"]["merge_commit_sha"])
+        self.assertEqual(effect["merge_commit_sha"], fixture.MERGE_SHA)
+        self.assertEqual(effect["merge_commit"]["sha"], fixture.MERGE_SHA)
+        self.assertEqual(
+            effect["merge_commit"]["parents"],
+            [fixture.BASE_SHA, fixture.HEAD],
+        )
+        self.assertFalse(effect["merge_commit"]["base_drift"])
+        self.assertIn("GET_COMMIT", self.client.calls)
+        self.assertEqual(self.client.mutation_count, 1)
+
+        self.wallet.add_receipt(settled[0]["result"]["receipt"])
+        closure = self.receiver.close(
+            self.revoke(at=6), "grant-a", now=self.at(7)
+        )
+        self.assertEqual(closure["status"], "EFFECT_CLOSED")
+        self.assertEqual(closure["active_frontiers"], 0)
+        self.assertEqual(
+            closure["confirmed_effect_hashes"], [record_hash(effect)]
+        )
+        self.assertEqual(self.client.mutation_count, 1)
+
     def test_acknowledged_merge_can_confirm_after_receiver_restart(self):
         self._force_immediate_settlement_timeout()
         self.receiver.shutdown()
@@ -84,6 +120,29 @@ class AcknowledgedGitHubSettlementTests(unittest.TestCase):
         )
         self.assertEqual(closure["status"], "EFFECT_CLOSED")
         self.assertEqual(len(closure["confirmed_effect_hashes"]), 1)
+        self.assertEqual(self.client.mutation_count, 1)
+
+    def test_restart_with_null_pr_sha_confirms_by_exact_commit(self):
+        self._force_immediate_settlement_timeout()
+        self.client.merge_sha = None
+        self.receiver.shutdown()
+
+        recovered = GitHubMergeReceiver(
+            self.gate,
+            self.client,
+            fixture.TARGET,
+            self.root / "journal.sqlite",
+        )
+        self.receiver = recovered
+
+        settled = settle_acknowledged_merges(
+            recovered, now=self.at(5), wait_seconds=0
+        )
+        self.assertEqual(settled[0]["status"], "CONFIRMED")
+        self.assertEqual(
+            settled[0]["effect_receipt"]["merge_commit_sha"],
+            fixture.MERGE_SHA,
+        )
         self.assertEqual(self.client.mutation_count, 1)
 
     def test_transport_ambiguous_merge_is_never_promoted(self):
@@ -132,6 +191,20 @@ class AcknowledgedGitHubSettlementTests(unittest.TestCase):
             self.receiver.close(
                 self.revoke(at=6), "grant-a", now=self.at(7)
             )
+        self.assertEqual(self.client.mutation_count, 1)
+
+    def test_null_pr_sha_with_wrong_commit_parent_remains_uncertain(self):
+        self._force_immediate_settlement_timeout()
+        self.client.merge_sha = None
+        self.client.bad_commit_parents = True
+
+        settled = settle_acknowledged_merges(
+            self.receiver, now=self.at(5), wait_seconds=0
+        )
+        self.assertEqual(settled[0]["status"], "UNCERTAIN")
+        self.assertEqual(
+            settled[0]["reason"], "GITHUB_MERGE_COMMIT_INVALID"
+        )
         self.assertEqual(self.client.mutation_count, 1)
 
     def test_invalid_settlement_window_fails_closed(self):
