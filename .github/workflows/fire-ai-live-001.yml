@@ -106,7 +106,8 @@ jobs:
           try:
               fal.record_live_session(WORKSPACE, phase="LIVE_SESSION_START", pid=session.pid,
                                       alive=session.is_alive(),
-                                      transcript_path=str(session.transcript_path))
+                                      transcript_path=(str(session.transcript_path)
+                                                       if session.transcript_path else None))
               session.send_prompt(fal.PROMPT_READINESS)
               if not session.wait_turn_end(600): raise SystemExit("LIVE_READINESS_NO_TURN_END")
               session.send_prompt(fal.PROMPT_BEFORE)          # P1: scientific contact

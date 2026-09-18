@@ -118,6 +118,45 @@ while True:
 """
 
 
+STUB_LAZY_TRANSCRIPT = r"""
+import json, os, time
+# Like the real CLI: no transcript file exists at startup; it is created
+# lazily when the first user message arrives, and the assistant's end-turn
+# record lands a few seconds later (simulated API latency).
+transcript = os.environ["STUB_TRANSCRIPT"]
+print("STUB_READY", flush=True)
+buf = b""
+n = 0
+created = False
+while True:
+    chunk = os.read(0, 1024)
+    if not chunk:
+        break
+    buf += chunk
+    while True:
+        for sep in (b"\r", b"\n"):
+            if sep in buf:
+                line, buf = buf.split(sep, 1)
+                line = line.decode("utf-8", "replace").strip()
+                if line:
+                    n += 1
+                    if not created:
+                        time.sleep(2)  # simulated time-to-first-record
+                        open(transcript, "w").close()
+                        created = True
+                    with open(transcript, "a") as h:
+                        h.write(json.dumps({"type": "user", "n": n, "text": line}) + "\n")
+                    time.sleep(2)  # simulated model latency
+                    with open(transcript, "a") as h:
+                        h.write(json.dumps({"type": "assistant",
+                                            "message": {"stop_reason": "end_turn"}}) + "\n")
+                    print(f"stub turn {n} done", flush=True)
+                break
+        else:
+            break
+"""
+
+
 def _synthetic_transcript(path: Path, turns: int = 3) -> Path:
     """One JSONL transcript with `turns` assistant turn-ends (no tool text)."""
     lines = []
@@ -425,6 +464,46 @@ class FireAiSyntheticTests(unittest.TestCase):
                 self.assertTrue(session.wait_turn_end(30))
                 lines = transcript.read_text(encoding="utf-8").strip().splitlines()
                 self.assertEqual(len(lines), 2)
+            finally:
+                session.close()
+                self.assertFalse(session.is_alive())
+
+    def test_pty_driver_binds_transcript_lazily(self) -> None:
+        # Regression: the real CLI creates its transcript only when the first
+        # user message arrives, so the driver must bind the transcript path
+        # on the first send_prompt, not at spawn.
+        with tempfile.TemporaryDirectory() as directory:
+            workdir = Path(directory)
+            stub_path = workdir / "stub_lazy.py"
+            stub_path.write_text(STUB_LAZY_TRANSCRIPT, encoding="utf-8")
+            encoded = "-" + str(workdir.resolve()).replace("/", "-")
+            projects = workdir / "config" / "projects" / encoded
+            projects.mkdir(parents=True)
+            transcript = projects / "session.jsonl"  # NOT pre-created
+            artifacts = workdir / "artifacts"
+            artifacts.mkdir()
+            env = dict(os.environ, STUB_TRANSCRIPT=str(transcript))
+            session = pty_driver.spawn_claude_session(
+                workdir=workdir,
+                mcp_config=workdir / "mcp.json",
+                allowed_tools="stub",
+                config_dir=workdir / "config",
+                artifacts_dir=artifacts,
+                argv=[sys.executable, "-u", str(stub_path)],
+                expect_trust=False,
+                idle_marker=b"STUB_READY",
+                check_auth=False,
+                extra_env=env,
+            )
+            try:
+                self.assertIsNone(session.transcript_path)
+                session.send_prompt("PROMPT ONE")
+                self.assertEqual(session.transcript_path, transcript)
+                self.assertTrue(session.wait_turn_end(30))
+                session.send_prompt("PROMPT TWO")
+                self.assertTrue(session.wait_turn_end(30))
+                lines = transcript.read_text(encoding="utf-8").strip().splitlines()
+                self.assertEqual(len(lines), 4)
             finally:
                 session.close()
                 self.assertFalse(session.is_alive())

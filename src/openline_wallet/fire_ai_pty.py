@@ -47,11 +47,18 @@ class ClaudeSession:
     pid: int
     fd: int
     workdir: Path
-    transcript_path: Path
+    transcript_path: Path | None
     argv: list[str]
     output_path: Path
     _output: bytearray = field(default_factory=bytearray, repr=False)
     _lines_seen: int = 0
+    # Lazy transcript binding: the real CLI only creates its transcript file
+    # when the first user message arrives, so the path is discovered on the
+    # first send_prompt, not at spawn. Synthetic stubs pass transcript_path
+    # directly and are bound from construction.
+    _config_dir: Path | None = None
+    _known_before: frozenset = frozenset()
+    _transcript_bound: bool = False
 
     def is_alive(self) -> bool:
         # Reap a zombie child: kill(pid, 0) succeeds on zombies, so a
@@ -96,14 +103,30 @@ class ClaudeSession:
         return marker in _norm(bytes(self._output))
 
     def send_prompt(self, text: str) -> None:
-        """Send one prompt line to the live session."""
+        """Send one prompt line to the live session.
+
+        On the first prompt against the real CLI, the transcript file is
+        created by that input, so the path is discovered here (not at spawn)
+        and the baseline starts at zero: the file is brand new, so every
+        record in it belongs to this first turn.
+        """
         if not self.is_alive():
             raise RuntimeError("FIRE_AI_SESSION_DEAD")
+        if not self._transcript_bound and self._config_dir is not None:
+            os.write(self.fd, text.encode("utf-8") + b"\r")
+            self.transcript_path = _find_session_transcript(
+                self._config_dir, self.workdir, set(self._known_before),
+                is_alive=self.is_alive)
+            self._lines_seen = 0
+            self._transcript_bound = True
+            return
         # Record transcript baseline so wait_turn_end only watches new records.
         self._lines_seen = self._count_transcript_lines()
         os.write(self.fd, text.encode("utf-8") + b"\r")
 
     def _count_transcript_lines(self) -> int:
+        if self.transcript_path is None:
+            return 0
         try:
             with open(self.transcript_path, "rb") as handle:
                 return sum(1 for _ in handle)
@@ -113,6 +136,8 @@ class ClaudeSession:
     def _new_assistant_ends(self) -> int:
         """Count post-baseline assistant records that ended a turn."""
         count = 0
+        if self.transcript_path is None:
+            return 0
         try:
             with open(self.transcript_path, "rb") as handle:
                 lines = handle.readlines()
@@ -173,12 +198,17 @@ class ClaudeSession:
 
 
 def _find_session_transcript(config_dir: Path, workdir: Path,
-                             known_before: set[str]) -> Path:
-    # Claude Code encodes the cwd as '-' + path with '/' -> '-'.
+                             known_before: set[str], timeout: float = 600.0,
+                             is_alive=None) -> Path:
+    # Claude Code encodes the cwd as '-' + path with '/' -> '-'. The file is
+    # created lazily during the first turn (not at spawn), so this waits
+    # patiently: it returns as soon as the file appears.
     encoded = "-" + str(workdir).replace("/", "-")
     projects = config_dir / "projects" / encoded
-    deadline = time.time() + 60.0
+    deadline = time.time() + timeout
     while time.time() < deadline:
+        if is_alive is not None and not is_alive():
+            raise RuntimeError("FIRE_AI_SESSION_DIED_WAITING_FOR_TRANSCRIPT")
         if projects.is_dir():
             candidates = sorted(
                 (p for p in projects.glob("*.jsonl")
@@ -205,8 +235,11 @@ def spawn_claude_session(*, workdir: Path, mcp_config: Path,
 
     Answers the first-run setup dialogs: the folder-trust dialog and the
     custom-API-key confirmation shown when ANTHROPIC_API_KEY is set. Both are
-    environment setup, not experiment content. Raises on any failure; callers
-    treat pre-scientific-contact failures as harness failures (not INCOMPLETE).
+    environment setup, not experiment content. The session transcript path is
+    NOT discovered here: the CLI creates its transcript file lazily, on the
+    first user message, so it is bound on the first send_prompt instead.
+    Raises on any failure; callers treat pre-scientific-contact failures as
+    harness failures (not INCOMPLETE).
     """
     workdir = workdir.resolve()
     projects_dir = config_dir / "projects" / ("-" + str(workdir).replace("/", "-"))
@@ -235,10 +268,15 @@ def spawn_claude_session(*, workdir: Path, mcp_config: Path,
 
     session = ClaudeSession(
         pid=pid, fd=fd, workdir=workdir,
-        transcript_path=transcript_path or Path("__pending__"),
+        transcript_path=transcript_path,
         argv=argv,
         output_path=artifacts_dir / "worker-a-pty-output.bin",
+        _config_dir=config_dir,
+        _known_before=frozenset(known_before),
+        _transcript_bound=transcript_path is not None,
     )
+    if transcript_path is not None:
+        session._lines_seen = session._count_transcript_lines()
     try:
         # First-run setup dialogs, each answered at most once, in whatever
         # order they appear: the folder-trust dialog, and the custom-API-key
@@ -277,10 +315,6 @@ def spawn_claude_session(*, workdir: Path, mcp_config: Path,
             else:
                 raise RuntimeError("FIRE_AI_PROMPT_NOT_READY")
         session._drain(2.0)
-        if transcript_path is None:
-            session.transcript_path = _find_session_transcript(
-                config_dir, workdir, known_before)
-        session._lines_seen = session._count_transcript_lines()
         return session
     except Exception:
         session.close()
