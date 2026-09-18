@@ -45,7 +45,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install -e ".[mcp]"
-          python -m pip install "mcp==2.1.1"
+          python -m pip install "mcp==2.1.1" "pytest==9.1.1"
           npm install -g @anthropic-ai/claude-code@2.1.260 @openai/codex@0.153.0
           {
             echo "claude=$(claude --version 2>&1 | head -1)"
