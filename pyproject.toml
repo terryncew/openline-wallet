@@ -29,6 +29,7 @@ openline-wallet-gate = "openline_wallet.gate_http:main"
 openline-wallet-mcp = "openline_wallet.mcp_bridge:main"
 openline-wallet-egress = "openline_wallet.mcp_egress:main"
 openline-wallet-platform-exit = "openline_wallet.platform_exit_live:main"
+openline-wallet-fire-ai = "openline_wallet.fire_ai_live:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
