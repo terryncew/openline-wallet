@@ -28,6 +28,8 @@ _ANSI2 = re.compile(rb"\x1b[()][AB0]")
 _WS = re.compile(rb"\s+")
 
 TRUST_MARKER = b"Yes,Itrustthisfolder"
+# Shown by claude-code when ANTHROPIC_API_KEY is set in the environment.
+API_KEY_MARKER = b"DoyouwanttousethisAPIkey?"
 LOGIN_MARKER = b"Selectloginmethod"
 IDLE_HINT_MARKERS = (b"forshortcuts",)  # main prompt status line fragments
 
@@ -201,7 +203,9 @@ def spawn_claude_session(*, workdir: Path, mcp_config: Path,
                          extra_env: dict | None = None) -> ClaudeSession:
     """Spawn one interactive claude process and return when it is at its prompt.
 
-    Answers the first-run folder-trust dialog. Raises on any failure; callers
+    Answers the first-run setup dialogs: the folder-trust dialog and the
+    custom-API-key confirmation shown when ANTHROPIC_API_KEY is set. Both are
+    environment setup, not experiment content. Raises on any failure; callers
     treat pre-scientific-contact failures as harness failures (not INCOMPLETE).
     """
     workdir = workdir.resolve()
@@ -236,20 +240,42 @@ def spawn_claude_session(*, workdir: Path, mcp_config: Path,
         output_path=artifacts_dir / "worker-a-pty-output.bin",
     )
     try:
-        # Folder-trust dialog (only if it appears).
-        if expect_trust and session._wait_for(TRUST_MARKER, trust_timeout):
-            time.sleep(1.5)
-            os.write(fd, b"\x1b[B")  # move selection to "Yes, I trust this folder"
-            time.sleep(1.2)
-            session._drain(0.5)
-            os.write(fd, b"\r")
-            time.sleep(2.0)
-        # If auth is missing we stop at the login screen instead of the prompt.
-        if check_auth and session._wait_for(LOGIN_MARKER, 5.0):
-            raise RuntimeError("FIRE_AI_AUTH_MISSING")
-        # Wait for the main prompt status line.
-        if idle_marker is not None and not session._wait_for(idle_marker, 60.0):
-            raise RuntimeError("FIRE_AI_PROMPT_NOT_READY")
+        # First-run setup dialogs, each answered at most once, in whatever
+        # order they appear: the folder-trust dialog, and the custom-API-key
+        # confirmation shown when ANTHROPIC_API_KEY is set in the environment.
+        if idle_marker is not None:
+            deadline = time.time() + trust_timeout
+            answered: set[bytes] = set()
+            while time.time() < deadline:
+                session._drain(0.5)
+                if not session.is_alive():
+                    raise RuntimeError("FIRE_AI_SESSION_DIED_DURING_SETUP")
+                norm = _norm(bytes(session._output))
+                if check_auth and LOGIN_MARKER in norm:
+                    raise RuntimeError("FIRE_AI_AUTH_MISSING")
+                if (expect_trust and TRUST_MARKER not in answered
+                        and TRUST_MARKER in norm):
+                    time.sleep(1.5)
+                    os.write(fd, b"\x1b[B")  # select "Yes, I trust this folder"
+                    time.sleep(1.2)
+                    session._drain(0.5)
+                    os.write(fd, b"\r")
+                    answered.add(TRUST_MARKER)
+                    time.sleep(2.0)
+                    continue
+                if API_KEY_MARKER not in answered and API_KEY_MARKER in norm:
+                    time.sleep(1.0)
+                    os.write(fd, b"\x1b[A")  # move selection from "No" to "Yes"
+                    time.sleep(1.0)
+                    session._drain(0.5)
+                    os.write(fd, b"\r")
+                    answered.add(API_KEY_MARKER)
+                    time.sleep(2.0)
+                    continue
+                if idle_marker in norm:
+                    break
+            else:
+                raise RuntimeError("FIRE_AI_PROMPT_NOT_READY")
         session._drain(2.0)
         if transcript_path is None:
             session.transcript_path = _find_session_transcript(

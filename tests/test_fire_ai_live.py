@@ -70,6 +70,54 @@ while True:
 """
 
 
+STUB_DIALOGS = r"""
+import json, os, sys
+# Emits the two first-run setup dialogs the driver must answer, then behaves
+# like STUB. Verifies the driver selects "Yes" on both (Down+Enter for trust,
+# Up+Enter for the API-key confirmation whose default is "No").
+transcript = os.environ["STUB_TRANSCRIPT"]
+buf = b""
+def read_until(needle):
+    global buf
+    while needle not in buf:
+        chunk = os.read(0, 1024)
+        if not chunk:
+            raise RuntimeError("stub: eof waiting for %r" % needle)
+        buf += chunk
+    i = buf.index(needle) + len(needle)
+    out, buf = buf[:i], buf[i:]
+    return out
+print("Yes, I trust this folder", flush=True)
+assert read_until(b"\x1b[B").endswith(b"\x1b[B")
+assert read_until(b"\r").endswith(b"\r")
+print("Do you want to use this API key?", flush=True)
+assert read_until(b"\x1b[A").endswith(b"\x1b[A")
+assert read_until(b"\r").endswith(b"\r")
+print("STUB_READY", flush=True)
+n = 0
+while True:
+    chunk = os.read(0, 1024)
+    if not chunk:
+        break
+    buf += chunk
+    while True:
+        for sep in (b"\r", b"\n"):
+            if sep in buf:
+                line, buf = buf.split(sep, 1)
+                line = line.decode("utf-8", "replace").strip()
+                if line:
+                    n += 1
+                    with open(transcript, "a") as h:
+                        h.write(json.dumps({"type": "user", "n": n, "text": line}) + "\n")
+                        h.write(json.dumps({"type": "assistant",
+                                            "message": {"stop_reason": "end_turn"}}) + "\n")
+                    print(f"stub turn {n} done", flush=True)
+                break
+        else:
+            break
+"""
+
+
 def _synthetic_transcript(path: Path, turns: int = 3) -> Path:
     """One JSONL transcript with `turns` assistant turn-ends (no tool text)."""
     lines = []
@@ -347,6 +395,39 @@ class FireAiSyntheticTests(unittest.TestCase):
                 self.assertIn("PROMPT_MENTIONS_REVOCATION:p2", result["failures"])
             finally:
                 http.shutdown()
+
+    def test_pty_driver_answers_setup_dialogs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            workdir = Path(directory)
+            stub_path = workdir / "stub_dialogs.py"
+            stub_path.write_text(STUB_DIALOGS, encoding="utf-8")
+            transcript = workdir / "transcript.jsonl"
+            transcript.write_text("", encoding="utf-8")
+            artifacts = workdir / "artifacts"
+            artifacts.mkdir()
+            env = dict(os.environ, STUB_TRANSCRIPT=str(transcript))
+            session = pty_driver.spawn_claude_session(
+                workdir=workdir,
+                mcp_config=workdir / "mcp.json",
+                allowed_tools="stub",
+                config_dir=workdir / "config",
+                artifacts_dir=artifacts,
+                argv=[sys.executable, "-u", str(stub_path)],
+                expect_trust=True,
+                idle_marker=b"STUB_READY",
+                check_auth=False,
+                transcript_path=transcript,
+                extra_env=env,
+            )
+            try:
+                self.assertTrue(session.is_alive())
+                session.send_prompt("PROMPT ONE")
+                self.assertTrue(session.wait_turn_end(30))
+                lines = transcript.read_text(encoding="utf-8").strip().splitlines()
+                self.assertEqual(len(lines), 2)
+            finally:
+                session.close()
+                self.assertFalse(session.is_alive())
 
     def test_pty_driver_two_prompts_one_process(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
