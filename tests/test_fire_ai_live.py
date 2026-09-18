@@ -468,33 +468,39 @@ class FireAiSyntheticTests(unittest.TestCase):
                 session.close()
                 self.assertFalse(session.is_alive())
 
+    def _spawn_with_lazy_transcript(self, workdir, project_dir):
+        """Spawn the lazy stub with its transcript pointed at project_dir."""
+        stub_path = workdir / "stub_lazy.py"
+        stub_path.write_text(STUB_LAZY_TRANSCRIPT, encoding="utf-8")
+        project_dir.mkdir(parents=True)
+        transcript = project_dir / "session.jsonl"  # NOT pre-created
+        artifacts = workdir / "artifacts"
+        artifacts.mkdir()
+        env = dict(os.environ, STUB_TRANSCRIPT=str(transcript))
+        session = pty_driver.spawn_claude_session(
+            workdir=workdir,
+            mcp_config=workdir / "mcp.json",
+            allowed_tools="stub",
+            config_dir=workdir / "config",
+            artifacts_dir=artifacts,
+            argv=[sys.executable, "-u", str(stub_path)],
+            expect_trust=False,
+            idle_marker=b"STUB_READY",
+            check_auth=False,
+            extra_env=env,
+        )
+        return session, transcript
+
     def test_pty_driver_binds_transcript_lazily(self) -> None:
         # Regression: the real CLI creates its transcript only when the first
         # user message arrives, so the driver must bind the transcript path
         # on the first send_prompt, not at spawn.
         with tempfile.TemporaryDirectory() as directory:
             workdir = Path(directory)
-            stub_path = workdir / "stub_lazy.py"
-            stub_path.write_text(STUB_LAZY_TRANSCRIPT, encoding="utf-8")
             encoded = "-" + str(workdir.resolve()).replace("/", "-")
-            projects = workdir / "config" / "projects" / encoded
-            projects.mkdir(parents=True)
-            transcript = projects / "session.jsonl"  # NOT pre-created
-            artifacts = workdir / "artifacts"
-            artifacts.mkdir()
-            env = dict(os.environ, STUB_TRANSCRIPT=str(transcript))
-            session = pty_driver.spawn_claude_session(
-                workdir=workdir,
-                mcp_config=workdir / "mcp.json",
-                allowed_tools="stub",
-                config_dir=workdir / "config",
-                artifacts_dir=artifacts,
-                argv=[sys.executable, "-u", str(stub_path)],
-                expect_trust=False,
-                idle_marker=b"STUB_READY",
-                check_auth=False,
-                extra_env=env,
-            )
+            project_dir = workdir / "config" / "projects" / encoded
+            session, transcript = self._spawn_with_lazy_transcript(
+                workdir, project_dir)
             try:
                 self.assertIsNone(session.transcript_path)
                 session.send_prompt("PROMPT ONE")
@@ -504,6 +510,24 @@ class FireAiSyntheticTests(unittest.TestCase):
                 self.assertTrue(session.wait_turn_end(30))
                 lines = transcript.read_text(encoding="utf-8").strip().splitlines()
                 self.assertEqual(len(lines), 4)
+            finally:
+                session.close()
+                self.assertFalse(session.is_alive())
+
+    def test_pty_driver_finds_transcript_in_any_project_dir(self) -> None:
+        # Regression: the directory-name encoding is versioned inside the
+        # CLI, so discovery must not assume one exact project dir name.
+        with tempfile.TemporaryDirectory() as directory:
+            workdir = Path(directory)
+            odd_dir = (workdir / "config" / "projects"
+                       / "some-unexpected-dir-name")
+            session, transcript = self._spawn_with_lazy_transcript(
+                workdir, odd_dir)
+            try:
+                self.assertIsNone(session.transcript_path)
+                session.send_prompt("PROMPT ONE")
+                self.assertEqual(session.transcript_path, transcript)
+                self.assertTrue(session.wait_turn_end(30))
             finally:
                 session.close()
                 self.assertFalse(session.is_alive())

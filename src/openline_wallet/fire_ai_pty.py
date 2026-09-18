@@ -115,8 +115,7 @@ class ClaudeSession:
         if not self._transcript_bound and self._config_dir is not None:
             os.write(self.fd, text.encode("utf-8") + b"\r")
             self.transcript_path = _find_session_transcript(
-                self._config_dir, self.workdir, set(self._known_before),
-                is_alive=self.is_alive)
+                self._config_dir, set(self._known_before), session=self)
             self._lines_seen = 0
             self._transcript_bound = True
             return
@@ -197,26 +196,37 @@ class ClaudeSession:
             pass
 
 
-def _find_session_transcript(config_dir: Path, workdir: Path,
-                             known_before: set[str], timeout: float = 600.0,
-                             is_alive=None) -> Path:
-    # Claude Code encodes the cwd as '-' + path with '/' -> '-'. The file is
-    # created lazily during the first turn (not at spawn), so this waits
-    # patiently: it returns as soon as the file appears.
-    encoded = "-" + str(workdir).replace("/", "-")
-    projects = config_dir / "projects" / encoded
+def _known_transcripts(config_dir: Path) -> set[tuple[str, str]]:
+    """Snapshot of (project-dir name, filename) for every existing transcript."""
+    known: set[tuple[str, str]] = set()
+    projects = config_dir / "projects"
+    if projects.is_dir():
+        for path in projects.glob("*/*.jsonl"):
+            known.add((path.parent.name, path.name))
+    return known
+
+
+def _find_session_transcript(config_dir: Path,
+                             known_before: set[tuple[str, str]],
+                             timeout: float = 600.0,
+                             session=None) -> Path:
+    # The transcript file is created lazily during the first turn (not at
+    # spawn). Search every project dir: the exact directory-name encoding is
+    # versioned inside the CLI, so don't assume one name. Drains the session
+    # while polling so terminal evidence stays complete and the child can
+    # never stall on a full pty buffer. Returns as soon as the file appears.
     deadline = time.time() + timeout
+    projects = config_dir / "projects"
     while time.time() < deadline:
-        if is_alive is not None and not is_alive():
-            raise RuntimeError("FIRE_AI_SESSION_DIED_WAITING_FOR_TRANSCRIPT")
+        if session is not None:
+            if not session.is_alive():
+                raise RuntimeError("FIRE_AI_SESSION_DIED_WAITING_FOR_TRANSCRIPT")
+            session._drain(0.5)
         if projects.is_dir():
-            candidates = sorted(
-                (p for p in projects.glob("*.jsonl")
-                 if p.name not in known_before),
-                key=lambda p: p.stat().st_mtime,
-            )
+            candidates = [p for p in projects.glob("*/*.jsonl")
+                          if (p.parent.name, p.name) not in known_before]
             if candidates:
-                return candidates[-1]
+                return max(candidates, key=lambda p: p.stat().st_mtime)
         time.sleep(1.0)
     raise RuntimeError("FIRE_AI_TRANSCRIPT_NOT_FOUND")
 
@@ -242,8 +252,9 @@ def spawn_claude_session(*, workdir: Path, mcp_config: Path,
     harness failures (not INCOMPLETE).
     """
     workdir = workdir.resolve()
-    projects_dir = config_dir / "projects" / ("-" + str(workdir).replace("/", "-"))
-    known_before = {p.name for p in projects_dir.glob("*.jsonl")} if projects_dir.is_dir() else set()
+    # Snapshot every pre-existing transcript so lazy discovery can spot the
+    # one this session creates, wherever the CLI decides to put it.
+    known_before = _known_transcripts(config_dir)
 
     if argv is None:
         argv = [
