@@ -17,7 +17,6 @@ jobs:
     env:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      CODEX_HOME: ${{ runner.temp }}/codex-home
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -31,7 +30,8 @@ jobs:
           set -euo pipefail
           echo "WORKSPACE=$RUNNER_TEMP/fire-ai-live" >> "$GITHUB_ENV"
           echo "ARTIFACTS=$RUNNER_TEMP/fire-ai-artifacts" >> "$GITHUB_ENV"
-          mkdir -p "$CODEX_HOME" "$RUNNER_TEMP/fire-ai-artifacts" "$RUNNER_TEMP/claude-config"
+          echo "CODEX_HOME=$RUNNER_TEMP/codex-home" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/codex-home" "$RUNNER_TEMP/fire-ai-artifacts" "$RUNNER_TEMP/claude-config"
 
       - name: Require provider credentials
         shell: bash
