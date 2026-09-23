@@ -51,12 +51,16 @@ principal; write access to the repo directory is the entire authority.
 
 - RRSI's research incumbent: the `evolve/<domain>` branch ref inside RRSI's
   own search workspace. RRSI may manage it freely.
-- The operator's deployed harness: a separate protected runtime. RRSI has
-  zero write authority over it.
+- The operator's deployed harness: a separate protected runtime. RRSI's key
+  holds no promotion authority in the adapter: the guarded promotion path
+  refuses non-operator callers, and acceptance requires the operator-pinned
+  optimizer signer. On this single host the adapter does not prevent
+  same-user filesystem writes.
 
 Inside RRSI these two roles collapse into one process. The adapter keeps
 them apart: the optimizer signs a candidate package, and only the
 operator-owned receiver — after its own checks, against its pinned base —
 may write the exact accepted artifact into the deployment dir. A signed
 receipt alone is not enforcement; the mandate check, the hash re-verification
-at invocation, and the operator-only write path are.
+at invocation, and the signer pin are. The proof ceiling is
+operator-controlled promotion flow, not adversarial isolation.

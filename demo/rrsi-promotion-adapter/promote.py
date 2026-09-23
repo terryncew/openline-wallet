@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Thin RRSI-to-OpenLine promotion adapter (developer preview).
+"""A promotion adapter for RRSI-style harness candidates (developer preview),
+demonstrated with a synthetic candidate based on a byte-verified RRSI component.
 
 An optimizer (here: the RRSI search process, external to this repo) may
 propose a harness change. Only the operator-owned receiver may install that
@@ -138,8 +139,10 @@ print(json.dumps(out, sort_keys=True))
 
 
 def _run_component(component_path: Path, input_path: Path) -> dict:
-    """Run the component in a subprocess with a clean environment. The
-    component never sees the operator's wallet, keys, or home."""
+    """Run the component in a subprocess with a restricted environment. The
+    subprocess receives no wallet/key paths or receiver credentials through
+    its environment. It is not sandboxed and retains the host user's
+    filesystem privileges."""
     env = _clean_env()
     for leaked in ("CAPINSTALL_HOME", HOME_ENV, "HOME", "XDG_CONFIG_HOME"):
         env.pop(leaked, None)
@@ -188,7 +191,8 @@ def cmd_init(args) -> int:
     # The optimizer is a separate identity. In this single-host demo the
     # operator generates its key to stand in for the external optimizer;
     # the optimizer identity is what signs candidate packages, and it has
-    # no write authority over the protected deployment dir.
+    # no promotion authority on the receiver-managed install path. This
+    # single-host preview does not prevent same-user filesystem writes.
     optimizer_key = Ed25519PrivateKey.generate()
     save_private_key(h / "keys" / "optimizer.key", optimizer_key)
     _write_json(h / "keys" / "optimizer.pub.json",
@@ -323,8 +327,9 @@ def _smoke_input() -> str:
 
 
 def _operator_checks(h: Path, validated: dict) -> dict:
-    """Operator-owned protected checks. They live in the adapter home, outside
-    the candidate's writable surface; the candidate cannot alter them."""
+    """Operator-owned protected checks. They live in the adapter home and run
+    in the adapter process before the candidate is installed. They are not
+    isolated from the candidate at the OS level on this single host."""
     manifest = validated["manifest"]
     artifact_bytes = validated["artifact_bytes"]
     dep = _read_json(h / "deployment" / "deployment.json", {})
@@ -386,6 +391,23 @@ def cmd_accept(args) -> int:
     h = _home(Path(args.home) if args.home else None)
     validated = validate_package(args.pkgdir)
     ph = validated["package_hash"]
+    # Signer pin: acceptance requires the candidate signer to be the exact
+    # optimizer identity the operator pinned at init. Any other valid
+    # signature — a different key, a self-signed stranger — is refused here,
+    # before the operator's checks run. This is the operator's decision,
+    # enforced in code, not just in prose.
+    pinned = _read_json(h / "keys" / "optimizer.pub.json", {}).get("public_key")
+    if not pinned:
+        raise InstallerError(
+            "NO_PINNED_SIGNER",
+            "operator has not pinned an optimizer identity in this home",
+        )
+    if validated["signer"] != pinned:
+        raise InstallerError(
+            "SIGNER_NOT_PINNED",
+            "candidate signer %s is not the operator-pinned optimizer %s; "
+            "refusing before any operator check" % (validated["signer"][:16], pinned[:16]),
+        )
     checks = _operator_checks(h, validated)
     passed = all(v[0] for v in checks.values())
     decision = {
@@ -396,6 +418,7 @@ def cmd_accept(args) -> int:
         "candidate_commit": validated["manifest"].get("candidate_commit"),
         "component": validated["manifest"].get("component"),
         "signer": validated["signer"],
+        "signer_pinned": True,
         "checks": {k: {"pass": v[0], "detail": v[1]} for k, v in checks.items()},
     }
     decisions = _read_json(h / "decisions.json", {})
@@ -413,13 +436,16 @@ def cmd_accept(args) -> int:
 
 
 def _guarded_deployment_write(h: Path, caller: str, rel: str, data: bytes) -> Path:
-    """The only write path into the protected deployment dir. The caller must
-    be the operator identity; the optimizer has no write authority here."""
+    """The receiver-managed write path into the protected deployment dir. The
+    caller must be the operator identity; the optimizer has no promotion
+    authority on this path. This single-host preview does not prevent
+    same-user filesystem writes."""
     if caller != "operator":
         raise InstallerError(
-            "OPTIMIZER_WRITE_DENIED",
-            "principal '%s' has no write authority over the protected deployment; "
-            "only the operator may install" % caller,
+            "GUARDED_PROMOTION_WRITE_DENIED",
+            "the receiver-managed install path grants no promotion authority "
+            "to principal '%s'; this single-host preview does not prevent "
+            "same-user filesystem writes" % caller,
         )
     dest = h / "deployment" / rel
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -574,9 +600,11 @@ def cmd_revoke(args) -> int:
 
 def cmd_bypass(args) -> int:
     h = _home(Path(args.home) if args.home else None)
-    if args.kind == "optimizer-write":
-        # The optimizer identity attempts a direct write into the protected
-        # deployment dir, bypassing the operator's install path.
+    if args.kind == "guarded-write":
+        # A non-operator caller attempts the guarded promotion path. The
+        # receiver refuses it. Note the ceiling: this proves the guarded
+        # promotion path will not install when invoked as the optimizer, not
+        # that the optimizer lacks same-user filesystem write access.
         _guarded_deployment_write(h, "optimizer", "components/" + ARTIFACT_FILENAME,
                                   b"# optimizer direct write\n")
         print("unexpected: write allowed")
@@ -643,7 +671,7 @@ def main(argv=None) -> int:
 
     s = sub.add_parser("bypass", help="demonstrate a blocked bypass")
     s.add_argument("--home", default=None)
-    s.add_argument("kind", choices=["optimizer-write", "substitute"])
+    s.add_argument("kind", choices=["guarded-write", "substitute"])
     s.set_defaults(fn=cmd_bypass)
 
     args = p.parse_args(argv)

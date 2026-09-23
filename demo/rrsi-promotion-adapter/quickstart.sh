@@ -5,9 +5,20 @@ set -uo pipefail
 
 DEMO_DIR="$(cd "$(dirname "$0")" && pwd)"
 WORK="${1:-$DEMO_DIR/work}"
-VENDOR_RRSI="$HOME/workspace/vendor/rrsi"
+# RRSI_REPO points at a checkout of google-research/rrsi that contains the
+# pinned commit. Override it if your clone lives elsewhere:
+#   export RRSI_REPO="$HOME/workspace/vendor/rrsi"
+RRSI_REPO="${RRSI_REPO:-$HOME/workspace/vendor/rrsi}"
 UPSTREAM_PIN="e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d"
 COMPONENT="third_party/harbor_terminus2/terminus_json_plain_parser.py"
+
+if ! git -C "$RRSI_REPO" cat-file -e "$UPSTREAM_PIN^{commit}" >/dev/null 2>&1; then
+  echo "fatal: pinned upstream commit $UPSTREAM_PIN is not available in RRSI_REPO=$RRSI_REPO" >&2
+  echo "fetch it with:" >&2
+  echo "  git clone https://github.com/google-research/rrsi \"\$RRSI_REPO\"" >&2
+  echo "  git -C \"\$RRSI_REPO\" checkout $UPSTREAM_PIN" >&2
+  exit 1
+fi
 
 PROMOTE=(python3 "$DEMO_DIR/promote.py")
 export RRSI_ADAPTER_HOME="$WORK/home"
@@ -27,14 +38,16 @@ rm -rf "$WORK"; mkdir -p "$WORK"
 
 # --- fixture: a synthetic two-commit candidate repo ---------------------------
 step "fixture: build a labeled synthetic candidate repo (NOT from RRSI)"
+echo "A promotion adapter for RRSI-style harness candidates, demonstrated with"
+echo "a synthetic candidate based on a byte-verified RRSI component."
 FIX="$WORK/fixture-harness"
 mkdir -p "$FIX/third_party/harbor_terminus2"; git -C "$FIX" init -q
 git -C "$FIX" -c user.email=fixture@localhost -c user.name=fixture config user.email fixture@localhost
 BASE_FILE="$FIX/$COMPONENT"
-git -C "$VENDOR_RRSI" show "$UPSTREAM_PIN:$COMPONENT" > "$BASE_FILE"
+git -C "$RRSI_REPO" show "$UPSTREAM_PIN:$COMPONENT" > "$BASE_FILE"
 # byte-verify the base file against the pinned upstream commit
 A="$(sha256sum "$BASE_FILE" | cut -d' ' -f1)"
-B="$(git -C "$VENDOR_RRSI" show "$UPSTREAM_PIN:$COMPONENT" | sha256sum | cut -d' ' -f1)"
+B="$(git -C "$RRSI_REPO" show "$UPSTREAM_PIN:$COMPONENT" | sha256sum | cut -d' ' -f1)"
 [ "$A" = "$B" ] || { echo "fixture base does not match pinned upstream file"; exit 1; }
 echo "base file byte-identical to $UPSTREAM_PIN:$COMPONENT"
 git -C "$FIX" add -A
@@ -136,8 +149,8 @@ grep -q "REJECTED" /tmp/qs_acc.txt && grep -q "C3_interface: FAIL" /tmp/qs_acc.t
   || { echo "unexpected rejection output"; cat /tmp/qs_acc.txt; exit 1; }
 expect_fail "IMPORT_REFUSED" "${PROMOTE[@]}" install --home "$WORK/home" "$WORK/pkg-bad"
 
-step "6c. direct optimizer write into the protected deployment is refused"
-expect_fail "OPTIMIZER_WRITE_DENIED" "${PROMOTE[@]}" bypass --home "$WORK/home" optimizer-write
+step "6c. guarded promotion path: a non-operator caller is refused"
+expect_fail "GUARDED_PROMOTION_WRITE_DENIED" "${PROMOTE[@]}" bypass --home "$WORK/home" guarded-write
 
 step "6d. substituted artifact: next gated invocation detects the mismatch"
 "${PROMOTE[@]}" bypass --home "$WORK/home" substitute
@@ -152,4 +165,5 @@ expect_fail "MANDATE_REVOKED" "${PROMOTE[@]}" invoke --home "$WORK/home" "$PH" -
 
 echo
 echo "demo complete: promotion stayed under operator control at every step."
+echo "proof ceiling: operator-controlled promotion flow, not adversarial isolation."
 echo "work dir: $WORK"
