@@ -75,8 +75,8 @@ git -C "$FIX" checkout -q "$B0"
 echo "unrelated note" > "$FIX/notes.txt"; git -C "$FIX" add -A
 git -C "$FIX" -c user.email=fixture@localhost -c user.name=fixture commit -qm "unrelated base change (new incumbent)"
 B0B="$(git -C "$FIX" rev-parse HEAD)"
-git -C "$FIX" cherry-pick "$C_GOOD" >/dev/null 2>&1 \
-  || { echo "cherry-pick of good change onto new base failed"; exit 1; }
+git -C "$FIX" cherry-pick "$C_GOOD" >/tmp/cherrypick.log 2>&1 \
+  || { echo "cherry-pick of good change onto new base failed:"; cat /tmp/cherrypick.log; exit 1; }
 C_ALT="$(git -C "$FIX" rev-parse HEAD)"
 [ "$C_ALT" != "$B0B" ] || { echo "cherry-pick produced no new commit"; exit 1; }
 echo "B0=$B0 C_GOOD=$C_GOOD C_BAD=$C_BAD B0B=$B0B C_ALT=$C_ALT"
