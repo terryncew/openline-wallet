@@ -1,0 +1,27 @@
+{
+ "probe_results": [
+  {
+   "task_id": "w2a",
+   "completed": true,
+   "verdict": "ok",
+   "component": "producer",
+   "runtime_ms": 30.0
+  },
+  {
+   "task_id": "w2b",
+   "completed": true,
+   "verdict": "ok",
+   "component": "selector",
+   "runtime_ms": 30.0
+  }
+ ],
+ "absent_files": [],
+ "expected": {
+  "fault_hint": "none",
+  "counts": {
+   "completed": 2,
+   "not_completed": 0,
+   "absent_files": 0
+  }
+ }
+}
