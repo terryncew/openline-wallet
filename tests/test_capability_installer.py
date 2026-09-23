@@ -6,8 +6,9 @@ preview's own binding controls:
 
   rejected package, unsigned / tampered-signature / substituted-manifest /
   seller-principal-mismatch package, substituted artifact, wrong version,
-  wrong buyer, altered acceptance policy, unsigned / forged invocation
-  receipt, settlement replay, revoked invocation.
+  wrong buyer (no imported state), altered acceptance policy, unsigned /
+  forged invocation receipt, signed invocation with forged outer fields,
+  settlement replay, revoked invocation.
 """
 from __future__ import annotations
 
@@ -71,7 +72,7 @@ class CapinstallCase(unittest.TestCase):
     def seller_key(self):
         return load_private_key(self.home / "keys" / "demo_seller.key")
 
-    def signed_package(self, name: str, artifact_src: str, **overrides) -> Path:
+    def signed_package(self, dirname: str, artifact_src: str, **overrides) -> Path:
         """Build a seller-signed package in this home, like the example one."""
         seller_key = self.seller_key()
         artifact_bytes = artifact_src.encode()
@@ -96,7 +97,7 @@ class CapinstallCase(unittest.TestCase):
         manifest["signatures"] = [
             {"signer": public_key_hex(seller_key), "record": sig}
         ]
-        pkgdir = self.home / "packages" / name
+        pkgdir = self.home / "packages" / dirname
         pkgdir.mkdir(parents=True, exist_ok=True)
         (pkgdir / "symptom_summarizer.py").write_bytes(artifact_bytes)
         (pkgdir / "manifest.json").write_text(
@@ -348,6 +349,48 @@ class CapinstallCase(unittest.TestCase):
         self.assertEqual(code, 0, err)
         code, _out, err = self.call("settle", ph, "--demo")
         self.assertEqual(code, 0, err)
+
+    # -- signed receipt body is the sole source of truth ----------------------
+
+    def test_settle_refuses_signed_receipt_with_forged_outer_fields(self) -> None:
+        pkg = self.pkgdir()
+        code, _out, err = self.call("accept", str(pkg))
+        self.assertEqual(code, 0, err)
+        code, _out, err = self.call("import", str(pkg))
+        self.assertEqual(code, 0, err)
+        ph_a = self.package_hash()
+
+        # a second accepted, imported package with no invocations of its own
+        pkg_b = self.signed_package(
+            "pkgb",
+            (self.pkgdir() / "symptom_summarizer.py").read_text(),
+            version="baseline-b",
+            name="symptom_summarizer_b",
+        )
+        code, _out, err = self.call("accept", str(pkg_b))
+        self.assertEqual(code, 0, err)
+        code, _out, err = self.call("import", str(pkg_b))
+        self.assertEqual(code, 0, err)
+        ph_b = next(h for h in json.loads((self.home / "decisions.json").read_text()) if h != ph_a)
+
+        # a genuine receiver-signed invocation of package A
+        code, _out, err = self.call("invoke", ph_a, "w01_mixed_eval_majority")
+        self.assertEqual(code, 0, err)
+        real = next((self.home / "receipts" / "invocations").glob("*.json"))
+        legit_sig = json.loads(real.read_text())["signature"]
+
+        # attack: the valid A signature wrapped in a forged outer receipt
+        # naming package B
+        forged_receipt = dict(json.loads(real.read_text())["receipt"])
+        forged_receipt["package_hash"] = ph_b
+        (self.home / "receipts" / "invocations" / "forged_wrapper.json").write_text(
+            json.dumps({"receipt": forged_receipt, "signature": legit_sig})
+        )
+
+        # settlement for B must not count the mismatched wrapper
+        code, _out, err = self.call("settle", ph_b, "--demo")
+        self.assertEqual(code, 2)
+        self.assertIn("INVOCATION_REQUIRED", err)
 
 
 if __name__ == "__main__":

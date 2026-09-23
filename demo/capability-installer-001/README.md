@@ -100,5 +100,7 @@ against the CLI entry point in unittest style (the same suite CI runs:
 `python -m unittest discover -s tests`): rejected package, unsigned or
 tampered-signature package, manifest-field substitution under an old
 signature, seller-principal mismatch, substituted artifact, wrong version,
-wrong buyer, altered acceptance policy, unsigned or forged invocation
-receipt, settlement replay, revoked invocation.
+wrong buyer (a second buyer's home holding no imported state is refused
+invocation of another buyer's package), altered acceptance policy,
+unsigned or forged invocation receipt, valid signature attached to forged
+outer receipt fields, settlement replay, revoked invocation.

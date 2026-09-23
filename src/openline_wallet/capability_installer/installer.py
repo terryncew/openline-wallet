@@ -553,9 +553,11 @@ def settle_demo(package_hash: str, h: Path | None = None) -> dict:
             "no payment before buyer acceptance",
         )
     # verified invocation: a signed invocation record whose signature
-    # verifies against this buyer's epoch key, whose buyer field is this
-    # buyer, and whose package/artifact binding matches the accepted
-    # package. An unsigned or forged local file is not invocation.
+    # verifies against this buyer's epoch key, whose signed body names
+    # this buyer and the accepted package, and whose unsigned duplicate
+    # matches the signed body. The signed record is the sole source of
+    # truth: an unsigned or forged local file is not invocation, and a
+    # valid signature attached to forged outer fields does not count.
     wallet = Wallet.open(h / "wallet")
     buyer_pub = public_key_hex(wallet.epoch_key)
     inv_dir = h / "receipts" / "invocations"
@@ -569,14 +571,19 @@ def settle_demo(package_hash: str, h: Path | None = None) -> dict:
                 continue
             if not isinstance(rec, dict) or not isinstance(sig, dict):
                 continue
-            if rec.get("package_hash") != package_hash:
-                continue
             ok, _reason = verify_record(sig, expected_public_key=buyer_pub)
             if not ok:
                 continue
-            if rec.get("buyer") != wallet.principal_id:
+            signed_body = {
+                k: v for k, v in sig.items() if k not in ("signature", "payload_hash")
+            }
+            if canonical_json(signed_body) != canonical_json(rec):
                 continue
-            if rec.get("artifact_sha256") != dec["artifact_sha256"]:
+            if signed_body.get("package_hash") != package_hash:
+                continue
+            if signed_body.get("buyer") != wallet.principal_id:
+                continue
+            if signed_body.get("artifact_sha256") != dec["artifact_sha256"]:
                 continue
             invoked = True
             break
@@ -584,7 +591,8 @@ def settle_demo(package_hash: str, h: Path | None = None) -> dict:
         raise InstallerError(
             "INVOCATION_REQUIRED",
             "settlement requires a verified signed invocation first; "
-            "unsigned or forged local receipts do not count",
+            "unsigned or forged local receipts do not count, and a valid "
+            "signature attached to forged outer fields does not count",
         )
     lineage = json.loads((h / "lineage" / package_hash / "lineage.json").read_text())
     price = lineage["manifest"]["asking_price"]
