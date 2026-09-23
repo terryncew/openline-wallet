@@ -23,6 +23,9 @@ classifiers = [
 [project.optional-dependencies]
 mcp = ["mcp>=2,<3"]
 
+[tool.setuptools.package-data]
+"openline_wallet.capability_installer" = ["fixtures/*.json"]
+
 [project.scripts]
 openline-wallet = "openline_wallet.cli:main"
 openline-wallet-gate = "openline_wallet.gate_http:main"

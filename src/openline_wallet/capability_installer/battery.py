@@ -21,13 +21,24 @@ import hashlib
 import importlib.util
 import json
 import os
+from importlib import resources
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-FIXTURES = os.path.join(HERE, "fixtures")
-BATTERY_FIXTURES = sorted(
-    n for n in os.listdir(FIXTURES)
-    if n.endswith(".json") and n.startswith("f")
-)
+
+def _fixture_path(name):
+    """Fixtures as installed package data (works from a wheel, not just the
+    source tree)."""
+    return resources.files(__package__) / "fixtures" / name
+
+
+def _fixture_names():
+    return sorted(
+        str(p.name)
+        for p in (resources.files(__package__) / "fixtures").iterdir()
+        if p.name.endswith(".json") and p.name.startswith("f")
+    )
+
+
+BATTERY_FIXTURES = _fixture_names()
 ACCURACY_BAR = 10 / 12
 BASELINE_ACCURACY = 10 / 12  # frozen no-regression bar from the exchange study
 FAULT_HINTS = {"none", "unknown", "trust", "producer", "evaluator", "selector"}
@@ -38,7 +49,7 @@ def battery_digest() -> str:
     """Pinned identity of the acceptance policy: battery code + fixtures."""
     h = hashlib.sha256()
     for name in BATTERY_FIXTURES:
-        h.update(open(os.path.join(FIXTURES, name), "rb").read())
+        h.update(_fixture_path(name).open("rb").read())
     h.update(open(__file__, "rb").read())
     return h.hexdigest()
 
@@ -86,7 +97,7 @@ def run_battery(artifact_bytes: bytes, checks=CHECK_IDS) -> dict:
         raise ValueError("unknown checks: %s" % ",".join(unknown))
     names = BATTERY_FIXTURES
     pre_hashes = {
-        n: hashlib.sha256(open(os.path.join(FIXTURES, n), "rb").read()).hexdigest()
+        n: hashlib.sha256(_fixture_path(n).open("rb").read()).hexdigest()
         for n in names
     }
     mod = load_module_from_bytes("cap_candidate", artifact_bytes)
@@ -97,7 +108,7 @@ def run_battery(artifact_bytes: bytes, checks=CHECK_IDS) -> dict:
             "accuracy": 0.0,
             "correct": 0,
         }
-    fx0 = json.load(open(os.path.join(FIXTURES, names[0])))
+    fx0 = json.load(_fixture_path(names[0]).open())
     try:
         out_a = mod.summarize(fx0["probe_results"], fx0["absent_files"])
         out_b = mod.summarize(fx0["probe_results"], fx0["absent_files"])
@@ -118,7 +129,7 @@ def run_battery(artifact_bytes: bytes, checks=CHECK_IDS) -> dict:
     schema_ok = True
     schema_notes = []
     for n in names:
-        fx = json.load(open(os.path.join(FIXTURES, n)))
+        fx = json.load(_fixture_path(n).open())
         out = mod.summarize(fx["probe_results"], fx["absent_files"])
         if "T1" in checks:
             probs = _check_schema(out)
@@ -146,7 +157,7 @@ def run_battery(artifact_bytes: bytes, checks=CHECK_IDS) -> dict:
         }
     if "T5" in checks:
         post_hashes = {
-            n: hashlib.sha256(open(os.path.join(FIXTURES, n), "rb").read()).hexdigest()
+            n: hashlib.sha256(_fixture_path(n).open("rb").read()).hexdigest()
             for n in names
         }
         tampered = [n for n in names if pre_hashes[n] != post_hashes[n]]

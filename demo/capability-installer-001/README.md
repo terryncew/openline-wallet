@@ -61,7 +61,9 @@ That score is the buyer's own acceptance result, not universal correctness.
 Refusals are readable and coded: `IMPORT_REFUSED`,
 `IMPORT_BINDING_MISMATCH`, `INVOCATION_BINDING_MISMATCH`,
 `MANDATE_REVOKED`, `ALREADY_SETTLED`, `BATTERY_INTEGRITY`,
-`INVOCATION_REQUIRED`, `SETTLEMENT_REFUSED`.
+`INVOCATION_REQUIRED`, `SETTLEMENT_REFUSED`, `SIGNATURE_MISSING`,
+`SIGNATURE_INVALID`, `MANIFEST_TAMPERED`,
+`SELLER_PRINCIPAL_MISMATCH`, `NOT_IMPORTED`.
 
 ## Supported scope
 
@@ -94,6 +96,9 @@ meaningfully check.
 ## Regression controls
 
 `tests/test_capability_installer.py` runs the discriminating controls
-against the CLI entry point: rejected package, substituted artifact,
-wrong version, altered acceptance policy, settlement replay, revoked
-invocation. Run with `python3 -m pytest tests/test_capability_installer.py`.
+against the CLI entry point in unittest style (the same suite CI runs:
+`python -m unittest discover -s tests`): rejected package, unsigned or
+tampered-signature package, manifest-field substitution under an old
+signature, seller-principal mismatch, substituted artifact, wrong version,
+wrong buyer, altered acceptance policy, unsigned or forged invocation
+receipt, settlement replay, revoked invocation.

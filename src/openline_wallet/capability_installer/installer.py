@@ -166,6 +166,71 @@ def build_example_package(h: Path, seller_key) -> Path:
     return pkgdir
 
 
+# -- shared package validation -----------------------------------------------
+
+
+def validate_package(pkgdir: str | Path) -> dict:
+    """One shared validation step, used by inspect and accept.
+
+    (a) the declared artifact hash matches the actual artifact bytes;
+    (b) the embedded seller signature verifies against the signer's key;
+    (c) the signed manifest canonical-matches the manifest being inspected
+        (no field — version, permissions, provenance, seller metadata —
+        may change under the old signature);
+    (d) the manifest's seller principal corresponds to the signing key.
+    """
+    pkgdir = Path(pkgdir)
+    man_path = pkgdir / "manifest.json"
+    if not man_path.exists():
+        raise InstallerError("NO_MANIFEST", "package has no manifest.json")
+    manifest = json.loads(man_path.read_text())
+    art_name = manifest.get("artifact", "symptom_summarizer.py")
+    art_path = pkgdir / art_name
+    if not art_path.exists():
+        raise InstallerError("NO_ARTIFACT", "manifest names %s, not present" % art_name)
+    artifact_bytes = art_path.read_bytes()
+    if sha256_hex(artifact_bytes) != manifest.get("artifact_sha256"):
+        raise InstallerError(
+            "ARTIFACT_HASH_MISMATCH",
+            "artifact bytes do not match the manifest's declared hash",
+        )
+    sigs = manifest.get("signatures", [])
+    if not sigs:
+        raise InstallerError(
+            "SIGNATURE_MISSING",
+            "package carries no seller signature; refusing without seller identity",
+        )
+    sig = sigs[0]
+    signer = sig.get("signer")
+    ok, reason = verify_record(sig.get("record", {}), expected_public_key=signer)
+    if not ok:
+        raise InstallerError(
+            "SIGNATURE_INVALID", "seller signature does not verify: %s" % reason
+        )
+    signed_manifest = sig.get("record", {}).get("manifest")
+    unsigned = {k: v for k, v in manifest.items() if k != "signatures"}
+    if signed_manifest is None or canonical_json(signed_manifest) != canonical_json(
+        unsigned
+    ):
+        raise InstallerError(
+            "MANIFEST_TAMPERED",
+            "the signed manifest does not match the manifest being inspected; "
+            "version, permissions, provenance, or seller metadata may have "
+            "been altered while the old signature was left attached",
+        )
+    if manifest.get("seller") != principal_id(signer):
+        raise InstallerError(
+            "SELLER_PRINCIPAL_MISMATCH",
+            "manifest seller principal does not correspond to the signing key",
+        )
+    return {
+        "artifact_bytes": artifact_bytes,
+        "manifest": manifest,
+        "signer": signer,
+        "package_hash": package_hash(artifact_bytes, manifest),
+    }
+
+
 # -- inspect ---------------------------------------------------------------
 
 
@@ -194,27 +259,14 @@ def _interface_of(artifact_bytes: bytes) -> dict:
 
 def inspect_package(pkgdir: str | Path) -> dict:
     """Describe a package without executing it. Hashes identify; they do not
-    certify safety."""
-    pkgdir = Path(pkgdir)
-    man_path = pkgdir / "manifest.json"
-    if not man_path.exists():
-        raise InstallerError("NO_MANIFEST", "package has no manifest.json")
-    manifest = json.loads(man_path.read_text())
-    art_name = manifest.get("artifact", "symptom_summarizer.py")
-    art_path = pkgdir / art_name
-    if not art_path.exists():
-        raise InstallerError("NO_ARTIFACT", "manifest names %s, not present" % art_name)
-    artifact_bytes = art_path.read_bytes()
-    sig_ok, sig_detail = False, "no signatures"
-    sigs = manifest.get("signatures", [])
-    if sigs:
-        rec = sigs[0].get("record", {})
-        ok, reason = verify_record(rec, expected_public_key=sigs[0].get("signer"))
-        sig_ok, sig_detail = bool(ok), (reason or "valid")
+    certify safety. Refuses packages that fail the shared validation step."""
+    validated = validate_package(pkgdir)
+    manifest = validated["manifest"]
+    artifact_bytes = validated["artifact_bytes"]
     return {
         "name": manifest.get("name"),
         "version": manifest.get("version"),
-        "package_hash": package_hash(artifact_bytes, manifest),
+        "package_hash": validated["package_hash"],
         "artifact_sha256": sha256_hex(artifact_bytes),
         "manifest_schema": manifest.get("schema"),
         "interface": _interface_of(artifact_bytes),
@@ -226,11 +278,11 @@ def inspect_package(pkgdir: str | Path) -> dict:
         "asking_price": manifest.get("asking_price"),
         "provenance": manifest.get("provenance"),
         "supplied_evidence": manifest.get("evidence"),
-        "signature": {"valid": sig_ok, "detail": sig_detail,
-                      "signer": sigs[0].get("signer") if sigs else None},
-        "trust_note": "signature verified against the signer's key in the manifest; "
-        "the buyer pins that key on first sight (trust-on-first-use). "
-        "A valid signature proves who packaged it, not that it is safe to run.",
+        "signature": {"valid": True, "detail": "valid", "signer": validated["signer"]},
+        "trust_note": "The signature identifies the packaging key. This preview "
+        "does not provide a seller trust registry; the buyer decides whether "
+        "that signer is trusted. A valid signature proves who packaged it, "
+        "not that it is safe to run.",
     }
 
 
@@ -253,13 +305,17 @@ def accept_package(
     checks=CHECK_IDS,
     threshold: int = 10,
 ) -> dict:
-    """Run the buyer-selected acceptance checks on the exact package bytes."""
+    """Run the buyer-selected acceptance checks on the exact package bytes.
+
+    The package must first pass the shared validation step; the buyer
+    battery never runs on an unsigned, tampered, or misbound package."""
     h = h or home()
     pkgdir = Path(pkgdir)
     _check_battery_pin(h)
-    manifest = json.loads((pkgdir / "manifest.json").read_text())
-    artifact_bytes = (pkgdir / manifest.get("artifact", "symptom_summarizer.py")).read_bytes()
-    ph = package_hash(artifact_bytes, manifest)
+    validated = validate_package(pkgdir)
+    manifest = validated["manifest"]
+    artifact_bytes = validated["artifact_bytes"]
+    ph = validated["package_hash"]
     result = run_battery(artifact_bytes, checks=checks)
     score = result["correct"]
     passed = bool(result["verdict"]) and score >= threshold
@@ -268,6 +324,7 @@ def accept_package(
         "package_hash": ph,
         "artifact_sha256": sha256_hex(artifact_bytes),
         "manifest_version": manifest.get("version"),
+        "signature": {"valid": True, "signer": validated["signer"]},
         "checks": result["checks"],
         "score": score,
         "threshold": threshold,
@@ -400,7 +457,10 @@ def invoke(
         )
     fx_path = Path(fixture)
     if not fx_path.exists():
-        fx_path = Path(__file__).parent / "fixtures" / (str(fixture) + ".json")
+        from importlib import resources
+
+        fx_path = resources.files("openline_wallet.capability_installer")
+        fx_path = fx_path / "fixtures" / (str(fixture) + ".json")
     fx = json.loads(fx_path.read_text())
     mod = load_module_from_bytes("invoked_capability", artifact_bytes)
     output = mod.summarize(fx["probe_results"], fx["absent_files"])
@@ -492,18 +552,39 @@ def settle_demo(package_hash: str, h: Path | None = None) -> dict:
             "SETTLEMENT_REFUSED",
             "no payment before buyer acceptance",
         )
+    # verified invocation: a signed invocation record whose signature
+    # verifies against this buyer's epoch key, whose buyer field is this
+    # buyer, and whose package/artifact binding matches the accepted
+    # package. An unsigned or forged local file is not invocation.
+    wallet = Wallet.open(h / "wallet")
+    buyer_pub = public_key_hex(wallet.epoch_key)
     inv_dir = h / "receipts" / "invocations"
     invoked = False
     if inv_dir.exists():
-        for p in inv_dir.glob("*.json"):
-            body = json.loads(p.read_text())["receipt"]
-            if body.get("package_hash") == package_hash:
-                invoked = True
-                break
+        for p in sorted(inv_dir.glob("*.json")):
+            try:
+                body = json.loads(p.read_text())
+                rec, sig = body["receipt"], body["signature"]
+            except Exception:  # noqa: BLE001 - malformed files are not evidence
+                continue
+            if not isinstance(rec, dict) or not isinstance(sig, dict):
+                continue
+            if rec.get("package_hash") != package_hash:
+                continue
+            ok, _reason = verify_record(sig, expected_public_key=buyer_pub)
+            if not ok:
+                continue
+            if rec.get("buyer") != wallet.principal_id:
+                continue
+            if rec.get("artifact_sha256") != dec["artifact_sha256"]:
+                continue
+            invoked = True
+            break
     if not invoked:
         raise InstallerError(
             "INVOCATION_REQUIRED",
-            "settlement requires a verified fresh-work invocation first",
+            "settlement requires a verified signed invocation first; "
+            "unsigned or forged local receipts do not count",
         )
     lineage = json.loads((h / "lineage" / package_hash / "lineage.json").read_text())
     price = lineage["manifest"]["asking_price"]
