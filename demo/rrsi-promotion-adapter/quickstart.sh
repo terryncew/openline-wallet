@@ -42,7 +42,8 @@ echo "A promotion adapter for RRSI-style harness candidates, demonstrated with"
 echo "a synthetic candidate based on a byte-verified RRSI component."
 FIX="$WORK/fixture-harness"
 mkdir -p "$FIX/third_party/harbor_terminus2"; git -C "$FIX" init -q
-git -C "$FIX" -c user.email=fixture@localhost -c user.name=fixture config user.email fixture@localhost
+git -C "$FIX" config user.email fixture@localhost
+git -C "$FIX" config user.name fixture
 BASE_FILE="$FIX/$COMPONENT"
 git -C "$RRSI_REPO" show "$UPSTREAM_PIN:$COMPONENT" > "$BASE_FILE"
 # byte-verify the base file against the pinned upstream commit
