@@ -1,0 +1,34 @@
+{
+ "probe_results": [
+  {
+   "task_id": "w4a",
+   "completed": true,
+   "verdict": "degraded",
+   "component": "producer",
+   "runtime_ms": 30.0
+  },
+  {
+   "task_id": "w4b",
+   "completed": true,
+   "verdict": "degraded",
+   "component": "selector",
+   "runtime_ms": 30.0
+  },
+  {
+   "task_id": "w4c",
+   "completed": true,
+   "verdict": "ok",
+   "component": "evaluator",
+   "runtime_ms": 30.0
+  }
+ ],
+ "absent_files": [],
+ "expected": {
+  "fault_hint": "producer",
+  "counts": {
+   "completed": 3,
+   "not_completed": 0,
+   "absent_files": 0
+  }
+ }
+}

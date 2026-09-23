@@ -1,0 +1,36 @@
+{
+ "probe_results": [
+  {
+   "task_id": "t1",
+   "completed": true,
+   "verdict": "missing",
+   "component": "trust",
+   "runtime_ms": 5.0
+  },
+  {
+   "task_id": "t2",
+   "completed": true,
+   "verdict": "missing",
+   "component": "trust",
+   "runtime_ms": 6.0
+  },
+  {
+   "task_id": "t3",
+   "completed": true,
+   "verdict": "ok",
+   "component": "producer",
+   "runtime_ms": 40.0
+  }
+ ],
+ "absent_files": [
+  "trust.json"
+ ],
+ "expected": {
+  "fault_hint": "trust",
+  "counts": {
+   "completed": 3,
+   "not_completed": 0,
+   "absent_files": 1
+  }
+ }
+}

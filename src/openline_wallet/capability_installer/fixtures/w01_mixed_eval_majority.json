@@ -1,0 +1,41 @@
+{
+ "probe_results": [
+  {
+   "task_id": "w1a",
+   "completed": true,
+   "verdict": "ok",
+   "component": "producer",
+   "runtime_ms": 30.0
+  },
+  {
+   "task_id": "w1b",
+   "completed": true,
+   "verdict": "degraded",
+   "component": "evaluator",
+   "runtime_ms": 30.0
+  },
+  {
+   "task_id": "w1c",
+   "completed": true,
+   "verdict": "degraded",
+   "component": "evaluator",
+   "runtime_ms": 30.0
+  },
+  {
+   "task_id": "w1d",
+   "completed": true,
+   "verdict": "slow",
+   "component": "evaluator",
+   "runtime_ms": 30.0
+  }
+ ],
+ "absent_files": [],
+ "expected": {
+  "fault_hint": "evaluator",
+  "counts": {
+   "completed": 4,
+   "not_completed": 0,
+   "absent_files": 0
+  }
+ }
+}

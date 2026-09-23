@@ -1,0 +1,12 @@
+{
+ "probe_results": [],
+ "absent_files": [],
+ "expected": {
+  "fault_hint": "unknown",
+  "counts": {
+   "completed": 0,
+   "not_completed": 0,
+   "absent_files": 0
+  }
+ }
+}

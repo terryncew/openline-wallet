@@ -1,0 +1,41 @@
+{
+ "probe_results": [
+  {
+   "task_id": "t1",
+   "completed": true,
+   "verdict": "degraded",
+   "component": "producer",
+   "runtime_ms": 42.0
+  },
+  {
+   "task_id": "t2",
+   "completed": true,
+   "verdict": "degraded",
+   "component": "producer",
+   "runtime_ms": 44.0
+  },
+  {
+   "task_id": "t3",
+   "completed": true,
+   "verdict": "degraded",
+   "component": "producer",
+   "runtime_ms": 41.0
+  },
+  {
+   "task_id": "t4",
+   "completed": true,
+   "verdict": "ok",
+   "component": "evaluator",
+   "runtime_ms": 40.0
+  }
+ ],
+ "absent_files": [],
+ "expected": {
+  "fault_hint": "producer",
+  "counts": {
+   "completed": 4,
+   "not_completed": 0,
+   "absent_files": 0
+  }
+ }
+}

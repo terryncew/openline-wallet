@@ -1,0 +1,27 @@
+{
+ "probe_results": [
+  {
+   "task_id": "w3a",
+   "completed": false,
+   "verdict": "error",
+   "component": "selector",
+   "runtime_ms": 30.0
+  },
+  {
+   "task_id": "w3b",
+   "completed": true,
+   "verdict": "ok",
+   "component": "producer",
+   "runtime_ms": 30.0
+  }
+ ],
+ "absent_files": [],
+ "expected": {
+  "fault_hint": "selector",
+  "counts": {
+   "completed": 1,
+   "not_completed": 1,
+   "absent_files": 0
+  }
+ }
+}
