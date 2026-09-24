@@ -31,11 +31,24 @@ $C settle --caller owner --job <job-id>        # exactly once; receipt saved
 
 - The agreement freezes before work: identities, task, input binding,
   deliverable, acceptance criteria, amount, deadline, cancellation rules.
-- The agent is weaker than the owner: it cannot raise its budget, rewrite
-  acceptance, change the payee, or authorize itself. Each attempt is refused.
-- Funds are reserved before work. Parallel jobs cannot commit the same
-  balance twice. Rejection releases the reservation; nothing pays.
-- Settlement is exactly once. A replay is refused (`ALREADY_SETTLED`).
+- The agent is weaker than the owner in the rules this preview tests: it
+  cannot raise its budget, rewrite acceptance, change the payee, or
+  authorize itself. Each attempt is refused. (Trusted-operator simulation:
+  on this host the operator holds every private key and chooses
+  `--caller`; what is genuinely enforced is signature attribution — every
+  consequential record is signed by its authorizing principal and verified
+  on every read — plus the owner's mandate gating new commissions.)
+- Funds are reserved before work, and budget accounting counts spent plus
+  reserved: settled money is gone, so a second job against a spent budget
+  is refused (`INSUFFICIENT_ALLOWANCE`). Concurrent commissions serialize
+  on a writer lock; racing commissions cannot over-commit one allowance.
+- Settlement is atomic and deduplicated. The transfer carries an
+  idempotency key checked inside the writer lock; the amount and payee
+  come only from the signed agreement, never from mutable job copies. A
+  crash after the transfer is written leaves exactly one transfer:
+  reconciliation reports the committed state truthfully and a retry
+  completes the local records without a second payment. A replay of a
+  completed settlement is refused (`ALREADY_SETTLED`).
 - Revocation blocks new work but never erases an already-earned obligation:
   an accepted job still settles after the mandate is revoked.
 - An interrupted run reconciles read-only: `reconcile` reads the durable
@@ -48,6 +61,11 @@ $C settle --caller owner --job <job-id>        # exactly once; receipt saved
 - Local-only. The owner, agent, and seller are separate identities on one
   machine. This demonstrates an authority boundary, not external adoption
   and not a functioning market.
+- Trusted-operator simulation. The three identities have separate keys, but
+  one operator holds all of them on this host and chooses `--caller`. The
+  preview demonstrates and tests the authority rules — refusals, mandates,
+  signature attribution, exactly-once settlement — but it does not
+  establish key-custody separation between the agent and the owner.
 - One service. The seller runs one deterministic local function
   (`text_digest`: word/line counts plus a SHA-256 of the input). The
   buyer's receiver recomputes every field from the frozen input.

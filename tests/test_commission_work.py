@@ -24,12 +24,18 @@ import io
 import json
 import os
 import tempfile
+import threading
+import time
 import unittest
 from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 
 DEMO_DIR = Path(__file__).resolve().parent.parent / "demo" / "commission-work-001"
-_spec = importlib.util.spec_from_file_location("commission_work", DEMO_DIR / "commission.py")
+# COMMISSION_MODULE lets the regression suite run against an older copy of
+# the preview (e.g. the frozen 536d1cc code) to demonstrate that each
+# regression fails pre-fix and passes post-fix.
+_module_path = os.environ.get("COMMISSION_MODULE", str(DEMO_DIR / "commission.py"))
+_spec = importlib.util.spec_from_file_location("commission_work", _module_path)
 commission = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(commission)
 
@@ -344,6 +350,147 @@ class Reconciliation(_T):
         self.assertIn("ALREADY_SETTLED", err)
         ledger = json.loads((self.home / "ledger.json").read_text())
         self.assertEqual(len(ledger["transfers"]), 2)
+
+
+class RegressionFixes(_T):
+    """The three failures reproduced at 536d1cc. Each test fails against the
+    frozen pre-fix code (COMMISSION_MODULE pointing at the 536d1cc copy)
+    and passes after the fix."""
+
+    def test_spent_plus_reserved_accounting(self):
+        # Budget 50, price 50: one settlement spends the whole budget. A
+        # second sequential commission must be refused — spent money is gone.
+        self.setup_basic(budget=50, price=50)
+        self.settle(self.commission_job("sp-1"))
+        allow = self.agent_allowance()
+        self.assertEqual((allow["granted"], allow["reserved"], allow["spent"]), (50, 0, 50))
+        inp = self.input("in-sp2.txt", "sp-2")
+        code, _, err = self.cli("commission", "--caller", "agent",
+                                "--offer", "offer-text-digest-v1", "--input", inp)
+        self.assertEqual(code, 2, "second 50-unit commission on a spent 50 budget must be refused")
+        self.assertIn("INSUFFICIENT_ALLOWANCE", err)
+        # nothing moved: still exactly one settlement
+        ledger = json.loads((self.home / "ledger.json").read_text())
+        self.assertEqual(len(ledger["transfers"]), 1)
+        self.assertEqual(self.agent_allowance()["spent"], 50)
+
+    def _crash_settle(self, job):
+        """Leave the exact state the old code left behind: the transfer is
+        written to the ledger, but the process dies before the allowance
+        and job records are updated."""
+        jobs = json.loads((self.home / "jobs.json").read_text())
+        job_rec = jobs[job]
+        settle_id = "settle:" + job_rec["agreement_hash"]
+        ledger = json.loads((self.home / "ledger.json").read_text())
+        owner = json.loads((self.home / "keys" / "owner.pub.json").read_text())["principal"]
+        seller = json.loads((self.home / "keys" / "seller.pub.json").read_text())["principal"]
+        ledger["balances"][owner] -= 50
+        ledger["balances"][seller] += 50
+        ledger["transfers"].append({
+            "settlement_id": settle_id,
+            "job_id": job,
+            "agreement_hash": job_rec["agreement_hash"],
+            "amount": 50,
+            "currency": "SIM_USD",
+            "from": owner,
+            "to": seller,
+            "at": "2026-09-23T00:00:00+00:00",
+        })
+        (self.home / "ledger.json").write_text(json.dumps(ledger, indent=1, sort_keys=True) + "\n")
+
+    def test_crash_mid_settle_never_pays_twice(self):
+        self.setup_basic()
+        job = self.commission_job("cr-1")
+        self.cli("work", "--caller", "seller", "--job", job)
+        self.cli("submit", "--caller", "seller", "--job", job)
+        self.cli("verify", "--caller", "owner", "--job", job)
+        self._crash_settle(job)
+        # reconciliation must report the committed state truthfully: it may
+        # direct idempotent completion, never a fresh settlement.
+        code, out, err = self.cli("reconcile")
+        self.assertEqual(code, 0, err)
+        self.assertIn("COMMITTED", out)
+        self.assertIn("never a second transfer", out)
+        # the retry completes the records and appends no second transfer
+        code, out, err = self.cli("settle", "--caller", "owner", "--job", job)
+        self.assertEqual(code, 0, err)
+        ledger = json.loads((self.home / "ledger.json").read_text())
+        self.assertEqual(len(ledger["transfers"]), 1,
+                         "retry after a mid-settle crash must not produce a second transfer")
+        owner = json.loads((self.home / "keys" / "owner.pub.json").read_text())["principal"]
+        seller = json.loads((self.home / "keys" / "seller.pub.json").read_text())["principal"]
+        self.assertEqual(ledger["balances"][owner], 9950)
+        self.assertEqual(ledger["balances"][seller], 50)
+        allow = self.agent_allowance()
+        self.assertEqual((allow["reserved"], allow["spent"]), (0, 50))
+        # and a further replay is still refused
+        code, _, err = self.cli("settle", "--caller", "owner", "--job", job)
+        self.assertEqual(code, 2)
+        self.assertIn("ALREADY_SETTLED", err)
+        self.assertEqual(len(json.loads((self.home / "ledger.json").read_text())["transfers"]), 1)
+
+    def test_substituted_payee_after_verify_refused(self):
+        self.setup_basic()
+        job = self.commission_job("py-1")
+        self.cli("work", "--caller", "seller", "--job", job)
+        self.cli("submit", "--caller", "seller", "--job", job)
+        code, _, err = self.cli("verify", "--caller", "owner", "--job", job)
+        self.assertEqual(code, 0, err)
+        # Attack: rewrite the payee in the mutable jobs.json copy after a
+        # successful verification. Settlement must read the payee only from
+        # the authenticated (signed) agreement.
+        jobs = json.loads((self.home / "jobs.json").read_text())
+        jobs[job]["agreement"]["payee"] = "stranger-principal"
+        (self.home / "jobs.json").write_text(json.dumps(jobs, indent=1, sort_keys=True) + "\n")
+        code, _, err = self.cli("settle", "--caller", "owner", "--job", job)
+        self.assertEqual(code, 2, "settlement with a substituted payee must be refused")
+        self.assertIn("AGREEMENT_NOT_AUTHENTIC", err)
+        ledger = json.loads((self.home / "ledger.json").read_text())
+        self.assertEqual(ledger["transfers"], [])
+        owner = json.loads((self.home / "keys" / "owner.pub.json").read_text())["principal"]
+        self.assertEqual(ledger["balances"][owner], 10000)
+
+
+class ConcurrentReservation(_T):
+    def test_concurrent_reservations_cannot_overcommit(self):
+        # Eight commissions race for a 200 budget at 50 each. The writer
+        # lock serializes the read-modify-write; exactly four win.
+        self.setup_basic(budget=200, price=50)
+        orig_read = commission._read_json
+
+        def slow_read(path, default):
+            value = orig_read(path, default)
+            if str(path).endswith("allowances.json"):
+                time.sleep(0.05)  # widen the race window
+            return value
+
+        commission._read_json = slow_read
+        barrier = threading.Barrier(8)
+        results = []
+        try:
+            def one(i):
+                barrier.wait()
+                inp = self.input("in-cc-%d.txt" % i, "cc-%d" % i, "concurrent text %d" % i)
+                code, _, _ = self.cli("commission", "--caller", "agent",
+                                      "--offer", "offer-text-digest-v1",
+                                      "--input", inp)
+                results.append(code)
+
+            threads = [threading.Thread(target=one, args=(i,)) for i in range(8)]
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join()
+        finally:
+            commission._read_json = orig_read
+        self.assertEqual(results.count(0), 4,
+                         "exactly four of eight racing commissions may reserve: %r" % (results,))
+        self.assertEqual(results.count(2), 4)
+        jobs = json.loads((self.home / "jobs.json").read_text())
+        self.assertEqual(len(jobs), 4)
+        allow = self.agent_allowance()
+        self.assertEqual(allow["reserved"], 200)
+        self.assertLessEqual(allow["reserved"] + allow["spent"], allow["granted"])
 
 
 if __name__ == "__main__":

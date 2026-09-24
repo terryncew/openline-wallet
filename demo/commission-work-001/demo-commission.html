@@ -48,6 +48,9 @@
     background:#160f12; border:2px solid #5a3333; padding:32px 36px; }
   .refusal .code { font-size:40px; color:#f05454; font-weight:bold; margin-bottom:14px; }
   .refusal .msg { font-size:34px; line-height:1.5; color:#c6cdd8; }
+  .refusal.compact { margin-bottom:18px; padding:22px 28px; }
+  .refusal.compact .code { font-size:34px; margin-bottom:8px; }
+  .refusal.compact .msg { font-size:30px; line-height:1.45; }
 </style>
 </head>
 <body>
@@ -60,11 +63,12 @@
 <script>
 // Every shown outcome is from the real quickstart run (home /tmp/cw-rec).
 var R = {
-  job: "job-b687467fa034",
-  agree: "3084e59d33f218e2",
-  agreeFull: "3084e59d33f218e2ce30a2e242e451ab2db3e961474afdfc5136f7d9c2b9c817",
-  input: "1a0ca7b274503a74",
-  receipt: "settlement_job-b687467fa034.json",
+  job: "job-7397c2a1ac4b",
+  agree: "471abb562b7d394d",
+  agreeFull: "471abb562b7d394dbafe1b2cf6d93057a9ea32e034a2fe763d55100aed6b3575",
+  input: "c8f93b5c028eb61e",
+  receipt: "settlement_job-7397c2a1ac4b.json",
+  settleId: "settle:471abb562b7d394d&hellip;",
   checks: ["agreement_integrity","payee_matches_offer","result_submitted",
            "seller_signature","result_binds_job","acceptance_exact_recompute","within_deadline"]
 };
@@ -103,31 +107,32 @@ var SCENES = [
   "The buyer's receiver checks<br><span class='green'>7 of 7</span>.",
   checksHTML(),
   "The seller never grades its own work.<br>The receiver recomputes every field from the frozen input."],
- [23.0, 28.0, "SETTLE",
+ [23.0, 28.5, "SETTLE",
   "Exactly once.",
   card([
     row("settle", "<span class='v'>50 SIM_USD (simulated)</span> paid to the seller"),
+    row("idempotency", "<span class='v mono'>" + R.settleId + "</span>"),
     row("receipt", "<span class='v mono'>" + R.receipt + "</span>"),
     row("signature", "<span class='v'>verifies</span>")
   ], refusalHTML("refused [ALREADY_SETTLED]",
       "the job already settled; replay cannot produce a second payment")),
-  "One settlement. The receipt is signed.<br>A replay is refused."],
- [28.0, 32.0, "REJECT",
+  "One settlement. The transfer carries an idempotency key,<br>checked inside the writer lock. A replay is refused."],
+ [28.5, 33.0, "REJECT",
   "Bad work gets <span class='red'>no payment</span>.",
   "<div class='body'>" + refusalHTML("REJECTED &mdash; acceptance_exact_recompute: FAIL",
       "the receiver recomputed from the frozen input; a field did not match") +
   refusalHTML("refused [SETTLEMENT_REFUSED]",
       "no payment before the buyer's receiver accepts the result") + "</div>",
   "The reservation is released. The funds go back<br>to the agent's allowance. Nothing pays."],
- [32.0, 36.0, "BOUNDARIES",
+ [33.0, 37.5, "BOUNDARIES",
   "The agent is weaker<br>than the owner.",
   "<div class='body' style='text-align:center'>" +
    "<span class='tag r'>BUDGET_INCREASE_REFUSED</span>" +
    "<span class='tag r'>ACCEPTANCE_REWRITE_REFUSED</span><br>" +
    "<span class='tag r'>PAYEE_CHANGE_REFUSED</span>" +
    "<span class='tag r'>SELF_AUTHORIZATION_REFUSED</span></div>",
-  "It cannot raise its budget, rewrite acceptance,<br>change the payee, or authorize itself."],
- [36.0, 39.5, "REVOKE",
+  "Command-layer refusals, tested. Every record signed and verified on read.<br>On this host the operator holds every key: a trusted-operator simulation."],
+ [37.5, 42.0, "REVOKE",
   "Revocation blocks new work.<br>It never erases what was earned.",
   card([
     row("owner", "<span class='v'>revokes</span> the agent's mandate"),
@@ -135,11 +140,21 @@ var SCENES = [
     row("earned job", "<span class='green'>still settles</span> &mdash; the obligation stands")
   ]),
   "Permission changes in flight are explicit.<br>An accepted job remains payable after revocation."],
- [39.5, 44.0, "END",
+ [42.0, 47.5, "HARDENING",
+  "Three fixes.<br>Three refusals.",
+  "<div class='body'>" +
+  refusalHTML("refused [INSUFFICIENT_ALLOWANCE]",
+      "budget 50, spent 50: settled money is gone, not committable again", true) +
+  refusalHTML("settlement COMMITTED &mdash; no second transfer",
+      "the process died after the transfer was written; the retry completed the records", true) +
+  refusalHTML("refused [AGREEMENT_NOT_AUTHENTIC]",
+      "the payee was rewritten after verification; only the signed agreement moves money", true) + "</div>",
+  "Spent money cannot be re-committed. A crash cannot pay twice.<br>The payee comes only from the signed agreement."],
+ [47.5, 52.0, "END",
   "The worker can change.<br><span class='accent'>Your authority stays with you.</span>",
   "",
   "commission-work-001 &middot; one service, local only, simulated funds<br>" +
-  "no discovery, no market, no real payments<br><br>" +
+  "trusted-operator simulation &middot; no market, no real payments<br><br>" +
   "<span class='mono' style='font-size:34px'>bash demo/commission-work-001/quickstart.sh</span>"]
 ];
 function row(k, v) { return "<div class='row'><span class='k'>" + k + "</span> &nbsp;" + v + "</div>"; }
@@ -150,8 +165,8 @@ function checksHTML() {
     h += "<div class='check'><span class='ok'>PASS</span> &nbsp;" + R.checks[i] + "</div>";
   return h + "</div></div>";
 }
-function refusalHTML(code, msg) {
-  return "<div class='refusal'><div class='code'>" + code +
+function refusalHTML(code, msg, compact) {
+  return "<div class='refusal" + (compact ? " compact" : "") + "'><div class='code'>" + code +
          "</div><div class='msg'>" + msg + "</div></div>";
 }
 var stage = document.getElementById("scenes");

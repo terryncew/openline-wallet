@@ -32,16 +32,31 @@ This preview adds only the commission-specific pieces:
 
 Scope: one service, one operator host, simulated money. See README.md
 and SUPPORTED.md for what this does and does not establish.
+
+Authority model (stated plainly): every consequential record is signed by
+the principal that may authorize it — the agent signs the agreement, the
+buyer side signs the verdict, the seller signs the result, the owner signs
+the receipt — and each signature is verified on every read, so the signed
+body is the sole source of truth. The owner's wallet mandate genuinely
+gates new agent commissions (no active mandate: no new work). But on this
+single host the operator holds every private key: nothing here separates
+key custody between agent and owner, and ``--caller`` is a label the
+operator chooses. This preview is a trusted-operator simulation of the
+authority boundary: it demonstrates and tests the rules (refusals,
+mandates, signature attribution, exactly-once settlement), not custodial
+separation between the agent and the owner.
 """
 
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import subprocess
 import sys
 import tempfile
+from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -56,6 +71,7 @@ from openline_wallet.crypto import (
     sign_record,
     verify_record,
 )
+from openline_wallet.storage import atomic_write_json
 from openline_wallet.wallet import Wallet, WalletError
 
 HOME_ENV = "COMMISSION_HOME"
@@ -98,8 +114,31 @@ def _read_json(path: Path, default):
 
 
 def _write_json(path: Path, obj) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(obj, indent=1, sort_keys=True) + "\n")
+    # All durable state uses the wallet's own atomic store (temp + rename +
+    # fsync), the same primitive the wallet itself writes through.
+    atomic_write_json(path, obj)
+
+
+@contextmanager
+def _state_lock(h: Path):
+    """Serialize writers of the shared home state (allowances, ledger, jobs).
+
+    Same convention as openline_wallet.effect_closure's writer lock: one
+    live writer for this local ledger, across processes and threads.
+    Reservations and settlements hold this lock for their whole
+    read-modify-write, so concurrent commissions cannot over-commit.
+    """
+    lock_path = h / "state.lock"
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    fd = os.open(lock_path, os.O_RDWR | os.O_CREAT, 0o600)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        yield
+    finally:
+        try:
+            fcntl.flock(fd, fcntl.LOCK_UN)
+        finally:
+            os.close(fd)
 
 
 def _now():
@@ -162,6 +201,42 @@ def _verify_signed(body: dict, signer_pub: str, label: str) -> None:
 
 def _allowances(h: Path) -> dict:
     return _read_json(h / "allowances.json", {})
+
+
+def _pub_by_principal(h: Path, principal: str) -> str:
+    for name in ("owner", "agent", "seller"):
+        if _principal(h, name) == principal:
+            return _pub(h, name)
+    raise CommissionError("UNKNOWN_PRINCIPAL", "no local key for principal %s" % principal[:24])
+
+
+def _authenticated_agreement(h: Path, job: dict) -> dict:
+    """The signed body is the sole source of truth.
+
+    Amount and payee come only from the agreement whose signature verifies
+    against the agent's key and whose hash matches the frozen hash. Mutable
+    copies in jobs.json cannot move money: a substituted payee or amount
+    fails authentication and settlement is refused.
+    """
+    agreement = job.get("agreement")
+    sig = job.get("agreement_signature")
+    if not isinstance(agreement, dict) or not isinstance(sig, dict):
+        raise CommissionError("AGREEMENT_NOT_AUTHENTIC",
+                              "no signed agreement on record for this job")
+    agent_principal = _principal(h, "agent")
+    if agreement.get("agent") != agent_principal:
+        raise CommissionError("AGREEMENT_NOT_AUTHENTIC",
+                              "the agreement names a different agent")
+    try:
+        _verify_signed({"record": agreement, "signature": sig},
+                       _pub(h, "agent"), "agreement")
+    except CommissionError as e:
+        raise CommissionError("AGREEMENT_NOT_AUTHENTIC",
+                              "the agreement's signature does not verify: %s" % e.code)
+    if _agreement_hash(agreement) != job.get("agreement_hash"):
+        raise CommissionError("AGREEMENT_NOT_AUTHENTIC",
+                              "the agreement does not match the frozen hash")
+    return agreement
 
 
 def _money(amount: int) -> str:
@@ -340,79 +415,89 @@ def cmd_commission(args) -> int:
     _verify_signed(offer, _pub(h, "seller"), "offer")
     offer_body = offer["record"]
     amount = offer_body["price"]
-    # Budget reservation: funds are reserved before work starts, so parallel
-    # jobs cannot commit the same balance twice.
-    allowances = _allowances(h)
-    agent = _principal(h, "agent")
-    allow = allowances.get(agent)
-    if allow is None:
-        raise CommissionError("NO_ALLOWANCE", "the owner has not delegated a budget to this agent")
-    if allow["reserved"] + amount > allow["granted"]:
-        code = "ALREADY_RESERVED" if allow["reserved"] > 0 else "INSUFFICIENT_ALLOWANCE"
-        raise CommissionError(
-            code,
-            "agent allowance %s, already reserved %s; %s does not fit"
-            % (_money(allow["granted"]), _money(allow["reserved"]), _money(amount)),
-        )
     raw = Path(args.input).read_bytes()
     header_end = raw.index(b"\n")
     try:
         nonce = json.loads(raw[:header_end].decode("utf-8"))["nonce"]
     except Exception as e:  # noqa: BLE001
         raise CommissionError("INPUT_MALFORMED", "input must start with a JSON header line carrying a nonce: %s" % e)
-    jobs = _read_json(h / "jobs.json", {})
-    for other in jobs.values():
-        if other["agreement"].get("nonce") == nonce:
+    # Everything that touches shared budget state happens inside one writer
+    # lock, so concurrent commissions serialize instead of over-committing.
+    with _state_lock(h):
+        allowances = _allowances(h)
+        agent = _principal(h, "agent")
+        allow = allowances.get(agent)
+        if allow is None:
+            raise CommissionError("NO_ALLOWANCE", "the owner has not delegated a budget to this agent")
+        # Budget accounting: SPENT plus RESERVED against the granted amount.
+        # Settled money is gone; only reserved-but-unsettled money is still
+        # committable. A second sequential job after a full settlement is
+        # refused, not silently funded twice.
+        committed = allow["reserved"] + allow["spent"]
+        if committed + amount > allow["granted"]:
+            code = "ALREADY_RESERVED" if allow["reserved"] > 0 else "INSUFFICIENT_ALLOWANCE"
             raise CommissionError(
-                "NONCE_REUSED",
-                "nonce %r was already commissioned; every job needs a fresh input" % nonce,
+                code,
+                "agent allowance: granted %s, reserved %s, already spent %s; %s does not fit"
+                % (_money(allow["granted"]), _money(allow["reserved"]),
+                   _money(allow["spent"]), _money(amount)),
             )
-    job_id = "job-%s" % sha256_hex(canonical_json(
-        {"agent": agent, "offer": args.offer, "nonce": nonce, "at": _utcnow_iso()}
-    ))[:12]
-    agreement = {
-        "schema": "commission.agreement.v1",
-        "job_id": job_id,
-        "buyer": _principal(h, "owner"),
-        "agent": agent,
-        "seller": offer_body["seller"],
-        "payee": offer_body["seller"],
-        "offer_id": args.offer,
-        "service": offer_body["service"],
-        "input_sha256": sha256_hex(raw),
-        "nonce": nonce,
-        "deliverable": offer_body["deliverable"],
-        "acceptance": offer_body["acceptance"],
-        "amount": amount,
-        "currency": CURRENCY + " (simulated)",
-        "deadline": (_now() + timedelta(hours=DEADLINE_HOURS)).isoformat(),
-        "rules": {
-            "on_accept": "settle exactly once to the payee after the buyer's receiver verifies the result",
-            "on_reject": "no payment; the reserved amount is released back to the agent allowance",
-            "on_revoke": "revocation blocks new commissions; an already-earned (verified, accepted) obligation is never silently erased and remains payable",
-            "replay": "settlement is idempotent; replaying settle cannot produce a second payment",
-        },
-    }
-    sig = sign_record(agreement, _load_key(h, "agent"))
-    job = {
-        "job_id": job_id,
-        "agreement": agreement,
-        "agreement_hash": _agreement_hash(agreement),
-        "agreement_signature": sig,
-        "input_path": str(Path(args.input).resolve()),
-        "status": "COMMISSIONED",
-        "events": [],
-        "submission": None,
-        "verdict": None,
-        "settlement": None,
-    }
-    _event(job, "AGREEMENT_FROZEN",
-           {"amount": amount, "currency": "SIM_USD (simulated)",
-            "reserved_from_allowance": allow["granted"]})
-    allow["reserved"] += amount
-    _write_json(h / "allowances.json", allowances)
-    jobs[job_id] = job
-    _write_json(h / "jobs.json", jobs)
+        jobs = _read_json(h / "jobs.json", {})
+        for other in jobs.values():
+            if other["agreement"].get("nonce") == nonce:
+                raise CommissionError(
+                    "NONCE_REUSED",
+                    "nonce %r was already commissioned; every job needs a fresh input" % nonce,
+                )
+        job_id = "job-%s" % sha256_hex(canonical_json(
+            {"agent": agent, "offer": args.offer, "nonce": nonce, "at": _utcnow_iso()}
+        ))[:12]
+        agreement = {
+            "schema": "commission.agreement.v1",
+            "job_id": job_id,
+            "buyer": _principal(h, "owner"),
+            "agent": agent,
+            "seller": offer_body["seller"],
+            "payee": offer_body["seller"],
+            "offer_id": args.offer,
+            "service": offer_body["service"],
+            "input_sha256": sha256_hex(raw),
+            "nonce": nonce,
+            "deliverable": offer_body["deliverable"],
+            "acceptance": offer_body["acceptance"],
+            "amount": amount,
+            "currency": CURRENCY + " (simulated)",
+            "deadline": (_now() + timedelta(hours=DEADLINE_HOURS)).isoformat(),
+            "rules": {
+                "on_accept": "settle exactly once to the payee after the buyer's receiver verifies the result",
+                "on_reject": "no payment; the reserved amount is released back to the agent allowance",
+                "on_revoke": "revocation blocks new commissions; an already-earned (verified, accepted) obligation is never silently erased and remains payable",
+                "replay": "settlement is idempotent; replaying settle cannot produce a second payment",
+            },
+        }
+        # Per-role key custody inside this process: the agreement is signed
+        # with the agent's key only. Every consequential record carries the
+        # key of the principal that may authorize it, verifiable offline.
+        sig = sign_record(agreement, _load_key(h, "agent"))
+        job = {
+            "job_id": job_id,
+            "agreement": agreement,
+            "agreement_hash": _agreement_hash(agreement),
+            "agreement_signature": sig,
+            "input_path": str(Path(args.input).resolve()),
+            "status": "COMMISSIONED",
+            "events": [],
+            "submission": None,
+            "verdict": None,
+            "settlement": None,
+        }
+        _event(job, "AGREEMENT_FROZEN",
+               {"amount": amount, "currency": "SIM_USD (simulated)",
+                "reserved_from_allowance": allow["granted"]})
+        allow["reserved"] += amount
+        _write_json(h / "allowances.json", allowances)
+        jobs[job_id] = job
+        _write_json(h / "jobs.json", jobs)
     print("agreement frozen: %s" % job_id)
     print("buyer %s -> agent %s -> seller %s" % (agreement["buyer"][:16], agent[:16], agreement["seller"][:16]))
     print("service: %s | amount: %s | deadline: %s" % (SERVICE, _money(amount), agreement["deadline"]))
@@ -480,28 +565,29 @@ def cmd_submit(args) -> int:
     """The seller submits its signed result against the frozen agreement."""
     _require_caller(args, {"seller"})
     h = _home(Path(args.home) if args.home else None)
-    job = _job(h, args.job)
-    if job["agreement"]["seller"] != _principal(h, "seller"):
-        raise CommissionError("SELLER_MISMATCH", "this job is owed to a different seller")
-    if job["submission"] is not None:
-        raise CommissionError(
-            "WORK_ALREADY_SUBMITTED",
-            "a result was already submitted for this job; resubmission is refused, "
-            "and the buyer verifies the recorded submission",
-        )
-    run_path = h / "seller_runs" / ("%s.json" % job["job_id"])
-    if not run_path.exists():
-        raise CommissionError("NO_WORK_DONE", "run `work` before `submit`")
-    submitted = _read_json(run_path, None)
-    if args.tamper_result:
-        # Demonstration hook: alter the result after the seller signed it.
-        submitted = {"record": dict(submitted["record"]), "signature": submitted["signature"]}
-        submitted["record"]["word_count"] += 100
-    _verify_signed(submitted, _pub(h, "seller"), "result")
-    job["submission"] = submitted
-    job["status"] = "SUBMITTED"
-    _event(job, "RESULT_SUBMITTED", {"result_sha256": sha256_hex(canonical_json(submitted["record"]))[:16]})
-    _save_job(h, job)
+    with _state_lock(h):
+        job = _job(h, args.job)
+        if job["agreement"]["seller"] != _principal(h, "seller"):
+            raise CommissionError("SELLER_MISMATCH", "this job is owed to a different seller")
+        if job["submission"] is not None:
+            raise CommissionError(
+                "WORK_ALREADY_SUBMITTED",
+                "a result was already submitted for this job; resubmission is refused, "
+                "and the buyer verifies the recorded submission",
+            )
+        run_path = h / "seller_runs" / ("%s.json" % job["job_id"])
+        if not run_path.exists():
+            raise CommissionError("NO_WORK_DONE", "run `work` before `submit`")
+        submitted = _read_json(run_path, None)
+        if args.tamper_result:
+            # Demonstration hook: alter the result after the seller signed it.
+            submitted = {"record": dict(submitted["record"]), "signature": submitted["signature"]}
+            submitted["record"]["word_count"] += 100
+        _verify_signed(submitted, _pub(h, "seller"), "result")
+        job["submission"] = submitted
+        job["status"] = "SUBMITTED"
+        _event(job, "RESULT_SUBMITTED", {"result_sha256": sha256_hex(canonical_json(submitted["record"]))[:16]})
+        _save_job(h, job)
     print("seller submitted the result for %s" % job["job_id"])
     print("the buyer's receiver now checks it against the frozen agreement")
     return 0
@@ -534,6 +620,9 @@ def cmd_verify(args) -> int:
     job = _job(h, args.job)
     if job["status"] != "SUBMITTED":
         raise CommissionError("VERIFY_WRONG_STATE", "job is %s; nothing to verify" % job["status"])
+    # The stored agreement must authenticate before anything is checked:
+    # signature by the agent's key, hash matching the frozen hash.
+    _authenticated_agreement(h, job)
     if args.tamper_agreement == "amount":
         # Demonstration hook: alter the frozen agreement before checking.
         # The tamper applies to a working copy only; the frozen record on
@@ -606,34 +695,92 @@ def cmd_verify(args) -> int:
         "at": _utcnow_iso(),
     }
     sig = sign_record(verdict, _load_key(h, args.caller))
-    job["verdict"] = {"record": verdict, "signature": sig}
+    verdict_signed = {"record": verdict, "signature": sig}
+    with _state_lock(h):
+        job = _job(h, args.job)
+        job["verdict"] = verdict_signed
+        if accepted:
+            job["status"] = "VERIFIED_ACCEPTED"
+            _event(job, "VERIFIED", {"verdict": "accepted"})
+        else:
+            job["status"] = "VERIFIED_REJECTED"
+            _event(job, "VERIFIED", {"verdict": "rejected"})
+            # Cancellation rule: rejection releases the reservation by the
+            # FROZEN amount (a tamper demonstration must not corrupt the
+            # accounting).
+            allowances = _allowances(h)
+            allow = allowances[_principal(h, "agent")]
+            frozen_amount = job["agreement"]["amount"]
+            allow["reserved"] -= frozen_amount
+            _write_json(h / "allowances.json", allowances)
+            _event(job, "RESERVATION_RELEASED", {"amount": frozen_amount})
+        _save_job(h, job)
     if accepted:
-        job["status"] = "VERIFIED_ACCEPTED"
-        _event(job, "VERIFIED", {"verdict": "accepted"})
         print("ACCEPTED %s — the result matches the frozen agreement exactly" % job["job_id"])
     else:
-        job["status"] = "VERIFIED_REJECTED"
-        _event(job, "VERIFIED", {"verdict": "rejected"})
-        # Cancellation rule: rejection releases the reservation by the FROZEN
-        # amount (a tamper demonstration must not corrupt the accounting).
-        allowances = _allowances(h)
-        allow = allowances[_principal(h, "agent")]
-        frozen_amount = job["agreement"]["amount"]
-        allow["reserved"] -= frozen_amount
-        _write_json(h / "allowances.json", allowances)
-        _event(job, "RESERVATION_RELEASED", {"amount": frozen_amount})
         print("REJECTED %s — no payment; the reservation is released" % job["job_id"])
     for n, ok_, d in checks:
         print("  %s: %s — %s" % (n, "pass" if ok_ else "FAIL", d))
     _write_json(h / "receipts" / ("verdict_%s.json" % job["job_id"]),
-                job["verdict"])
-    _save_job(h, job)
+                verdict_signed)
     return 0 if accepted else 2
 # -- settle (exactly once) -------------------------------------------------------
 
 
+def _settlement_record(h: Path, job: dict, agreement: dict,
+                       verdict_hash: str, amount: int, payee: str) -> dict:
+    """The settlement receipt, bound to the exact authenticated agreement and
+    verdict. Signed by the owner's key; the signature is deterministic for a
+    given key and body, so crash recovery reproduces the identical record.
+    """
+    receipt = {
+        "schema": "commission.settlement.v1",
+        "job_id": job["job_id"],
+        "agreement_hash": job["agreement_hash"],
+        "verdict_hash": verdict_hash,
+        "settlement_id": "settle:" + job["agreement_hash"],
+        "amount": amount,
+        "currency": CURRENCY + " (simulated)",
+        "from": agreement["buyer"],
+        "to": payee,
+        "note": "simulated payment; no real money moved",
+        "at": _utcnow_iso(),
+    }
+    return {"record": receipt,
+            "signature": sign_record(receipt, _load_key(h, "owner"))}
+
+
+def _finalize_allowance(allow: dict, amount: int, settle_id: str) -> None:
+    """Move the reservation to spent, exactly once per settlement id."""
+    if settle_id in allow.setdefault("settled_jobs", []):
+        return
+    allow["reserved"] -= amount
+    allow["spent"] += amount
+    allow["settled_jobs"].append(settle_id)
+
+
+def _transfer_committed(ledger: dict, settle_id: str) -> bool:
+    return any(t.get("settlement_id") == settle_id
+               for t in ledger.get("transfers", []))
+
+
 def cmd_settle(args) -> int:
     """Pay the frozen agreement exactly once, only after acceptance.
+
+    Settlement is one atomic, deduplicated transaction:
+
+    - amount and payee come ONLY from the authenticated agreement (the
+      signed body), never from mutable jobs.json fields;
+    - the verdict must be the buyer's receiver's verdict on THIS agreement
+      (signature by a buyer-side key, agreement_hash bound);
+    - the transfer carries an idempotency key (``settle:<agreement_hash>``)
+      that is checked inside the writer lock before anything is appended.
+
+    A crash between the ledger write and the local-record writes leaves the
+    transfer on record: the next settle sees the idempotency key, completes
+    the local records, and never appends a second transfer. Reconciliation
+    reports that committed-but-incomplete state truthfully; it never
+    recommends re-executing an already-settled obligation.
 
     Rejected work does not settle. Replaying settle for an already-settled
     job is refused with ALREADY_SETTLED. An already-earned obligation
@@ -643,66 +790,121 @@ def cmd_settle(args) -> int:
     """
     _require_caller(args, {"owner", "agent"})
     h = _home(Path(args.home) if args.home else None)
-    job = _job(h, args.job)
-    if job["settlement"] is not None:
-        raise CommissionError(
-            "ALREADY_SETTLED",
-            "job %s already settled; replay cannot produce a second payment" % job["job_id"],
-        )
-    if job["verdict"] is None or job["verdict"]["record"]["verdict"] != "accepted":
-        raise CommissionError(
-            "SETTLEMENT_REFUSED",
-            "no payment before the buyer's receiver accepts the result "
-            "(job is %s)" % job["status"],
-        )
-    agreement = job["agreement"]
-    _verify_signed(job["verdict"], _pub(h, job["verdict"]["record"]["verified_by"]), "verdict")
-    ledger = _read_json(h / "ledger.json", None)
-    assert ledger["currency"].startswith(CURRENCY), "simulated currency only"
-    amount = agreement["amount"]
-    allowances = _allowances(h)
-    allow = allowances[_principal(h, "agent")]
-    if allow["reserved"] < amount:
-        raise CommissionError(
-            "RESERVATION_MISSING",
-            "the reserved amount is gone; the agreement record is inconsistent",
-        )
-    owner, seller = _principal(h, "owner"), agreement["payee"]
-    ledger["balances"][owner] -= amount
-    ledger["balances"][seller] = ledger["balances"].get(seller, 0) + amount
-    ledger["transfers"].append({
-        "job_id": job["job_id"], "amount": amount, "currency": CURRENCY,
-        "from": owner, "to": seller, "at": _utcnow_iso(),
-    })
-    _write_json(h / "ledger.json", ledger)
-    allow["reserved"] -= amount
-    allow["spent"] += amount
-    _write_json(h / "allowances.json", allowances)
-    receipt = {
-        "schema": "commission.settlement.v1",
-        "job_id": job["job_id"],
-        "agreement_hash": job["agreement_hash"],
-        "amount": amount,
-        "currency": CURRENCY + " (simulated)",
-        "from": owner,
-        "to": seller,
-        "note": "simulated payment; no real money moved",
-        "at": _utcnow_iso(),
-    }
-    sig = sign_record(receipt, _load_key(h, "owner"))
-    job["settlement"] = {"record": receipt, "signature": sig}
-    job["status"] = "SETTLED"
-    _event(job, "SETTLED", {"amount": amount})
-    _save_job(h, job)
-    _write_json(h / "receipts" / ("settlement_%s.json" % job["job_id"]), job["settlement"])
+    with _state_lock(h):
+        job = _job(h, args.job)
+        # 1. The exact authenticated agreement. A substituted payee or amount
+        #    in jobs.json fails here and settlement is refused.
+        agreement = _authenticated_agreement(h, job)
+        amount = agreement["amount"]
+        payee = agreement["payee"]
+        buyer = agreement["buyer"]
+        agent_principal = agreement["agent"]
+        # 2. The verdict must accept, must be signed by a buyer-side key, and
+        #    must bind this exact agreement hash.
+        verdict = job.get("verdict")
+        if verdict is None or verdict["record"]["verdict"] != "accepted":
+            raise CommissionError(
+                "SETTLEMENT_REFUSED",
+                "no payment before the buyer's receiver accepts the result "
+                "(job is %s)" % job["status"],
+            )
+        vrec = verdict["record"]
+        verifier = vrec.get("verified_by")
+        if verifier not in ("owner", "agent"):
+            raise CommissionError("VERDICT_NOT_BUYER_SIDE",
+                                  "the verdict was not produced by the buyer's side")
+        if _principal(h, verifier) not in (buyer, agent_principal):
+            raise CommissionError("VERDICT_NOT_BUYER_SIDE",
+                                  "the verdict signer is not this job's buyer side")
+        _verify_signed(verdict, _pub(h, verifier), "verdict")
+        if vrec.get("agreement_hash") != job["agreement_hash"]:
+            raise CommissionError("VERDICT_MISMATCH",
+                                  "the verdict binds a different agreement")
+        verdict_hash = sha256_hex(canonical_json(vrec))
+        settle_id = "settle:" + job["agreement_hash"]
+        ledger = _read_json(h / "ledger.json", None)
+        assert ledger["currency"].startswith(CURRENCY), "simulated currency only"
+        allowances = _allowances(h)
+        allow = allowances.get(agent_principal)
+        if allow is None:
+            raise CommissionError("NO_ALLOWANCE", "no allowance on record for the job's agent")
+        if _transfer_committed(ledger, settle_id):
+            # A previous attempt committed the transfer but died before the
+            # local records were finished. Complete them idempotently; the
+            # transfer is never appended twice. A replay of a fully
+            # completed settlement is still refused, with no side effects.
+            recovered = False
+            if job["settlement"] is None:
+                job["settlement"] = _settlement_record(
+                    h, job, agreement, verdict_hash, amount, payee)
+                job["status"] = "SETTLED"
+                _event(job, "SETTLED_RECOVERED",
+                       {"settlement_id": settle_id, "amount": amount})
+                recovered = True
+            if settle_id not in allow.get("settled_jobs", []):
+                _finalize_allowance(allow, amount, settle_id)
+                recovered = True
+            if recovered:
+                _write_json(h / "allowances.json", allowances)
+                _save_job(h, job)
+                _write_json(h / "receipts" / ("settlement_%s.json" % job["job_id"]),
+                            job["settlement"])
+                print("settlement %s already committed; local records completed — "
+                      "no second transfer" % job["job_id"])
+                return 0
+            raise CommissionError(
+                "ALREADY_SETTLED",
+                "job %s already settled; replay cannot produce a second payment" % job["job_id"],
+            )
+        if job["settlement"] is not None:
+            raise CommissionError(
+                "ALREADY_SETTLED",
+                "job %s already settled; replay cannot produce a second payment" % job["job_id"],
+            )
+        if allow["reserved"] < amount:
+            raise CommissionError(
+                "RESERVATION_MISSING",
+                "the reserved amount is gone; the agreement record is inconsistent",
+            )
+        # 3. Fresh settlement: the transfer is the atomic commit point. It is
+        #    appended under the writer lock with the idempotency key, so a
+        #    retry can always tell committed from uncommitted.
+        ledger["balances"][buyer] -= amount
+        ledger["balances"][payee] = ledger["balances"].get(payee, 0) + amount
+        ledger["transfers"].append({
+            "settlement_id": settle_id,
+            "job_id": job["job_id"],
+            "agreement_hash": job["agreement_hash"],
+            "amount": amount,
+            "currency": CURRENCY,
+            "from": buyer,
+            "to": payee,
+            "at": _utcnow_iso(),
+        })
+        _write_json(h / "ledger.json", ledger)
+        if os.environ.get("COMMISSION_CRASH_AFTER") == "ledger":
+            # Demonstration/test hook only: die exactly where the old code
+            # died, so the recovery path can be exercised honestly.
+            raise CommissionError("CRASH_SIMULATED",
+                                  "demonstration hook: the process dies after the ledger write")
+        _finalize_allowance(allow, amount, settle_id)
+        _write_json(h / "allowances.json", allowances)
+        job["settlement"] = _settlement_record(
+            h, job, agreement, verdict_hash, amount, payee)
+        job["status"] = "SETTLED"
+        _event(job, "SETTLED", {"amount": amount, "settlement_id": settle_id})
+        _save_job(h, job)
+        _write_json(h / "receipts" / ("settlement_%s.json" % job["job_id"]),
+                    job["settlement"])
     mandate_note = ""
     try:
         _agent_mandate_active(h)
     except CommissionError:
         mandate_note = " (the agent's mandate was revoked after verification; this obligation was already earned, so it remains payable)"
+    ledger = _read_json(h / "ledger.json", None)
     print("SETTLED %s: %s paid to the seller%s" % (job["job_id"], _money(amount), mandate_note))
     print("owner balance: %s | seller balance: %s"
-          % (_money(ledger["balances"][owner]), _money(ledger["balances"][seller])))
+          % (_money(ledger["balances"][buyer]), _money(ledger["balances"].get(payee, 0))))
     print("exactly one settlement; replay is refused")
     return 0
 
@@ -801,10 +1003,19 @@ def cmd_reconcile(args) -> int:
     if not jobs:
         print("no jobs on record")
         return 0
+    ledger = _read_json(h / "ledger.json", {})
     for job in sorted(jobs.values(), key=lambda j: j["job_id"]):
         a = job["agreement"]
+        settle_id = "settle:" + job["agreement_hash"]
         if job["settlement"] is not None:
             state = "SETTLED — nothing further; replaying settle is refused"
+        elif _transfer_committed(ledger, settle_id):
+            # Truthful: the transfer is on record, so the obligation is paid.
+            # Re-running settle completes the local records idempotently; it
+            # never re-executes the settlement.
+            state = ("settlement COMMITTED (transfer on record) but local records "
+                     "incomplete — re-run settle to complete idempotently; "
+                     "never a second transfer")
         elif job["status"] == "VERIFIED_ACCEPTED":
             state = "VERIFIED+ACCEPTED, unsettled — settle exactly once"
         elif job["status"] == "VERIFIED_REJECTED":
