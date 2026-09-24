@@ -999,6 +999,29 @@ class CommissionTransactions(_T):
         self.assertIn("reservation released", job_line)
         self.assertNotIn("PENDING", job_line)
 
+    def test_reconcile_surfaces_orphan_with_empty_jobs(self):
+        # Legacy state: a reservation committed with no identifiable job
+        # (the old two-write order's orphan). Reconcile must surface it as
+        # MISMATCH — even when jobs.json holds no jobs at all — never
+        # silently refund or mutate it, and must remain read-only.
+        self.setup_basic()
+        job = self.commission_job("orph-legacy")
+        jobs = json.loads((self.home / "jobs.json").read_text())
+        del jobs[job]
+        (self.home / "jobs.json").write_text(json.dumps(jobs, indent=2))
+        before = json.loads((self.home / "allowances.json").read_text())
+        self.assertEqual(list(before.values())[0]["reserved"], 50)
+        code, out, err = self.cli("reconcile")
+        self.assertEqual(code, 0, err)
+        audit_line = next(l for l in out.splitlines() if "reservation audit" in l)
+        self.assertIn("MISMATCH", audit_line, out)
+        # No silent refund, no mutation: reserved still 50, jobs still empty.
+        after = json.loads((self.home / "allowances.json").read_text())
+        self.assertEqual(list(after.values())[0]["reserved"], 50)
+        self.assertEqual(json.loads((self.home / "jobs.json").read_text()), {})
+        self.assertNotIn("refunded", out)
+        self.assertNotIn("repaired", out)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1312,49 +1312,47 @@ def cmd_reconcile(args) -> int:
     """
     h = _home(Path(args.home) if args.home else None)
     jobs = _read_json(h / "jobs.json", {})
-    if not jobs:
-        print("no jobs on record")
-        return 0
     ledger = _read_json(h / "ledger.json", {})
-    for job in sorted(jobs.values(), key=lambda j: j["job_id"]):
-        a = job["agreement"]
-        settle_id = "settle:" + job["agreement_hash"]
-        if job["settlement"] is not None:
-            state = "SETTLED — nothing further; replaying settle is refused"
-        elif _transfer_committed(ledger, settle_id):
-            # Truthful: the transfer is on record, so the obligation is paid.
-            # Re-running settle completes the local records idempotently; it
-            # never re-executes the settlement.
-            state = ("settlement COMMITTED (transfer on record) but local records "
-                     "incomplete — re-run settle to complete idempotently; "
-                     "never a second transfer")
-        elif job["status"] == "VERIFIED_ACCEPTED":
-            state = "VERIFIED+ACCEPTED, unsettled — settle exactly once"
-        elif job["status"] == "VERIFIED_REJECTED":
-            # The release report is derived from the DURABLE release state,
-            # not from the verdict: a committed verdict whose release has
-            # not committed is reported as PENDING, with the idempotent
-            # recovery command named. Reconciliation stays read-only.
-            allow = _allowances(h).get(job["agreement"]["agent"], {})
-            if job["job_id"] in allow.get("released_jobs", []):
-                state = "VERIFIED+REJECTED — no payment; reservation released"
+    if jobs:
+        for job in sorted(jobs.values(), key=lambda j: j["job_id"]):
+            a = job["agreement"]
+            settle_id = "settle:" + job["agreement_hash"]
+            if job["settlement"] is not None:
+                state = "SETTLED — nothing further; replaying settle is refused"
+            elif _transfer_committed(ledger, settle_id):
+                # Truthful: the transfer is on record, so the obligation is paid.
+                # Re-running settle completes the local records idempotently; it
+                # never re-executes the settlement.
+                state = ("settlement COMMITTED (transfer on record) but local records "
+                         "incomplete — re-run settle to complete idempotently; "
+                         "never a second transfer")
+            elif job["status"] == "VERIFIED_ACCEPTED":
+                state = "VERIFIED+ACCEPTED, unsettled — settle exactly once"
+            elif job["status"] == "VERIFIED_REJECTED":
+                # The release report is derived from the DURABLE release state,
+                # not from the verdict: a committed verdict whose release has
+                # not committed is reported as PENDING, with the idempotent
+                # recovery command named. Reconciliation stays read-only.
+                allow = _allowances(h).get(job["agreement"]["agent"], {})
+                if job["job_id"] in allow.get("released_jobs", []):
+                    state = "VERIFIED+REJECTED — no payment; reservation released"
+                else:
+                    recover_caller = (job.get("verdict") or {}).get("record", {}).get("verified_by", "owner")
+                    state = ("VERIFIED+REJECTED — no payment; reservation release PENDING — "
+                             "run `verify --caller %s --job %s` to complete the release; "
+                             "the recovery is idempotent and safe to repeat"
+                             % (recover_caller, job["job_id"]))
+            elif job["status"] == "SUBMITTED":
+                state = "SUBMITTED, unverified — buyer's receiver must verify"
+            elif job["status"] == "COMMISSIONED":
+                ran = (h / "seller_runs" / ("%s.json" % job["job_id"])).exists()
+                state = ("COMMISSIONED, work recorded but not submitted — seller may submit"
+                         if ran else "COMMISSIONED, no work recorded — seller may work then submit")
             else:
-                recover_caller = (job.get("verdict") or {}).get("record", {}).get("verified_by", "owner")
-                state = ("VERIFIED+REJECTED — no payment; reservation release PENDING — "
-                         "run `verify --caller %s --job %s` to complete the release; "
-                         "the recovery is idempotent and safe to repeat"
-                         % (recover_caller, job["job_id"]))
-        elif job["status"] == "SUBMITTED":
-            state = "SUBMITTED, unverified — buyer's receiver must verify"
-        elif job["status"] == "COMMISSIONED":
-            ran = (h / "seller_runs" / ("%s.json" % job["job_id"])).exists()
-            state = ("COMMISSIONED, work recorded but not submitted — seller may submit"
-                     if ran else "COMMISSIONED, no work recorded — seller may work then submit")
-        else:
-            state = job["status"]
-        print("%s  %s  (%s)" % (job["job_id"], job["status"], state))
-        print("    agreement %s | amount %s | events %d"
-              % (job["agreement_hash"][:16], _money(a["amount"]), len(job["events"])))
+                state = job["status"]
+            print("%s  %s  (%s)" % (job["job_id"], job["status"], state))
+            print("    agreement %s | amount %s | events %d"
+                  % (job["agreement_hash"][:16], _money(a["amount"]), len(job["events"])))
     # Reservation audit: committed reserved totals against identifiable
     # outstanding jobs. Read-only, like everything else here.
     for row in _reservation_audit(h):
