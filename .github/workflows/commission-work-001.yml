@@ -1,0 +1,38 @@
+name: commission-work-001
+
+on:
+  pull_request:
+    paths:
+      - "demo/commission-work-001/**"
+      - "tests/test_commission_work.py"
+      - "src/**"
+      - ".github/workflows/commission-work-001.yml"
+  push:
+    branches: ["preview/**"]
+    paths:
+      - "demo/commission-work-001/**"
+      - "tests/test_commission_work.py"
+      - "src/**"
+      - ".github/workflows/commission-work-001.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  commission:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: python -m pip install -e .
+      - name: Commission-work tests
+        run: python -m unittest tests.test_commission_work -v
+      - name: Quickstart smoke
+        run: bash demo/commission-work-001/quickstart.sh "$RUNNER_TEMP/commission-work"
