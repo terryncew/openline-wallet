@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenLine Exchange Preview</title>
+<style>
+:root {
+  --cream: #faf6ee;
+  --paper: #fffdf8;
+  --charcoal: #2b2b2b;
+  --muted: #6f6a5e;
+  --line: #e3dccb;
+  --cobalt: #1f4fd8;
+  --cobalt-soft: #e8eefc;
+  --red-orange: #c9481c;
+  --red-orange-soft: #fbeee6;
+  --amber: #8a6d00;
+  --amber-soft: #fdf6dd;
+  --green: #2e7d32;
+  --green-soft: #e9f4e9;
+  --darkbar: #1c1a17;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 0;
+  background: var(--cream); color: var(--charcoal);
+  font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  line-height: 1.5; font-size: 15px;
+}
+.banner {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--darkbar); color: #f5f1e8;
+  text-align: center; padding: 10px 16px;
+  font-size: 13px; letter-spacing: 0.06em; font-weight: 600;
+  border-bottom: 3px solid var(--cobalt);
+}
+.banner .dot { color: var(--cobalt); }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 24px 20px 60px; }
+h1 { font-size: 26px; margin: 8px 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 12px; padding-bottom: 6px;
+     border-bottom: 2px solid var(--line); }
+h3 { font-size: 16px; margin: 24px 0 8px; color: var(--charcoal); }
+.meta { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+.meta code { background: #efe9da; padding: 1px 6px; border-radius: 4px; }
+.sim-note { font-size: 13px; color: var(--muted); }
+
+/* Tabs (anchor-linked, CSS only) */
+.tabs { display: flex; gap: 0; margin: 20px 0 0; border-bottom: 2px solid var(--line); }
+.tab {
+  padding: 10px 26px; text-decoration: none; color: var(--charcoal);
+  font-weight: 600; border: 2px solid transparent; border-bottom: none;
+  border-radius: 8px 8px 0 0; margin-bottom: -2px;
+}
+.tab:hover { background: var(--cobalt-soft); }
+.view { display: none; }
+#buyer { display: block; }              /* default view */
+#seller:target { display: block; }
+#seller:target ~ #buyer { display: none; }
+/* active-tab highlight (modern browsers support :has) */
+.tab[href="#buyer"] { background: var(--cobalt-soft); border-color: var(--line); }
+.view-wrap:has(#seller:target) .tab[href="#seller"] {
+  background: var(--cobalt-soft); border-color: var(--line);
+}
+.view-wrap:has(#seller:target) .tab[href="#buyer"] {
+  background: none; border-color: transparent;
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; margin: 8px 0 20px;
+        background: var(--paper); font-size: 14px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line);
+         vertical-align: top; }
+th { background: #f1ebdd; font-size: 12px; text-transform: uppercase;
+     letter-spacing: 0.05em; color: var(--muted); }
+tr:last-child td { border-bottom: none; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 13px; }
+
+/* Badges and chips */
+.badge, .chip {
+  display: inline-block; padding: 2px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.04em; white-space: nowrap;
+}
+.badge-active { background: var(--green-soft); color: var(--green);
+                border: 1px solid var(--green); }
+.badge-revoked { background: var(--red-orange-soft); color: var(--red-orange);
+                 border: 1px solid var(--red-orange); }
+.chip-accepted { background: var(--green-soft); color: var(--green);
+                 border: 1px solid var(--green); }
+.chip-settled { background: var(--cobalt-soft); color: var(--cobalt);
+                border: 1px solid var(--cobalt); }
+.chip-refused, .chip-revoked { background: var(--red-orange-soft);
+                color: var(--red-orange); border: 1px solid var(--red-orange); }
+.chip-pending { background: var(--amber-soft); color: var(--amber);
+                border: 1px solid var(--amber); }
+
+/* Timeline */
+.timeline { list-style: none; margin: 8px 0 20px; padding: 0; }
+.timeline li {
+  display: flex; gap: 14px; padding: 10px 4px;
+  border-bottom: 1px dashed var(--line); align-items: flex-start;
+}
+.timeline li:last-child { border-bottom: none; }
+.step-mark {
+  flex: 0 0 118px; font-weight: 700; font-size: 13px;
+  text-transform: uppercase; letter-spacing: 0.04em; padding-top: 2px;
+}
+.step-done .step-mark { color: var(--cobalt); }
+.step-pending .step-mark { color: var(--muted); }
+.step-dot {
+  flex: 0 0 auto; width: 14px; height: 14px; border-radius: 50%;
+  margin-top: 4px; border: 2px solid var(--muted); background: transparent;
+}
+.step-done .step-dot { background: var(--cobalt); border-color: var(--cobalt); }
+.step-body { flex: 1; }
+.step-state { font-size: 12px; font-weight: 700; letter-spacing: 0.05em; }
+.step-done .step-state { color: var(--cobalt); }
+.step-pending .step-state { color: var(--muted); }
+.step-detail { font-size: 14px; margin-top: 2px; }
+.step-when { font-size: 12px; color: var(--muted); }
+
+/* Cards */
+.card {
+  background: var(--paper); border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px 18px; margin: 12px 0;
+}
+.card h4 { margin: 0 0 8px; font-size: 15px; }
+.receipt-card { border-left: 5px solid #d4a900; background: var(--amber-soft); }
+.receipt-card .mono { font-size: 14px; }
+.seller-card h4 { margin-bottom: 4px; }
+.standing-line { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+
+/* Footer honesty block */
+.honesty {
+  margin-top: 48px; padding: 20px 22px; border: 2px solid var(--charcoal);
+  border-radius: 10px; background: var(--paper);
+}
+.honesty h2 { margin-top: 0; border-bottom: none; padding-bottom: 0; }
+.honesty ul { margin: 8px 0; padding-left: 20px; }
+.honesty li { margin: 4px 0; }
+.footer { margin-top: 24px; font-size: 12px; color: var(--muted);
+           text-align: center; }
+a { color: var(--cobalt); }
+.note { font-size: 13px; color: var(--muted); }
+.section-nav { font-size: 13px; margin: 12px 0; color: var(--muted); }
+.section-nav a { margin-right: 14px; }
+</style>
+</head>
+<body>
+<div class="banner">LOCAL DEVELOPER PREVIEW — controlled agents · SIM_USD simulated funds · NOT a functioning market</div>
+<div class="wrap">
+
+<h1>OpenLine Exchange Preview</h1>
+<div class="meta">snapshot generated: <span class="mono">2026-09-24T05:47:34.480922+00:00</span>
+&middot; home: <code>/tmp/ex-fix-home</code></div>
+<p class="sim-note">All amounts in <strong>SIM_USD (simulated)</strong>. No real counterparties, no real money.</p>
+<div class="view-wrap">
+<nav class="tabs" aria-label="Views">
+  <a class="tab" href="#buyer">Buyer view</a>
+  <a class="tab" href="#seller">Seller view</a>
+</nav>
+<section id="seller" class="view" aria-label="Seller view"><h2>Seller view</h2><div class='card seller-card'><h4>seller</h4><div class='standing-line'>standing: all listings active</div><h3>Listings</h3><p class="note">No listings.</p><h3>Jobs worked</h3><p class="note">No jobs worked.</p><h3>Settlements received</h3><p class="note">No settlements received.</p></div><div class='card seller-card'><h4>seller-b</h4><div class='standing-line'>standing: all listings active</div><h3>Listings</h3><p class="note">No listings.</p><h3>Jobs worked</h3><p class="note">No jobs worked.</p><h3>Settlements received</h3><p class="note">No settlements received.</p></div><div class='card seller-card'><h4>seller-c</h4><div class='standing-line'>standing: all listings active</div><h3>Listings</h3><p class="note">No listings.</p><h3>Jobs worked</h3><p class="note">No jobs worked.</p><h3>Settlements received</h3><p class="note">No settlements received.</p></div><div class='card seller-card'><h4>Seller B</h4><div class='standing-line'>standing: all listings active</div><h3>Listings</h3><table><tr><th>Listing</th><th>Capability</th><th>Price</th><th>Standing</th><th>Terms</th></tr><tr><td class='mono'>listing-0a44e9a0a5d8bc8a</td><td>digest-report</td><td>40 SIM_USD (simulated)</td><td><span class="badge badge-active">ACTIVE</span></td><td>results only; the seller retains its implementation</td></tr></table><h3>Jobs worked</h3><table><tr><th>Job</th><th>Amount</th><th>Status</th></tr><tr><td class='mono'>job-040a096970f8</td><td>40 SIM_USD (simulated)</td><td><span class='chip chip-refused'>REFUSED</span></td></tr><tr><td class='mono'>job-ea734341ec5a</td><td>40 SIM_USD (simulated)</td><td><span class='chip chip-settled'>SETTLED</span></td></tr><tr><td class='mono'>job-f439af450259</td><td>40 SIM_USD (simulated)</td><td><span class='chip chip-settled'>SETTLED</span></td></tr></table><h3>Settlements received</h3><table><tr><th>Job</th><th>Settlement</th><th>Amount</th><th>Hash</th></tr><tr><td class='mono'>job-ea734341ec5a</td><td class='mono'>settle:2d99d94162e07d74f3fe7e4c2428b4177c93bdb7bc658e03241ae235f6c2a785</td><td>40 SIM_USD (simulated)</td><td class='mono'>settle:2d99d...</td></tr><tr><td class='mono'>job-f439af450259</td><td class='mono'>settle:34d94ba702b5d588b69c8b0e15ac4f6f3d6666df5080e5f32d34250b7e92754c</td><td>40 SIM_USD (simulated)</td><td class='mono'>settle:34d94...</td></tr></table></div><div class='card seller-card'><h4>Seller C</h4><div class='standing-line'>standing: <strong>has revoked listings</strong></div><h3>Listings</h3><table><tr><th>Listing</th><th>Capability</th><th>Price</th><th>Standing</th><th>Terms</th></tr><tr><td class='mono'>listing-38205843db888b15</td><td>digest-report</td><td>60 SIM_USD (simulated)</td><td><span class="badge badge-revoked">REVOKED</span><br><span class='note'>reason: seller left the preview</span></td><td>results only; the seller retains its implementation</td></tr></table><h3>Jobs worked</h3><p class="note">No jobs worked.</p><h3>Settlements received</h3><p class="note">No settlements received.</p></div><div class='card seller-card'><h4>Seller A</h4><div class='standing-line'>standing: all listings active</div><h3>Listings</h3><table><tr><th>Listing</th><th>Capability</th><th>Price</th><th>Standing</th><th>Terms</th></tr><tr><td class='mono'>listing-b9c690edb3d59397</td><td>digest-report</td><td>50 SIM_USD (simulated)</td><td><span class="badge badge-active">ACTIVE</span></td><td>results only; the seller retains its implementation</td></tr></table><h3>Jobs worked</h3><p class="note">No jobs worked.</p><h3>Settlements received</h3><p class="note">No settlements received.</p></div></section>
+<section id="buyer" class="view" aria-label="Buyer view">
+<h2>Buyer view</h2>
+<h3>Needs</h3>
+<table><tr><th>Need</th><th>Buyer</th><th>Description</th><th>Service</th><th>Max price</th></tr><tr><td class='mono'>need-exch-need-1</td><td>buyer-agent</td><td>digest report of a field note</td><td>text_digest</td><td>50 SIM_USD (simulated)</td></tr><tr><td class='mono'>need-exch-need-3</td><td>buyer-agent</td><td>digest of a second field note</td><td>text_digest</td><td>100 SIM_USD (simulated)</td></tr><tr><td class='mono'>need-exch-need-6</td><td>buyer-agent</td><td>digest for the swapped agent</td><td>text_digest</td><td>100 SIM_USD (simulated)</td></tr></table>
+<h3>Matched offers</h3>
+<table><tr><th>Message</th><th>Kind</th><th>Route</th><th>Body</th></tr><tr><td class='mono'>msg-fbee8a8daf222b51</td><td>MATCH_RESPONSE</td><td>broker &rarr; buyer-agent</td><td class='mono'></td></tr><tr><td class='mono'>msg-42f3290e2ba2f690</td><td>MATCH_RESPONSE</td><td>broker &rarr; buyer-agent</td><td class='mono'></td></tr><tr><td class='mono'>msg-c499dde70cfbbe6a</td><td>MATCH_RESPONSE</td><td>broker &rarr; buyer-agent</td><td class='mono'></td></tr><tr><td class='mono'>msg-0ed041504d52b441</td><td>MATCH_REQUEST</td><td>buyer-agent &rarr; seller-b</td><td class='mono'></td></tr><tr><td class='mono'>msg-0a219af0de9131d9</td><td>MATCH_REQUEST</td><td>buyer-agent &rarr; seller-b</td><td class='mono'></td></tr><tr><td class='mono'>msg-139eca2d929d0ef8</td><td>MATCH_REQUEST</td><td>buyer-agent &rarr; seller-b</td><td class='mono'></td></tr></table>
+<h3>Commissions</h3>
+<table><tr><th>Job</th><th>Seller</th><th>Amount</th><th>Status</th><th>Verdict</th></tr><tr><td class='mono'>job-040a096970f8</td><td>openline:principal:52f40</td><td>40 SIM_USD (simulated)</td><td><span class='chip chip-refused'>REFUSED</span></td><td>rejected</td></tr><tr><td class='mono'>job-ea734341ec5a</td><td>openline:principal:52f40</td><td>40 SIM_USD (simulated)</td><td><span class='chip chip-settled'>SETTLED</span></td><td>accepted</td></tr><tr><td class='mono'>job-f439af450259</td><td>openline:principal:52f40</td><td>40 SIM_USD (simulated)</td><td><span class='chip chip-settled'>SETTLED</span></td><td>accepted</td></tr></table>
+<h3>Verdicts</h3>
+<table><tr><th>Job</th><th>Verdict</th><th>Note</th></tr><tr><td class='mono'>job-040a096970f8</td><td>rejected</td><td></td></tr><tr><td class='mono'>job-ea734341ec5a</td><td>accepted</td><td></td></tr><tr><td class='mono'>job-f439af450259</td><td>accepted</td><td></td></tr></table>
+<h3>Receipts</h3>
+<div class='card receipt-card'><h4>Receipt for <span class='mono'>job-ea734341ec5a</span></h4><div>settlement: <span class='mono'>settle:2d99d94162e07d74f3fe7e4c2428b4177c93bdb7bc658e03241ae235f6c2a785</span></div><div>amount: 40 SIM_USD (simulated)</div><div>hash: <span class='mono'>settle:2d99d94162e07d74f3fe7e4c2428b4177c93bdb7bc658e03241ae235f6c2a785</span></div></div><div class='card receipt-card'><h4>Receipt for <span class='mono'>job-f439af450259</span></h4><div>settlement: <span class='mono'>settle:34d94ba702b5d588b69c8b0e15ac4f6f3d6666df5080e5f32d34250b7e92754c</span></div><div>amount: 40 SIM_USD (simulated)</div><div>hash: <span class='mono'>settle:34d94ba702b5d588b69c8b0e15ac4f6f3d6666df5080e5f32d34250b7e92754c</span></div></div>
+</section>
+</div>
+<div class="section-nav" aria-label="Sections">
+  Sections:
+  <a href="#timeline">Timeline</a>
+  <a href="#listings">Listings</a>
+  <a href="#transactions">Transactions</a>
+  <a href="#ledger">Ledger</a>
+  <a href="#events">Control events</a>
+  <a href="#honesty">What this is not</a>
+</div>
+<h2 id='timeline'>Exchange timeline</h2><p class='note'>The kernel loop, in order. Each step is marked from the snapshot's own events and messages.</p><ol class='timeline'><li class='step-done'><div class='step-mark'>Need</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t=0.1 &middot; buyer-agent</div><div class='step-detail'>digest report of a field note (budget 50 SIM_USD simulated)</div></div></li><li class='step-done'><div class='step-mark'>Find</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t=0.1 &middot; broker</div><div class='step-detail'>2 candidate(s) for need-exch-need-1</div></div></li><li class='step-done'><div class='step-mark'>Contact</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t=0.1 &middot; buyer-agent</div><div class='step-detail'>buyer-agent -&gt; seller-b: requested offer-digest-b</div></div></li><li class='step-done'><div class='step-mark'>Offer</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t= &middot; seller-b</div><div class='step-detail'>seller-b -&gt; buyer-agent</div></div></li><li class='step-done'><div class='step-mark'>Authorize</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t=0.1 &middot; buyer-agent</div><div class='step-detail'>job-ea734341ec5a reserved 40 SIM_USD (simulated)</div></div></li><li class='step-done'><div class='step-mark'>Work</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t=0.3 &middot; seller-b</div><div class='step-detail'>job-ea734341ec5a</div></div></li><li class='step-done'><div class='step-mark'>Verify</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t=0.3 &middot; receiver</div><div class='step-detail'>job-ea734341ec5a: ACCEPTED</div></div></li><li class='step-done'><div class='step-mark'>Accept / Refuse</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t=0.3 &middot; receiver</div><div class='step-detail'>job-ea734341ec5a: ACCEPTED</div></div></li><li class='step-done'><div class='step-mark'>Settle</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t= &middot; exchange</div><div class='step-detail'>exchange -&gt; buyer-agent</div></div></li><li class='step-done'><div class='step-mark'>Receipt</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t= &middot; exchange</div><div class='step-detail'>exchange -&gt; buyer-agent</div></div></li><li class='step-done'><div class='step-mark'>Revoke</div><div class='step-dot' aria-hidden='true'></div><div class='step-body'><div class='step-state'>DONE</div><div class='step-when'>t=0.7 &middot; exchange</div><div class='step-detail'>buyer agent &#x27;agent&#x27; revoked; &#x27;agent-b&#x27; delegated 300 SIM_USD (simulated). Old agent commission probe: REFUSED (refused [MANDATE_REVOKED]).</div></div></li></ol><h2 id='listings'>Listings</h2><table><tr><th>Listing</th><th>Seller</th><th>Capability</th><th>Artifact</th><th>Price</th><th>Standing</th><th>Terms</th></tr><tr><td class='mono'>listing-0a44e9a0a5d8bc8a</td><td>Seller B</td><td>digest-report</td><td class='mono'>text_digest@1.0</td><td>40 SIM_USD (simulated)</td><td><span class="badge badge-active">ACTIVE</span></td><td>results only; the seller retains its implementation</td></tr><tr><td class='mono'>listing-38205843db888b15</td><td>Seller C</td><td>digest-report</td><td class='mono'>text_digest@1.0</td><td>60 SIM_USD (simulated)</td><td><span class="badge badge-revoked">REVOKED</span><br><span class='note'>reason: seller left the preview</span></td><td>results only; the seller retains its implementation</td></tr><tr><td class='mono'>listing-b9c690edb3d59397</td><td>Seller A</td><td>digest-report</td><td class='mono'>text_digest@1.0</td><td>50 SIM_USD (simulated)</td><td><span class="badge badge-active">ACTIVE</span></td><td>results only; the seller retains its implementation</td></tr></table><h2 id='transactions'>Transaction history</h2><h3>Jobs</h3><table><tr><th>Job</th><th>Route</th><th>Amount</th><th>Status</th><th>Verdict</th><th>Settlement</th></tr><tr><td class='mono'>job-040a096970f8</td><td> &rarr; openline:principal:52f40</td><td>40 SIM_USD (simulated)</td><td><span class='chip chip-refused'>REFUSED</span></td><td>rejected</td><td class='mono'></td></tr><tr><td class='mono'>job-ea734341ec5a</td><td> &rarr; openline:principal:52f40</td><td>40 SIM_USD (simulated)</td><td><span class='chip chip-settled'>SETTLED</span></td><td>accepted</td><td class='mono'></td></tr><tr><td class='mono'>job-f439af450259</td><td> &rarr; openline:principal:52f40</td><td>40 SIM_USD (simulated)</td><td><span class='chip chip-settled'>SETTLED</span></td><td>accepted</td><td class='mono'></td></tr></table><h3>Receipts</h3><table><tr><th>Job</th><th>Settlement</th><th>Amount</th><th>Hash</th></tr><tr><td class='mono'>job-ea734341ec5a</td><td class='mono'>settle:2d99d94162e07d74f3fe7e4c2428b4177c93bdb7bc658e03241ae235f6c2a785</td><td>40 SIM_USD (simulated)</td><td class='mono'>settle:2d99d94162e07d74f3fe7e4c2428b4177c93bdb7bc658e03241ae235f6c2a785</td></tr><tr><td class='mono'>job-f439af450259</td><td class='mono'>settle:34d94ba702b5d588b69c8b0e15ac4f6f3d6666df5080e5f32d34250b7e92754c</td><td>40 SIM_USD (simulated)</td><td class='mono'>settle:34d94ba702b5d588b69c8b0e15ac4f6f3d6666df5080e5f32d34250b7e92754c</td></tr></table><h2 id='ledger'>Ledger (simulated funds)</h2><h3>Balances</h3><table><tr><th>Principal</th><th>Balance</th></tr><tr><td class='mono'>openline:principal:0f54f548ef14559089cd4ade989470e9ae1313e4f0d10d20dad1b3fbea80e7ed</td><td>9920 SIM_USD (simulated)</td></tr><tr><td class='mono'>openline:principal:0fa02faefdfde25bccf5294f2d7041d2e2b8aacee6cb79af4779ad23845d94f8</td><td>0 SIM_USD (simulated)</td></tr><tr><td class='mono'>openline:principal:52f403ee9c8464ed53205f96e873a06ff303fc29f891acb1e40faae778a1ec63</td><td>80 SIM_USD (simulated)</td></tr></table><h3>Transfers</h3><table><tr><th>From</th><th>To</th><th>Amount</th><th>Memo</th></tr><tr><td class='mono'>openline:principal:0f54f548ef14559089cd4ade989470e9ae1313e4f0d10d20dad1b3fbea80e7ed</td><td class='mono'>openline:principal:52f403ee9c8464ed53205f96e873a06ff303fc29f891acb1e40faae778a1ec63</td><td>40 SIM_USD (simulated)</td><td></td></tr><tr><td class='mono'>openline:principal:0f54f548ef14559089cd4ade989470e9ae1313e4f0d10d20dad1b3fbea80e7ed</td><td class='mono'>openline:principal:52f403ee9c8464ed53205f96e873a06ff303fc29f891acb1e40faae778a1ec63</td><td>40 SIM_USD (simulated)</td><td></td></tr></table><h2 id='events'>Control events</h2><p class='note'>Authority changes: swaps, revocations, mandate actions. Talk is cheap; these are the moments the boundary moved.</p><ul><li><strong class='mono'>EXCHANGE_BOOTSTRAPPED</strong> &mdash; 3 sellers listed; buyer-agent funded with 300 SIM_USD (simulated)</li><li><strong class='mono'>AGENT_SWAPPED</strong> &mdash; buyer agent &#x27;agent&#x27; revoked; &#x27;agent-b&#x27; delegated 300 SIM_USD (simulated). Old agent commission probe: REFUSED (refused [MANDATE_REVOKED]).</li><li><strong class='mono'>SELLER_REVOKED</strong> &mdash; Seller C revoked: seller left the preview. Existing receipts survive; new commissions refused.</li></ul>
+<div class="honesty" id="honesty">
+<h2>What this is not</h2>
+<ul>
+  <li>Not a functioning market.</li>
+  <li>No real counterparties.</li>
+  <li>No real demand.</li>
+  <li>No real money (SIM_USD is simulated).</li>
+  <li>No reputation, no liquidity.</li>
+</ul>
+<p><strong>Built:</strong> the exchange kernel &mdash; the control boundary.
+The transport carries talk; the kernel decides whether talk becomes
+authority, installation, work, or payment. Everything on this page ran
+locally against file-backed mailboxes, a JSON registry, and a simulated
+ledger.</p>
+</div>
+<div class="footer">
+Generated by ui/dashboard.py from a local snapshot. Nothing on this page
+touched a network.
+</div>
+</div>
+</body>
+</html>

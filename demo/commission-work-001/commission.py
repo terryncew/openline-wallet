@@ -177,9 +177,9 @@ def _require_caller(args, allowed: set[str]) -> None:
         )
 
 
-def _agent_mandate_active(h: Path) -> dict:
+def _agent_mandate_active(h: Path, agent_name: str = "agent") -> dict:
     """The buyer's agent may act only under an active owner-issued mandate."""
-    agent = _principal(h, "agent")
+    agent = _principal(h, agent_name)
     wallet = Wallet.open(h / "wallet")
     now = _now()
     for m in wallet.timeline().current(now):
@@ -187,9 +187,38 @@ def _agent_mandate_active(h: Path) -> dict:
             return m
     raise CommissionError(
         "MANDATE_REVOKED",
-        "the agent has no active commission mandate from the owner; "
-        "new work is blocked",
+        "the agent '%s' has no active commission mandate from the owner; "
+        "new work is blocked" % agent_name,
     )
+
+
+def _buyer_side(h: Path, identity: str) -> bool:
+    """Is this identity allowed to produce a buyer-side verdict?
+
+    The owner always; an agent only if its local identity was registered
+    with the agent role. Sellers can never verify their own work.
+    """
+    if identity == "owner":
+        return True
+    pub_path = h / "keys" / ("%s.pub.json" % identity)
+    if not pub_path.exists():
+        return False
+    try:
+        return json.loads(pub_path.read_text()).get("role") == "agent"
+    except Exception:  # noqa: BLE001
+        return False
+
+
+def _verify_caller_identity(args) -> str:
+    """Identity whose key signs a buyer-side step.
+
+    The operator-chosen --caller label says which SIDE acts (owner, agent,
+    seller); the identity name says WHOSE key signs. For the owner the two
+    coincide; an agent acts under its own identity name (default "agent").
+    """
+    if args.caller == "agent":
+        return getattr(args, "as_agent", None) or "agent"
+    return args.caller
 
 
 def _verify_signed(body: dict, signer_pub: str, label: str) -> None:
@@ -207,9 +236,18 @@ def _allowances(h: Path) -> dict:
 
 
 def _pub_by_principal(h: Path, principal: str) -> str:
-    for name in ("owner", "agent", "seller"):
-        if _principal(h, name) == principal:
-            return _pub(h, name)
+    # Resolve any local identity's public key by scanning the keys
+    # directory, so identities added later (extra sellers, a second agent)
+    # resolve the same way as the three bootstrapped ones.
+    keys = h / "keys"
+    if keys.is_dir():
+        for pub_path in sorted(keys.glob("*.pub.json")):
+            try:
+                meta = json.loads(pub_path.read_text())
+            except Exception:  # noqa: BLE001
+                continue
+            if meta.get("principal") == principal:
+                return meta["public_key"]
     raise CommissionError("UNKNOWN_PRINCIPAL", "no local key for principal %s" % principal[:24])
 
 
@@ -226,13 +264,13 @@ def _authenticated_agreement(h: Path, job: dict) -> dict:
     if not isinstance(agreement, dict) or not isinstance(sig, dict):
         raise CommissionError("AGREEMENT_NOT_AUTHENTIC",
                               "no signed agreement on record for this job")
-    agent_principal = _principal(h, "agent")
-    if agreement.get("agent") != agent_principal:
+    agent_principal = agreement.get("agent")
+    if not agent_principal:
         raise CommissionError("AGREEMENT_NOT_AUTHENTIC",
-                              "the agreement names a different agent")
+                              "the agreement names no agent")
     try:
         _verify_signed({"record": agreement, "signature": sig},
-                       _pub(h, "agent"), "agreement")
+                       _pub_by_principal(h, agent_principal), "agreement")
     except CommissionError as e:
         raise CommissionError("AGREEMENT_NOT_AUTHENTIC",
                               "the agreement's signature does not verify: %s" % e.code)
@@ -247,6 +285,34 @@ def _money(amount: int) -> str:
 
 
 # -- init / delegate / offer --------------------------------------------------
+
+
+def cmd_init_identity(args) -> int:
+    """Add one more local identity (an extra seller, or a second agent).
+
+    Same key custody as init: the operator holds the key in this
+    trusted-operator simulation. The identity's principal is derived from
+    its public key, so every later signature check resolves by principal.
+    """
+    h = _home(Path(args.home) if args.home else None)
+    name = args.name
+    if not name or "/" in name or name in ("owner",):
+        raise CommissionError("IDENTITY_INVALID",
+                              "identity name must be a fresh non-owner label")
+    key_path = h / "keys" / ("%s.key" % name)
+    if key_path.exists():
+        raise CommissionError("IDENTITY_EXISTS", "identity '%s' already exists" % name)
+    if args.role not in ("seller", "agent"):
+        raise CommissionError("IDENTITY_INVALID",
+                              "role must be seller or agent, not %r" % args.role)
+    key = Ed25519PrivateKey.generate()
+    save_private_key(key_path, key)
+    _write_json(h / "keys" / ("%s.pub.json" % name),
+                {"public_key": public_key_hex(key),
+                 "principal": principal_id(public_key_hex(key)),
+                 "role": args.role})
+    print("identity '%s' (%s): %s" % (name, args.role, principal_id(public_key_hex(key))))
+    return 0
 
 
 def cmd_init(args) -> int:
@@ -305,8 +371,9 @@ def cmd_delegate(args) -> int:
     _require_caller(args, {"owner"})
     _positive_amount(args.budget, "the delegated budget")
     h = _home(Path(args.home) if args.home else None)
-    agent = _principal(h, "agent")
-    agent_pub = _pub(h, "agent")
+    agent_name = getattr(args, "to", None) or "agent"
+    agent = _principal(h, agent_name)
+    agent_pub = _pub(h, agent_name)
     with _state_lock(h):
         allowances = _allowances(h)
         old = allowances.get(agent, {})
@@ -346,11 +413,11 @@ def cmd_delegate(args) -> int:
           % (_money(args.budget), _money(reserved), _money(spent)))
     print("the agent cannot raise this. only the owner can grant again.")
     return 0
-def _offer_body(h: Path, price: int) -> dict:
+def _offer_body(h: Path, offer_id: str, price: int, seller_name: str) -> dict:
     return {
         "schema": "commission.offer.v1",
-        "offer_id": OFFER_ID,
-        "seller": _principal(h, "seller"),
+        "offer_id": offer_id,
+        "seller": _principal(h, seller_name),
         "service": SERVICE,
         "deliverable": DELIVERABLE,
         "acceptance": ACCEPTANCE,
@@ -365,13 +432,15 @@ def cmd_offer(args) -> int:
     _require_caller(args, {"seller"})
     _positive_amount(args.price, "the offer price")
     h = _home(Path(args.home) if args.home else None)
-    body = _offer_body(h, args.price)
-    sig = sign_record(body, _load_key(h, "seller"))
+    seller_name = getattr(args, "as_name", None) or "seller"
+    offer_id = getattr(args, "offer_id", None) or OFFER_ID
+    body = _offer_body(h, offer_id, args.price, seller_name)
+    sig = sign_record(body, _load_key(h, seller_name))
     offers = _read_json(h / "offers.json", {})
-    offers[OFFER_ID] = {"record": body, "signature": sig}
+    offers[offer_id] = {"record": body, "signature": sig}
     _write_json(h / "offers.json", offers)
-    print("seller offers '%s' as a service" % SERVICE)
-    print("offer id: %s" % OFFER_ID)
+    print("seller '%s' offers '%s' as a service" % (seller_name, SERVICE))
+    print("offer id: %s" % offer_id)
     print("price: %s" % _money(args.price))
     print("deliverable: %s" % DELIVERABLE)
     print("acceptance (receiver-owned): exact recompute of every field from the job input")
@@ -438,13 +507,14 @@ def cmd_commission(args) -> int:
             "the agent cannot authorize itself; only the owner delegates",
         )
     h = _home(Path(args.home) if args.home else None)
-    _agent_mandate_active(h)
+    agent_name = getattr(args, "as_agent", None) or "agent"
+    _agent_mandate_active(h, agent_name)
     offers = _read_json(h / "offers.json", {})
     offer = offers.get(args.offer)
     if offer is None:
         raise CommissionError("OFFER_NOT_FOUND", "no such offer: %s" % args.offer)
-    _verify_signed(offer, _pub(h, "seller"), "offer")
     offer_body = offer["record"]
+    _verify_signed(offer, _pub_by_principal(h, offer_body["seller"]), "offer")
     amount = offer_body["price"]
     if isinstance(amount, bool) or not isinstance(amount, int) or amount <= 0:
         raise CommissionError(
@@ -461,7 +531,7 @@ def cmd_commission(args) -> int:
     # Everything that touches shared budget state happens inside one writer
     # lock, so concurrent commissions serialize instead of over-committing.
     with _state_lock(h):
-        agent = _principal(h, "agent")
+        agent = _principal(h, agent_name)
         # Stable request identity: (agent, offer, nonce). The transaction
         # record is the single commit point for this logical transaction:
         # it commits first, and the job record plus the reservation replay
@@ -579,9 +649,9 @@ def cmd_commission(args) -> int:
             },
         }
         # Per-role key custody inside this process: the agreement is signed
-        # with the agent's key only. Every consequential record carries the
-        # key of the principal that may authorize it, verifiable offline.
-        sig = sign_record(agreement, _load_key(h, "agent"))
+        # with the acting agent's key only. Every consequential record carries
+        # the key of the principal that may authorize it, verifiable offline.
+        sig = sign_record(agreement, _load_key(h, agent_name))
         job = {
             "job_id": job_id,
             "agreement": agreement,
@@ -660,8 +730,9 @@ def cmd_work(args) -> int:
     """
     _require_caller(args, {"seller"})
     h = _home(Path(args.home) if args.home else None)
+    seller_name = getattr(args, "as_name", None) or "seller"
     job = _job(h, args.job)
-    if job["agreement"]["seller"] != _principal(h, "seller"):
+    if job["agreement"]["seller"] != _principal(h, seller_name):
         raise CommissionError("SELLER_MISMATCH", "this job is owed to a different seller")
     if job["status"] != "COMMISSIONED":
         raise CommissionError("WORK_WRONG_STATE", "job is %s; work is only performed once it is commissioned" % job["status"])
@@ -689,7 +760,7 @@ def cmd_work(args) -> int:
         "service": SERVICE,
         **report,
     }
-    sig = sign_record(result, _load_key(h, "seller"))
+    sig = sign_record(result, _load_key(h, seller_name))
     _write_json(run_path, {"record": result, "signature": sig})
     print("seller completed the work for %s" % job["job_id"])
     print("result digest: sha256 %s, words %d, lines %d, nonce %s"
@@ -702,9 +773,10 @@ def cmd_submit(args) -> int:
     """The seller submits its signed result against the frozen agreement."""
     _require_caller(args, {"seller"})
     h = _home(Path(args.home) if args.home else None)
+    seller_name = getattr(args, "as_name", None) or "seller"
     with _state_lock(h):
         job = _job(h, args.job)
-        if job["agreement"]["seller"] != _principal(h, "seller"):
+        if job["agreement"]["seller"] != _principal(h, seller_name):
             raise CommissionError("SELLER_MISMATCH", "this job is owed to a different seller")
         if job["submission"] is not None:
             raise CommissionError(
@@ -720,7 +792,7 @@ def cmd_submit(args) -> int:
             # Demonstration hook: alter the result after the seller signed it.
             submitted = {"record": dict(submitted["record"]), "signature": submitted["signature"]}
             submitted["record"]["word_count"] += 100
-        _verify_signed(submitted, _pub(h, "seller"), "result")
+        _verify_signed(submitted, _pub_by_principal(h, job["agreement"]["seller"]), "result")
         job["submission"] = submitted
         job["status"] = "SUBMITTED"
         _event(job, "RESULT_SUBMITTED", {"result_sha256": sha256_hex(canonical_json(submitted["record"]))[:16]})
@@ -760,6 +832,10 @@ def cmd_verify(args) -> int:
     """
     _require_caller(args, {"owner", "agent"})
     h = _home(Path(args.home) if args.home else None)
+    # The operator-chosen label says which SIDE acts; the identity name says
+    # WHOSE key signs. For the owner the two coincide; an agent acts under
+    # its own identity name (default "agent").
+    verifier_identity = _verify_caller_identity(args)
     with _state_lock(h):
         job = _job(h, args.job)
         # The stored agreement must authenticate before anything is checked:
@@ -770,7 +846,7 @@ def cmd_verify(args) -> int:
             # job write and the reservation release; complete the release
             # exactly once. Never re-verify, never double-release.
             verdict_rec = job["verdict"]["record"]
-            if verdict_rec.get("verified_by") not in ("owner", "agent"):
+            if not _buyer_side(h, verdict_rec.get("verified_by", "")):
                 raise CommissionError("VERDICT_NOT_BUYER_SIDE",
                                       "the recorded verdict was not produced by the buyer's side")
             _verify_signed(job["verdict"], _pub(h, verdict_rec["verified_by"]), "verdict")
@@ -780,7 +856,7 @@ def cmd_verify(args) -> int:
             released_now = False
             if verdict_rec["verdict"] == "rejected":
                 allowances = _allowances(h)
-                allow = allowances[_principal(h, "agent")]
+                allow = allowances[job["agreement"]["agent"]]
                 if _release_reservation(allow, agreement["amount"], job["job_id"]):
                     _write_json(h / "allowances.json", allowances)
                     _event(job, "RESERVATION_RELEASED_RECOVERED",
@@ -830,7 +906,7 @@ def cmd_verify(args) -> int:
         if ok:
             sub = job["submission"]
             try:
-                _verify_signed(sub, _pub(h, "seller"), "result")
+                _verify_signed(sub, _pub_by_principal(h, agreement["seller"]), "result")
                 sig_ok, sig_detail = True, "signed by the agreement's seller"
             except CommissionError as e:
                 sig_ok, sig_detail = False, "%s: %s" % (e.code, e.message)
@@ -861,10 +937,10 @@ def cmd_verify(args) -> int:
             "verdict": "accepted" if accepted else "rejected",
             "agreement_hash": job["agreement_hash"],
             "checks": [{"name": n, "pass": ok_, "detail": d} for n, ok_, d in checks],
-            "verified_by": args.caller,
+            "verified_by": verifier_identity,
             "at": _utcnow_iso(),
         }
-        sig = sign_record(verdict, _load_key(h, args.caller))
+        sig = sign_record(verdict, _load_key(h, verifier_identity))
         verdict_signed = {"record": verdict, "signature": sig}
         job["verdict"] = verdict_signed
         if accepted:
@@ -888,7 +964,7 @@ def cmd_verify(args) -> int:
             # accounting). The release is idempotent per job: if a crash
             # already wrote it, this only completes the verdict.
             allowances = _allowances(h)
-            allow = allowances[_principal(h, "agent")]
+            allow = allowances[agreement["agent"]]
             if _release_reservation(allow, agreement["amount"], job["job_id"]):
                 _write_json(h / "allowances.json", allowances)
                 _event(job, "RESERVATION_RELEASED", {"amount": agreement["amount"]})
@@ -1103,10 +1179,11 @@ def cmd_settle(args) -> int:
             )
         vrec = verdict["record"]
         verifier = vrec.get("verified_by")
-        if verifier not in ("owner", "agent"):
+        if not _buyer_side(h, verifier or ""):
             raise CommissionError("VERDICT_NOT_BUYER_SIDE",
                                   "the verdict was not produced by the buyer's side")
-        if _principal(h, verifier) not in (buyer, agent_principal):
+        verifier_principal = _principal(h, verifier)
+        if verifier_principal not in (buyer, agent_principal):
             raise CommissionError("VERDICT_NOT_BUYER_SIDE",
                                   "the verdict signer is not this job's buyer side")
         _verify_signed(verdict, _pub(h, verifier), "verdict")
@@ -1291,12 +1368,13 @@ def cmd_revoke(args) -> int:
     """
     _require_caller(args, {"owner"})
     h = _home(Path(args.home) if args.home else None)
+    agent_name = getattr(args, "of", None) or "agent"
     wallet = Wallet.open(h / "wallet")
     try:
-        wallet.revoke(_principal(h, "agent"), reason="OWNER_REVOKED")
+        wallet.revoke(_principal(h, agent_name), reason="OWNER_REVOKED")
     except WalletError as e:
         raise CommissionError("REVOKE_FAILED", str(e))
-    print("owner revoked the agent's commission mandate")
+    print("owner revoked the '%s' agent's commission mandate" % agent_name)
     print("new commissions are blocked; already-earned obligations remain payable")
     return 0
 
@@ -1338,10 +1416,15 @@ def cmd_reconcile(args) -> int:
                     state = "VERIFIED+REJECTED — no payment; reservation released"
                 else:
                     recover_caller = (job.get("verdict") or {}).get("record", {}).get("verified_by", "owner")
+                    if recover_caller == "owner":
+                        recover_cmd = "verify --caller owner --job %s" % job["job_id"]
+                    else:
+                        recover_cmd = ("verify --caller agent --as-agent %s --job %s"
+                                       % (recover_caller, job["job_id"]))
                     state = ("VERIFIED+REJECTED — no payment; reservation release PENDING — "
-                             "run `verify --caller %s --job %s` to complete the release; "
+                             "run `%s` to complete the release; "
                              "the recovery is idempotent and safe to repeat"
-                             % (recover_caller, job["job_id"]))
+                             % recover_cmd)
             elif job["status"] == "SUBMITTED":
                 state = "SUBMITTED, unverified — buyer's receiver must verify"
             elif job["status"] == "COMMISSIONED":
@@ -1380,21 +1463,35 @@ def main(argv=None) -> int:
     s.add_argument("--home", default=None)
     s.set_defaults(fn=cmd_init)
 
+    s = sub.add_parser("init-identity", help="add one more local identity (extra seller or agent)")
+    s.add_argument("--home", default=None)
+    s.add_argument("--name", required=True, help="identity label, e.g. seller-b")
+    s.add_argument("--role", required=True, choices=["seller", "agent"])
+    s.set_defaults(fn=cmd_init_identity)
+
     s = sub.add_parser("delegate", help="owner grants the agent a bounded budget")
     caller(s)
     s.add_argument("--budget", type=int, required=True)
     s.add_argument("--hours", type=float, default=2.0)
+    s.add_argument("--to", default="agent",
+                   help="which agent identity receives the budget (default: agent)")
     s.set_defaults(fn=cmd_delegate)
 
     s = sub.add_parser("offer", help="seller offers the service")
     caller(s)
     s.add_argument("--price", type=int, required=True)
+    s.add_argument("--as", dest="as_name", default="seller",
+                   help="which seller identity offers (default: seller)")
+    s.add_argument("--offer-id", default=None,
+                   help="offer id (default: the preview's single offer id)")
     s.set_defaults(fn=cmd_offer)
 
     s = sub.add_parser("commission", help="agent commissions bounded work; the agreement freezes")
     caller(s)
     s.add_argument("--offer", required=True)
     s.add_argument("--input", required=True)
+    s.add_argument("--as-agent", default="agent",
+                   help="which agent identity commissions (default: agent)")
     s.add_argument("--raise-budget", type=int, default=None)
     s.add_argument("--rewrite-acceptance", action="store_true")
     s.add_argument("--payee", default=None)
@@ -1405,6 +1502,8 @@ def main(argv=None) -> int:
     s = sub.add_parser("work", help="seller performs the work")
     caller(s)
     s.add_argument("--job", required=True)
+    s.add_argument("--as", dest="as_name", default="seller",
+                   help="which seller identity works (default: seller)")
     s.add_argument("--wrong-input", action="store_true",
                    help="demo hook: run the implementation on different text")
     s.set_defaults(fn=cmd_work)
@@ -1412,6 +1511,8 @@ def main(argv=None) -> int:
     s = sub.add_parser("submit", help="seller submits the signed result")
     caller(s)
     s.add_argument("--job", required=True)
+    s.add_argument("--as", dest="as_name", default="seller",
+                   help="which seller identity submits (default: seller)")
     s.add_argument("--tamper-result", action="store_true",
                    help="demo hook: alter the result after the seller signed it")
     s.set_defaults(fn=cmd_submit)
@@ -1419,6 +1520,8 @@ def main(argv=None) -> int:
     s = sub.add_parser("verify", help="buyer's receiver checks the result")
     caller(s)
     s.add_argument("--job", required=True)
+    s.add_argument("--as-agent", default="agent",
+                   help="which agent identity's key signs an agent-side verdict")
     s.add_argument("--tamper-agreement", choices=["amount"], default=None,
                    help="demo hook: alter the frozen agreement before checking")
     s.add_argument("--tamper-payee", action="store_true",
@@ -1448,6 +1551,8 @@ def main(argv=None) -> int:
 
     s = sub.add_parser("revoke", help="owner revokes the agent's mandate")
     caller(s)
+    s.add_argument("--of", default="agent",
+                   help="which agent identity loses its mandate (default: agent)")
     s.set_defaults(fn=cmd_revoke)
 
     s = sub.add_parser("reconcile", help="read-only: re-derive each job's next step")

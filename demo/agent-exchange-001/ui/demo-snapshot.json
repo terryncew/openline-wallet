@@ -1,0 +1,347 @@
+{
+  "meta": {
+    "title": "Agent Exchange Preview \u2014 developer snapshot",
+    "generated_at": "2026-09-23T21:30:00Z",
+    "home": "~/demo/agent-exchange-001 (local, file-backed)",
+    "simulated": true
+  },
+  "banner": "LOCAL DEVELOPER PREVIEW \u2014 controlled agents, SIM_USD simulated funds, not a functioning market.",
+  "agents": [
+    {
+      "name": "buyer-agent",
+      "role": "buyer agent",
+      "principal": "principal-buyer-7f3a"
+    },
+    {
+      "name": "buyer-agent-2",
+      "role": "buyer agent (successor)",
+      "principal": "principal-buyer-9c1d"
+    },
+    {
+      "name": "seller-a",
+      "role": "seller",
+      "principal": "principal-seller-a-11aa"
+    },
+    {
+      "name": "seller-b",
+      "role": "seller",
+      "principal": "principal-seller-b-22bb"
+    },
+    {
+      "name": "seller-c",
+      "role": "seller",
+      "principal": "principal-seller-c-33cc"
+    }
+  ],
+  "needs": [
+    {
+      "need_id": "need-abc1",
+      "buyer": "buyer-agent",
+      "description": "Weekly digest of this repo's open issues, 200 words max.",
+      "keywords": [
+        "digest",
+        "weekly",
+        "issues"
+      ],
+      "max_price": 50,
+      "service": "text_digest"
+    },
+    {
+      "need_id": "need-abc2",
+      "buyer": "buyer-agent-2",
+      "description": "Changelog summary for release 0.4.0.",
+      "keywords": [
+        "changelog",
+        "summary",
+        "release"
+      ],
+      "max_price": 30,
+      "service": "text_digest"
+    }
+  ],
+  "listings": [
+    {
+      "listing_id": "listing-a1",
+      "seller_id": "principal-seller-a-11aa",
+      "seller_name": "seller-a",
+      "capability": "digest-report",
+      "service": "text_digest",
+      "artifact": "text_digest@1.0",
+      "price": 40,
+      "currency": "SIM_USD (simulated)",
+      "terms": "results only; implementation retained by seller",
+      "standing": "active",
+      "revoked_reason": null
+    },
+    {
+      "listing_id": "listing-b1",
+      "seller_id": "principal-seller-b-22bb",
+      "seller_name": "seller-b",
+      "capability": "digest-report",
+      "service": "text_digest",
+      "artifact": "text_digest@2.0",
+      "price": 60,
+      "currency": "SIM_USD (simulated)",
+      "terms": "results only; rush delivery available",
+      "standing": "active",
+      "revoked_reason": null
+    },
+    {
+      "listing_id": "listing-c1",
+      "seller_id": "principal-seller-c-33cc",
+      "seller_name": "seller-c",
+      "capability": "changelog-summary",
+      "service": "text_digest",
+      "artifact": "text_digest@1.0",
+      "price": 25,
+      "currency": "SIM_USD (simulated)",
+      "terms": "results only; implementation retained by seller",
+      "standing": "revoked",
+      "revoked_reason": "seller withdrew the listing"
+    }
+  ],
+  "timeline": [
+    {
+      "t": "0.0",
+      "actor": "buyer-agent",
+      "event": "NEED_POSTED",
+      "detail": "need-abc1 posted: weekly digest, max 50 SIM_USD"
+    },
+    {
+      "t": "1.2",
+      "actor": "exchange",
+      "event": "OFFER_LIST",
+      "detail": "registry advertised 3 listings to buyer-agent"
+    },
+    {
+      "t": "1.8",
+      "actor": "buyer-agent",
+      "event": "MATCH_RESPONSE",
+      "detail": "2 candidates under budget; listing-a1 ranked first (keyword overlap: digest, weekly)"
+    },
+    {
+      "t": "2.1",
+      "actor": "buyer-agent",
+      "event": "CONTACT",
+      "detail": "opened agreement discussion with seller-a"
+    },
+    {
+      "t": "2.4",
+      "actor": "seller-a",
+      "event": "AGREEMENT_PROPOSED",
+      "detail": "proposed digest-report at 40 SIM_USD, results only"
+    },
+    {
+      "t": "2.9",
+      "actor": "exchange",
+      "event": "AGREEMENT_FROZEN",
+      "detail": "agreement frozen; 40 SIM_USD reserved from buyer-agent allowance"
+    },
+    {
+      "t": "5.5",
+      "actor": "seller-a",
+      "event": "RESULT_DELIVERED",
+      "detail": "delivered digest artifact (212 words)"
+    },
+    {
+      "t": "6.0",
+      "actor": "exchange",
+      "event": "VERDICT",
+      "detail": "receiver verdict on job-1a2b: accepted (word count and keyword checks passed)"
+    },
+    {
+      "t": "6.3",
+      "actor": "exchange",
+      "event": "SETTLED",
+      "detail": "exactly-once settlement settlement-9f2c: 40 SIM_USD to seller-a"
+    },
+    {
+      "t": "6.4",
+      "actor": "exchange",
+      "event": "RECEIPT",
+      "detail": "receipt issued for job-1a2b (hash 9f2ce4a1b7d3...)"
+    },
+    {
+      "t": "9.0",
+      "actor": "owner",
+      "event": "AGENT_SWAPPED",
+      "detail": "revoked buyer-agent mandate; delegated buyer-agent-2 with a fresh allowance (no funds carried over)"
+    },
+    {
+      "t": "10.2",
+      "actor": "buyer-agent-2",
+      "event": "NEED_POSTED",
+      "detail": "need-abc2 posted: changelog summary, max 30 SIM_USD"
+    },
+    {
+      "t": "11.7",
+      "actor": "exchange",
+      "event": "AGREEMENT_FROZEN",
+      "detail": "agreement frozen for job-5e6f with seller-a; 25 SIM_USD reserved"
+    },
+    {
+      "t": "13.1",
+      "actor": "seller-a",
+      "event": "RESULT_DELIVERED",
+      "detail": "delivered changelog artifact (640 words)"
+    },
+    {
+      "t": "13.6",
+      "actor": "exchange",
+      "event": "VERDICT",
+      "detail": "receiver verdict on job-5e6f: rejected (artifact exceeded length cap)"
+    },
+    {
+      "t": "15.0",
+      "actor": "exchange",
+      "event": "SELLER_REVOKED",
+      "detail": "seller-c revoked listing-c1: seller withdrew the listing"
+    }
+  ],
+  "messages": [
+    {
+      "msg_id": "msg-01a2",
+      "sender": "buyer-agent",
+      "recipient": "exchange",
+      "kind": "NEED_POSTED",
+      "body": {
+        "need_id": "need-abc1"
+      },
+      "at": "t=0.0"
+    },
+    {
+      "msg_id": "msg-02b3",
+      "sender": "exchange",
+      "recipient": "buyer-agent",
+      "kind": "OFFER_LIST",
+      "body": {
+        "count": 3
+      },
+      "at": "t=1.2"
+    },
+    {
+      "msg_id": "msg-03c4",
+      "sender": "seller-a",
+      "recipient": "buyer-agent",
+      "kind": "AGREEMENT_PROPOSED",
+      "body": {
+        "price": 40
+      },
+      "at": "t=2.4"
+    },
+    {
+      "msg_id": "msg-04d5",
+      "sender": "seller-a",
+      "recipient": "exchange",
+      "kind": "RESULT_DELIVERED",
+      "body": {
+        "job_id": "job-1a2b"
+      },
+      "at": "t=5.5"
+    },
+    {
+      "msg_id": "msg-05e6",
+      "sender": "exchange",
+      "recipient": "buyer-agent",
+      "kind": "VERDICT",
+      "body": {
+        "job_id": "job-1a2b",
+        "verdict": "accepted"
+      },
+      "at": "t=6.0"
+    },
+    {
+      "msg_id": "msg-06f7",
+      "sender": "exchange",
+      "recipient": "seller-a",
+      "kind": "SETTLED",
+      "body": {
+        "job_id": "job-1a2b",
+        "settlement_id": "settlement-9f2c"
+      },
+      "at": "t=6.3"
+    },
+    {
+      "msg_id": "msg-07a8",
+      "sender": "exchange",
+      "recipient": "buyer-agent",
+      "kind": "RECEIPT",
+      "body": {
+        "job_id": "job-1a2b"
+      },
+      "at": "t=6.4"
+    }
+  ],
+  "jobs": [
+    {
+      "job_id": "job-1a2b",
+      "need_id": "need-abc1",
+      "buyer": "buyer-agent",
+      "seller": "seller-a",
+      "listing_id": "listing-a1",
+      "amount": 40,
+      "status": "SETTLED",
+      "verdict": "accepted",
+      "settlement_id": "settlement-9f2c"
+    },
+    {
+      "job_id": "job-5e6f",
+      "need_id": "need-abc2",
+      "buyer": "buyer-agent-2",
+      "seller": "seller-a",
+      "listing_id": "listing-a1",
+      "amount": 25,
+      "status": "VERIFIED_REJECTED",
+      "verdict": "rejected",
+      "settlement_id": null
+    },
+    {
+      "job_id": "job-7g8h",
+      "need_id": "need-abc1",
+      "buyer": "buyer-agent",
+      "seller": "seller-b",
+      "listing_id": "listing-b1",
+      "amount": 60,
+      "status": "PENDING-RELEASE",
+      "verdict": "accepted",
+      "settlement_id": null,
+      "note": "verdict accepted; release interrupted before settle"
+    }
+  ],
+  "receipts": [
+    {
+      "job_id": "job-1a2b",
+      "settlement_id": "settlement-9f2c",
+      "amount": 40,
+      "hash": "9f2ce4a1b7d30566c8a1",
+      "at": "t=6.4"
+    }
+  ],
+  "ledger": {
+    "balances": {
+      "principal-buyer-7f3a": 9910,
+      "principal-buyer-9c1d": 10000,
+      "principal-seller-a-11aa": 10040,
+      "principal-seller-b-22bb": 10000,
+      "principal-seller-c-33cc": 10000
+    },
+    "transfers": [
+      {
+        "from": "principal-buyer-7f3a",
+        "to": "principal-seller-a-11aa",
+        "amount": 40,
+        "memo": "settlement-9f2c for job-1a2b"
+      }
+    ]
+  },
+  "events": [
+    {
+      "kind": "AGENT_SWAPPED",
+      "detail": "owner revoked buyer-agent mandate; delegated buyer-agent-2 with a fresh allowance"
+    },
+    {
+      "kind": "SELLER_REVOKED",
+      "detail": "seller-c revoked listing-c1: seller withdrew the listing; existing receipts unaffected"
+    }
+  ]
+}
