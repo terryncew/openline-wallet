@@ -184,5 +184,35 @@ $C settle --caller owner --job "$JI1" >/dev/null
 $C settle --caller owner --job "$JI2" >/dev/null
 $C settle --caller owner --job "$JI2" 2>&1 || echo "(refused as expected: ALREADY_SETTLED)"
 
+say "accounting review: the allowance is not the funding"
+$C revoke --caller owner >/dev/null
+$C delegate --caller owner --budget 20000 >/dev/null
+$C offer --caller seller --price 15000 >/dev/null
+mkinput job-F-001 "funded" /tmp/cw-in-F.txt
+$C commission --caller agent --offer offer-text-digest-v1 --input /tmp/cw-in-F.txt 2>&1 || echo "(refused as expected: INSUFFICIENT_OWNER_FUNDS — the funded balance cannot cover a 15,000 commitment)"
+$C offer --caller seller --price 50 >/dev/null
+
+say "monetary inputs are validated before signing: negative and zero prices refused"
+$C offer --caller seller --price -50 2>&1 || echo "(refused as expected: INVALID_AMOUNT)"
+$C offer --caller seller --price 0 2>&1 || echo "(refused as expected: INVALID_AMOUNT — zero-price work is not supported)"
+
+say "re-granting preserves live commitments; a grant cannot shrink under them"
+mkinput job-G-001 "grant" /tmp/cw-in-G.txt
+$C commission --caller agent --offer offer-text-digest-v1 --input /tmp/cw-in-G.txt >/dev/null
+JG=$(job_by_nonce job-G-001)
+$C revoke --caller owner >/dev/null
+$C delegate --caller owner --budget 300 | grep -o "reserved 50 SIM_USD (simulated)" && echo "(reserved carried over the re-grant)"
+$C revoke --caller owner >/dev/null
+$C delegate --caller owner --budget 40 2>&1 || echo "(refused as expected: ALLOWANCE_REDUCTION_REFUSED)"
+$C delegate --caller owner --budget 300 >/dev/null
+
+say "verification is idempotent; a rejection releases exactly once"
+$C work --caller seller --job "$JG" --wrong-input >/dev/null
+$C submit --caller seller --job "$JG" >/dev/null
+$C verify --caller owner --job "$JG" >/dev/null || true
+$C verify --caller owner --job "$JG" 2>&1 | head -1 || true
+$C status | grep -A1 "agent allowance"
+
+
 echo
 echo "quickstart complete."

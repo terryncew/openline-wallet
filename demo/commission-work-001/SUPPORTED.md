@@ -15,7 +15,18 @@
 - Fund safety: reservations before work; budget accounting counts spent
   plus reserved; concurrent commissions serialize on a writer lock so
   racing jobs cannot over-commit one allowance; rejection releases the
-  reservation; exactly-once settlement.
+  reservation; exactly-once settlement. Commitments are also checked
+  against the owner's funded account balance, not just the allowance —
+  an allowance is spending authority, not funding. Monetary inputs
+  (budgets, prices) must be positive integers, validated before signing
+  or any state change; zero-price work is not supported.
+- Concurrent verification: two verifications of one submission are
+  check-then-act under one writer lock, so the reservation releases
+  exactly once and never goes negative; verification is idempotent
+  (a replay completes a pending release once, then reports the recorded
+  verdict). Release and settlement refuse underflow rather than trusting
+  arithmetic: a release that would take reserved below zero is an error,
+  never a silent negative.
 - Atomic, deduplicated settlement: the transfer carries an idempotency
   key checked inside the writer lock; amount and payee come only from
   the authenticated agreement. A crash after the transfer is written
@@ -47,6 +58,9 @@
 
 ## Explicitly not supported
 
+- Zero-price work: prices must be positive simulated amounts, validated
+  before signing; a free or negative-price offer is refused, not settled
+  at zero.
 - No discovery network, no auctions, no reputation scores, no tokens.
 - No real payments or public deployment. `SIM_USD (simulated)` everywhere.
 - No seller capability import or inheritance: the seller keeps its

@@ -288,32 +288,54 @@ def cmd_init(args) -> int:
 
 
 def cmd_delegate(args) -> int:
-    """Only the owner can grant (or raise) the agent's budget."""
+    """Only the owner can grant (or raise) the agent's budget.
+
+    The budget is validated before any signing or state change. Re-granting
+    preserves live commitments: reserved and spent carry over, and a grant
+    below the already-committed amount is refused, so commitments can never
+    be shrunk under.
+    """
     _require_caller(args, {"owner"})
+    _positive_amount(args.budget, "the delegated budget")
     h = _home(Path(args.home) if args.home else None)
+    agent = _principal(h, "agent")
     agent_pub = _pub(h, "agent")
-    wallet = Wallet.open(h / "wallet")
-    try:
-        mandate = wallet.grant(
-            subject_id=_principal(h, "agent"),
-            subject_public_key=agent_pub,
-            scopes=["commission:work"],
-            expires_at=_now() + timedelta(hours=args.hours),
-        )
-    except WalletError as e:
-        raise CommissionError("DELEGATE_FAILED", str(e))
-    allowances = _allowances(h)
-    allowances[_principal(h, "agent")] = {
-        "granted": args.budget,
-        "reserved": 0,
-        "spent": 0,
-        "mandate_id": mandate["data"]["mandate_id"],
-        "granted_by": "owner",
-        "granted_at": _utcnow_iso(),
-    }
-    _write_json(h / "allowances.json", allowances)
+    with _state_lock(h):
+        allowances = _allowances(h)
+        old = allowances.get(agent, {})
+        reserved, spent = old.get("reserved", 0), old.get("spent", 0)
+        if args.budget < reserved + spent:
+            raise CommissionError(
+                "ALLOWANCE_REDUCTION_REFUSED",
+                "the new budget %s is below the already-committed %s "
+                "(reserved %s + spent %s); a grant cannot shrink under live commitments"
+                % (_money(args.budget), _money(reserved + spent),
+                   _money(reserved), _money(spent)),
+            )
+        wallet = Wallet.open(h / "wallet")
+        try:
+            mandate = wallet.grant(
+                subject_id=agent,
+                subject_public_key=agent_pub,
+                scopes=["commission:work"],
+                expires_at=_now() + timedelta(hours=args.hours),
+            )
+        except WalletError as e:
+            raise CommissionError("DELEGATE_FAILED", str(e))
+        allowances[agent] = {
+            "granted": args.budget,
+            "reserved": reserved,
+            "spent": spent,
+            "settled_jobs": old.get("settled_jobs", []),
+            "released_jobs": old.get("released_jobs", []),
+            "mandate_id": mandate["data"]["mandate_id"],
+            "granted_by": "owner",
+            "granted_at": _utcnow_iso(),
+        }
+        _write_json(h / "allowances.json", allowances)
     print("owner delegated a bounded job budget to the agent")
-    print("agent allowance: %s (reserved 0, spent 0)" % _money(args.budget))
+    print("agent allowance: granted %s, reserved %s, spent %s"
+          % (_money(args.budget), _money(reserved), _money(spent)))
     print("the agent cannot raise this. only the owner can grant again.")
     return 0
 def _offer_body(h: Path, price: int) -> dict:
@@ -333,6 +355,7 @@ def _offer_body(h: Path, price: int) -> dict:
 def cmd_offer(args) -> int:
     """The seller offers one existing capability as a service."""
     _require_caller(args, {"seller"})
+    _positive_amount(args.price, "the offer price")
     h = _home(Path(args.home) if args.home else None)
     body = _offer_body(h, args.price)
     sig = sign_record(body, _load_key(h, "seller"))
@@ -415,6 +438,12 @@ def cmd_commission(args) -> int:
     _verify_signed(offer, _pub(h, "seller"), "offer")
     offer_body = offer["record"]
     amount = offer_body["price"]
+    if isinstance(amount, bool) or not isinstance(amount, int) or amount <= 0:
+        raise CommissionError(
+            "OFFER_INVALID",
+            "the offer's price is not a positive amount of simulated funds; "
+            "commission refused",
+        )
     raw = Path(args.input).read_bytes()
     header_end = raw.index(b"\n")
     try:
@@ -441,6 +470,23 @@ def cmd_commission(args) -> int:
                 "agent allowance: granted %s, reserved %s, already spent %s; %s does not fit"
                 % (_money(allow["granted"]), _money(allow["reserved"]),
                    _money(allow["spent"]), _money(amount)),
+            )
+        # Funded authority: the allowance is not the funding. The commitment
+        # must also fit the owner's actual funded balance, net of outstanding
+        # reservations. Spent money already left the account, so it is not
+        # subtracted twice. A commitment larger than the funded balance is
+        # refused, never allowed to drive the account negative.
+        ledger = _read_json(h / "ledger.json", None) or {}
+        balances = ledger.get("balances", {})
+        buyer_principal = _principal(h, "owner")
+        funded_room = balances.get(buyer_principal, 0) - allow["reserved"]
+        if amount > funded_room:
+            raise CommissionError(
+                "INSUFFICIENT_OWNER_FUNDS",
+                "the owner's funded balance cannot cover this commitment: balance %s, "
+                "already reserved %s; %s does not fit (the allowance is not the funding)"
+                % (_money(balances.get(buyer_principal, 0)),
+                   _money(allow["reserved"]), _money(amount)),
             )
         jobs = _read_json(h / "jobs.json", {})
         for other in jobs.values():
@@ -614,90 +660,121 @@ def cmd_verify(args) -> int:
 
     Only the buyer side verifies; the seller cannot verify its own work.
     Every check is against the frozen agreement, never a live copy.
+
+    Verification is check-then-act under one writer lock: the job state is
+    re-read inside the lock, so two concurrent verifications of the same
+    submission cannot both release the reservation. A replay of an
+    already-verified job completes a pending release exactly once and never
+    re-releases.
     """
     _require_caller(args, {"owner", "agent"})
     h = _home(Path(args.home) if args.home else None)
-    job = _job(h, args.job)
-    if job["status"] != "SUBMITTED":
-        raise CommissionError("VERIFY_WRONG_STATE", "job is %s; nothing to verify" % job["status"])
-    # The stored agreement must authenticate before anything is checked:
-    # signature by the agent's key, hash matching the frozen hash.
-    _authenticated_agreement(h, job)
-    if args.tamper_agreement == "amount":
-        # Demonstration hook: alter the frozen agreement before checking.
-        # The tamper applies to a working copy only; the frozen record on
-        # disk is never rewritten, and the reservation is released by the
-        # frozen amount.
-        agreement = dict(job["agreement"])
-        agreement["amount"] += 1000
-    elif args.tamper_payee:
-        agreement = dict(job["agreement"])
-        agreement["payee"] = "stranger-principal"
-    elif args.tamper_input_hash:
-        agreement = dict(job["agreement"])
-        agreement["input_sha256"] = "0" * 64
-    else:
-        agreement = job["agreement"]
-    checks: list[tuple[str, bool, str]] = []
-
-    def check(name: str, ok: bool, detail: str) -> bool:
-        checks.append((name, ok, detail))
-        return ok
-
-    # 1. the agreement must be the exact agreement that was frozen.
-    check("agreement_integrity",
-          _agreement_hash(agreement) == job["agreement_hash"],
-          "frozen hash %s" % job["agreement_hash"][:16])
-    # 2. the agent that commissioned it still needs no mandate at verify
-    #    time (revocation blocks NEW work, not verification of work owed),
-    #    but the payee must be the offer's seller.
-    check("payee_matches_offer",
-          agreement["payee"] == agreement["seller"],
-          "payee %s" % agreement["payee"][:16])
-    # 3. a result must have been submitted.
-    check("result_submitted", job["submission"] is not None, "submission on record")
-    ok = all(c[1] for c in checks)
-    if ok:
-        sub = job["submission"]
-        try:
-            _verify_signed(sub, _pub(h, "seller"), "result")
-            sig_ok, sig_detail = True, "signed by the agreement's seller"
-        except CommissionError as e:
-            sig_ok, sig_detail = False, "%s: %s" % (e.code, e.message)
-        check("seller_signature", sig_ok, sig_detail)
-        rec = sub["record"]
-        check("result_binds_job",
-              rec.get("job_id") == job["job_id"] and rec.get("nonce") == agreement["nonce"]
-              and rec.get("input_sha256") == agreement["input_sha256"],
-              "result names this job, nonce, and input hash")
-        try:
-            raw = Path(job["input_path"]).read_bytes()
-            expected = _recompute(raw)
-            match = all(rec.get(f) == expected[f] for f in ACCEPTANCE["fields"])
-            check("acceptance_exact_recompute", match,
-                  "receiver recomputed from the job input; every field %s"
-                  % ("matches" if match else "does NOT match"))
-        except Exception as e:  # noqa: BLE001
-            check("acceptance_exact_recompute", False, "recompute failed: %s" % e)
-        try:
-            on_time = _now() <= datetime.fromisoformat(agreement["deadline"])
-        except Exception:  # noqa: BLE001
-            on_time = False
-        check("within_deadline", on_time, "deadline %s" % agreement["deadline"])
-    accepted = all(c[1] for c in checks)
-    verdict = {
-        "schema": "commission.verdict.v1",
-        "job_id": job["job_id"],
-        "verdict": "accepted" if accepted else "rejected",
-        "agreement_hash": job["agreement_hash"],
-        "checks": [{"name": n, "pass": ok_, "detail": d} for n, ok_, d in checks],
-        "verified_by": args.caller,
-        "at": _utcnow_iso(),
-    }
-    sig = sign_record(verdict, _load_key(h, args.caller))
-    verdict_signed = {"record": verdict, "signature": sig}
     with _state_lock(h):
         job = _job(h, args.job)
+        # The stored agreement must authenticate before anything is checked:
+        # signature by the agent's key, hash matching the frozen hash.
+        agreement = _authenticated_agreement(h, job)
+        if job.get("verdict") is not None:
+            # Idempotent replay. A previous verify may have died between the
+            # job write and the reservation release; complete the release
+            # exactly once. Never re-verify, never double-release.
+            verdict_rec = job["verdict"]["record"]
+            if verdict_rec.get("verified_by") not in ("owner", "agent"):
+                raise CommissionError("VERDICT_NOT_BUYER_SIDE",
+                                      "the recorded verdict was not produced by the buyer's side")
+            _verify_signed(job["verdict"], _pub(h, verdict_rec["verified_by"]), "verdict")
+            if verdict_rec.get("agreement_hash") != job["agreement_hash"]:
+                raise CommissionError("VERDICT_MISMATCH",
+                                      "the recorded verdict binds a different agreement")
+            released_now = False
+            if verdict_rec["verdict"] == "rejected":
+                allowances = _allowances(h)
+                allow = allowances[_principal(h, "agent")]
+                if _release_reservation(allow, agreement["amount"], job["job_id"]):
+                    _write_json(h / "allowances.json", allowances)
+                    _event(job, "RESERVATION_RELEASED_RECOVERED",
+                           {"amount": agreement["amount"]})
+                    _save_job(h, job)
+                    released_now = True
+            print("already verified %s: %s%s"
+                  % (job["job_id"], verdict_rec["verdict"],
+                     " — the pending release completed, exactly once"
+                     if released_now else " — no further action"))
+            return 0 if verdict_rec["verdict"] == "accepted" else 2
+        if job["status"] != "SUBMITTED":
+            raise CommissionError("VERIFY_WRONG_STATE", "job is %s; nothing to verify" % job["status"])
+        if args.tamper_agreement == "amount":
+            # Demonstration hook: alter the frozen agreement before checking.
+            # The tamper applies to a working copy only; the frozen record on
+            # disk is never rewritten, and the reservation is released by the
+            # frozen amount.
+            working = dict(job["agreement"])
+            working["amount"] += 1000
+        elif args.tamper_payee:
+            working = dict(job["agreement"])
+            working["payee"] = "stranger-principal"
+        elif args.tamper_input_hash:
+            working = dict(job["agreement"])
+            working["input_sha256"] = "0" * 64
+        else:
+            working = job["agreement"]
+        checks: list[tuple[str, bool, str]] = []
+
+        def check(name: str, ok: bool, detail: str) -> bool:
+            checks.append((name, ok, detail))
+            return ok
+
+        # 1. the agreement must be the exact agreement that was frozen.
+        check("agreement_integrity",
+              _agreement_hash(working) == job["agreement_hash"],
+              "frozen hash %s" % job["agreement_hash"][:16])
+        # 2. revocation blocks NEW work, not verification of work owed; the
+        #    payee must be the offer's seller.
+        check("payee_matches_offer",
+              working["payee"] == working["seller"],
+              "payee %s" % working["payee"][:16])
+        # 3. a result must have been submitted.
+        check("result_submitted", job["submission"] is not None, "submission on record")
+        ok = all(c[1] for c in checks)
+        if ok:
+            sub = job["submission"]
+            try:
+                _verify_signed(sub, _pub(h, "seller"), "result")
+                sig_ok, sig_detail = True, "signed by the agreement's seller"
+            except CommissionError as e:
+                sig_ok, sig_detail = False, "%s: %s" % (e.code, e.message)
+            check("seller_signature", sig_ok, sig_detail)
+            rec = sub["record"]
+            check("result_binds_job",
+                  rec.get("job_id") == job["job_id"] and rec.get("nonce") == working["nonce"]
+                  and rec.get("input_sha256") == working["input_sha256"],
+                  "result names this job, nonce, and input hash")
+            try:
+                raw = Path(job["input_path"]).read_bytes()
+                expected = _recompute(raw)
+                match = all(rec.get(f) == expected[f] for f in ACCEPTANCE["fields"])
+                check("acceptance_exact_recompute", match,
+                      "receiver recomputed from the job input; every field %s"
+                      % ("matches" if match else "does NOT match"))
+            except Exception as e:  # noqa: BLE001
+                check("acceptance_exact_recompute", False, "recompute failed: %s" % e)
+            try:
+                on_time = _now() <= datetime.fromisoformat(working["deadline"])
+            except Exception:  # noqa: BLE001
+                on_time = False
+            check("within_deadline", on_time, "deadline %s" % working["deadline"])
+        accepted = all(c[1] for c in checks)
+        verdict = {
+            "schema": "commission.verdict.v1",
+            "job_id": job["job_id"],
+            "verdict": "accepted" if accepted else "rejected",
+            "agreement_hash": job["agreement_hash"],
+            "checks": [{"name": n, "pass": ok_, "detail": d} for n, ok_, d in checks],
+            "verified_by": args.caller,
+            "at": _utcnow_iso(),
+        }
+        sig = sign_record(verdict, _load_key(h, args.caller))
+        verdict_signed = {"record": verdict, "signature": sig}
         job["verdict"] = verdict_signed
         if accepted:
             job["status"] = "VERIFIED_ACCEPTED"
@@ -705,25 +782,29 @@ def cmd_verify(args) -> int:
         else:
             job["status"] = "VERIFIED_REJECTED"
             _event(job, "VERIFIED", {"verdict": "rejected"})
+        _save_job(h, job)  # the job record first: a crash after this point
+                           # leaves the verdict on record, and a replay
+                           # completes the release exactly once
+        if not accepted:
             # Cancellation rule: rejection releases the reservation by the
             # FROZEN amount (a tamper demonstration must not corrupt the
-            # accounting).
+            # accounting). The release is idempotent per job: if a crash
+            # already wrote it, this only completes the verdict.
             allowances = _allowances(h)
             allow = allowances[_principal(h, "agent")]
-            frozen_amount = job["agreement"]["amount"]
-            allow["reserved"] -= frozen_amount
-            _write_json(h / "allowances.json", allowances)
-            _event(job, "RESERVATION_RELEASED", {"amount": frozen_amount})
-        _save_job(h, job)
-    if accepted:
-        print("ACCEPTED %s — the result matches the frozen agreement exactly" % job["job_id"])
-    else:
-        print("REJECTED %s — no payment; the reservation is released" % job["job_id"])
-    for n, ok_, d in checks:
-        print("  %s: %s — %s" % (n, "pass" if ok_ else "FAIL", d))
-    _write_json(h / "receipts" / ("verdict_%s.json" % job["job_id"]),
-                verdict_signed)
-    return 0 if accepted else 2
+            if _release_reservation(allow, agreement["amount"], job["job_id"]):
+                _write_json(h / "allowances.json", allowances)
+                _event(job, "RESERVATION_RELEASED", {"amount": agreement["amount"]})
+                _save_job(h, job)
+        _write_json(h / "receipts" / ("verdict_%s.json" % job["job_id"]),
+                    verdict_signed)
+        if accepted:
+            print("ACCEPTED %s — the result matches the frozen agreement exactly" % job["job_id"])
+        else:
+            print("REJECTED %s — no payment; the reservation is released" % job["job_id"])
+        for n, ok_, d in checks:
+            print("  %s: %s — %s" % (n, "pass" if ok_ else "FAIL", d))
+        return 0 if accepted else 2
 # -- settle (exactly once) -------------------------------------------------------
 
 
@@ -750,13 +831,56 @@ def _settlement_record(h: Path, job: dict, agreement: dict,
             "signature": sign_record(receipt, _load_key(h, "owner"))}
 
 
+def _positive_amount(value, label: str) -> int:
+    """All monetary inputs are positive integers of simulated funds.
+
+    Validated before any signing or state change. Zero-price work is not
+    supported in this preview; negative amounts are never signed or stored.
+    """
+    if isinstance(value, bool) or not isinstance(value, int) or value <= 0:
+        raise CommissionError(
+            "INVALID_AMOUNT",
+            "%s must be a positive amount of simulated funds, not %r"
+            % (label, value),
+        )
+    return value
+
+
+def _release_reservation(allow: dict, amount: int, job_id: str) -> bool:
+    """Release one job's reservation, exactly once per job.
+
+    Returns True if this call released it. A job that already released is a
+    no-op; a release larger than the reservation is refused rather than
+    driving the books negative.
+    """
+    released = allow.setdefault("released_jobs", [])
+    if job_id in released:
+        return False
+    if allow["reserved"] < amount:
+        raise CommissionError(
+            "RESERVATION_INCONSISTENT",
+            "release underflow: reserved %s, release %s for %s"
+            % (_money(allow["reserved"]), _money(amount), job_id),
+        )
+    allow["reserved"] -= amount
+    released.append(job_id)
+    return True
+
+
 def _finalize_allowance(allow: dict, amount: int, settle_id: str) -> None:
     """Move the reservation to spent, exactly once per settlement id."""
-    if settle_id in allow.setdefault("settled_jobs", []):
+    settled = allow.setdefault("settled_jobs", [])
+    if settle_id in settled:
         return
+    if allow["reserved"] < amount:
+        raise CommissionError(
+            "RESERVATION_INCONSISTENT",
+            "settlement underflow: reserved %s, settle %s"
+            % (_money(allow["reserved"]), _money(amount)),
+        )
     allow["reserved"] -= amount
     allow["spent"] += amount
-    allow["settled_jobs"].append(settle_id)
+    settled.append(settle_id)
 
 
 def _transfer_committed(ledger: dict, settle_id: str) -> bool:
@@ -799,6 +923,12 @@ def cmd_settle(args) -> int:
         payee = agreement["payee"]
         buyer = agreement["buyer"]
         agent_principal = agreement["agent"]
+        if isinstance(amount, bool) or not isinstance(amount, int) or amount <= 0:
+            raise CommissionError(
+                "SETTLEMENT_REFUSED",
+                "the agreement's amount is not a positive amount of simulated "
+                "funds; settlement refused",
+            )
         # 2. The verdict must accept, must be signed by a buyer-side key, and
         #    must bind this exact agreement hash.
         verdict = job.get("verdict")
@@ -869,6 +999,20 @@ def cmd_settle(args) -> int:
         # 3. Fresh settlement: the transfer is the atomic commit point. It is
         #    appended under the writer lock with the idempotency key, so a
         #    retry can always tell committed from uncommitted.
+        #
+        #    Defense in depth: every properly-reserved commitment was funded
+        #    at commission time, and each settlement moves its reservation to
+        #    spent one-for-one with the balance, so the funded balance always
+        #    covers outstanding reservations. If it does not, the ledger is
+        #    inconsistent and settlement is refused rather than driving the
+        #    account negative.
+        if amount > ledger["balances"].get(buyer, 0):
+            raise CommissionError(
+                "SETTLEMENT_REFUSED",
+                "the funded account balance %s cannot cover the committed %s; "
+                "the ledger is inconsistent"
+                % (_money(ledger["balances"].get(buyer, 0)), _money(amount)),
+            )
         ledger["balances"][buyer] -= amount
         ledger["balances"][payee] = ledger["balances"].get(payee, 0) + amount
         ledger["transfers"].append({
