@@ -647,7 +647,9 @@ def render_seller_view(snap):
         own_listings = [l for l in listings
                         if isinstance(l, dict) and l.get("seller_name") == name]
         own_jobs = [j for j in jobs
-                    if isinstance(j, dict) and j.get("seller") == name]
+                    if isinstance(j, dict)
+                    and (j.get("seller") == name
+                         or j.get("seller_name") == name)]
         own_job_ids = {j.get("job_id") for j in own_jobs}
         own_receipts = [r for r in receipts
                         if isinstance(r, dict) and r.get("job_id") in own_job_ids]
