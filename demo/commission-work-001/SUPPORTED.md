@@ -33,6 +33,24 @@
   leaves one transfer; reconciliation reports the committed state
   truthfully and a retry completes the local records, never a second
   payment.
+- One recoverable logical transaction per commission: a deterministic
+  request identity — (agent, offer, nonce), no timestamp — commits a
+  single transaction record first; the job record and the reservation
+  replay from it idempotently. An interrupted commission retried with the
+  identical request returns the same job with exactly one reservation,
+  never a second reservation and never a lost agreement. Simply reversing
+  the old two-write order would only move the hole; the request identity
+  plus the single atomic commitment is the invariant.
+- Truthful release reporting: reconciliation derives the release report
+  from the durable release state, never from the verdict alone. A
+  committed rejection whose release has not committed is reported as
+  release PENDING with the idempotent recovery command named; recovery
+  is safe to repeat and completes exactly one release. Reconciliation
+  stays read-only — there is no recovery subsystem, only named
+  idempotent commands the operator can re-run.
+- Reservation audit: `status` and `reconcile` sum committed reservation
+  totals against identifiable outstanding jobs (reserved jobs minus
+  released and settled) and report BALANCED or MISMATCH per allowance.
 - Revocation semantics: blocks new commissions, never erases an
   already-earned obligation.
 - Interruption: read-only reconciliation that names the next step per job.
@@ -53,8 +71,12 @@
   receiver-owned acceptance criteria, amount, currency, deadline,
   cancellation/settlement rules)
 - Budget reservation ahead of work (parallel jobs cannot double-commit)
+- One recoverable logical transaction per commission: deterministic
+  request identity, single committed transaction record, idempotent
+  replay of the job record and the reservation
 - Receiver-owned verification for this one service
-- Idempotent event log per job; read-only `reconcile` over durable records
+- Idempotent event log per job; read-only `reconcile` over durable records,
+  with reservation totals audited against identifiable outstanding jobs
 
 ## Explicitly not supported
 

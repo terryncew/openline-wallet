@@ -184,6 +184,36 @@ $C settle --caller owner --job "$JI1" >/dev/null
 $C settle --caller owner --job "$JI2" >/dev/null
 $C settle --caller owner --job "$JI2" 2>&1 || echo "(refused as expected: ALREADY_SETTLED)"
 
+say "RECOVERABLE-COMMISSION (fresh home): an interrupted commission retries to the same job and one reservation"
+export COMMISSION_HOME="${COMMISSION_HOME%-crash}-txcommit"
+rm -rf "$COMMISSION_HOME"
+$C init >/dev/null && $C delegate --caller owner --budget 200 >/dev/null && $C offer --caller seller --price 50 >/dev/null
+mkinput job-TX-001 "recoverable commission" /tmp/cw-in-TX1.txt
+echo "(the process dies after the transaction record commits — before the job record)"
+COMMISSION_CRASH_AFTER=commission-txn $C commission --caller agent --offer offer-text-digest-v1 --input /tmp/cw-in-TX1.txt 2>&1 || echo "(died as staged: CRASH_SIMULATED)"
+echo "(retry the identical request: the same job returns, one reservation — never two)"
+$C commission --caller agent --offer offer-text-digest-v1 --input /tmp/cw-in-TX1.txt
+$C commission --caller agent --offer offer-text-digest-v1 --input /tmp/cw-in-TX1.txt | head -1
+$C status | grep -A2 "reservation audit"
+
+say "PENDING-RELEASE (fresh home): reconcile reports a release that never committed as pending"
+export COMMISSION_HOME="${COMMISSION_HOME%-txcommit}-pendingrelease"
+rm -rf "$COMMISSION_HOME"
+$C init >/dev/null && $C delegate --caller owner --budget 200 >/dev/null && $C offer --caller seller --price 50 >/dev/null
+mkinput job-PR-001 "pending release" /tmp/cw-in-PR1.txt
+$C commission --caller agent --offer offer-text-digest-v1 --input /tmp/cw-in-PR1.txt >/dev/null
+JPR=$(job_by_nonce job-PR-001)
+$C work --caller seller --job "$JPR" --wrong-input >/dev/null
+$C submit --caller seller --job "$JPR" >/dev/null
+echo "(the process dies between the verdict commit and the reservation release)"
+COMMISSION_CRASH_AFTER=verify-verdict $C verify --caller owner --job "$JPR" 2>&1 || echo "(died as staged: CRASH_SIMULATED)"
+echo "(reconcile names the pending release and the idempotent recovery command — never claims it released)"
+$C reconcile | grep -A2 "$JPR"
+echo "(run the recovery twice: exactly one release, audit balances to zero)"
+$C verify --caller owner --job "$JPR" >/dev/null 2>&1 || true
+$C verify --caller owner --job "$JPR" >/dev/null 2>&1 || true
+$C status | grep -A2 "reservation audit"
+
 say "accounting review: the allowance is not the funding"
 $C revoke --caller owner >/dev/null
 $C delegate --caller owner --budget 20000 >/dev/null

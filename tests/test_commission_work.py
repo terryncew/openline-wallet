@@ -27,6 +27,14 @@ Run in this repo's unittest style (CI: python -m unittest discover):
                          reduction under them; settle refuses an unfunded
                          commitment; a crash between the verdict and the
                          release reconciles to exactly one release
+  commission transaction -> one recoverable logical transaction per request:
+                         a deterministic request identity commits a single
+                         transaction record first; an interrupted commission
+                         retried returns the same job with exactly one
+                         reservation, never two, and the agreement is never
+                         lost; reconcile derives the release report from
+                         durable release state (PENDING named with the
+                         idempotent recovery command, never "released")
 """
 from __future__ import annotations
 
@@ -194,12 +202,48 @@ class Tampering(_T):
         self.assertEqual(code, 2)
         self.assertIn("RECORD_TAMPERED", err)
 
-    def test_nonce_reuse_refused(self):
+    def test_identical_request_recovers_without_double_reserve(self):
+        # The same (agent, offer, nonce) is one request: retrying it returns
+        # the recorded job, never a second reservation. This replaces the old
+        # NONCE_REUSED refusal for *identical* requests — the old code had
+        # no recovery path at all, so this test fails against the frozen
+        # 42fd93f code (NONCE_REUSED) and passes after the fix.
         self.setup_basic()
-        self.commission_job("nonce-dup")
+        job = self.commission_job("nonce-dup")
         inp = self.input("in-dup2.txt", "nonce-dup", "different text")
+        code, out, err = self.cli("commission", "--caller", "agent",
+                                  "--offer", "offer-text-digest-v1", "--input", inp)
+        self.assertEqual(code, 0, err)
+        self.assertIn(job, out)
+        self.assertEqual(self.agent_allowance()["reserved"], 50,
+                         "an identical retry must not reserve a second time")
+        self.assertEqual(len(json.loads((self.home / "jobs.json").read_text())), 1)
+        # the recorded job still works its full flow exactly once
+        self.settle(job)
+
+    def test_nonce_reuse_across_requests_refused(self):
+        # A nonce is single-use across *different* requests: the same nonce
+        # under a different offer id is refused.
+        self.setup_basic()
+        self.commission_job("nonce-x1")
+        body = {
+            "schema": "commission.offer.v1",
+            "offer_id": "offer-text-digest-v2",
+            "seller": json.loads((self.home / "keys" / "seller.pub.json").read_text())["principal"],
+            "service": commission.SERVICE,
+            "deliverable": commission.DELIVERABLE,
+            "acceptance": commission.ACCEPTANCE,
+            "price": 50,
+            "currency": commission.CURRENCY + " (simulated)",
+            "note": "results only; the seller retains its implementation",
+        }
+        sig = commission.sign_record(body, commission._load_key(self.home, "seller"))
+        offers = json.loads((self.home / "offers.json").read_text())
+        offers["offer-text-digest-v2"] = {"record": body, "signature": sig}
+        (self.home / "offers.json").write_text(json.dumps(offers, indent=1, sort_keys=True) + "\n")
+        inp = self.input("in-x2.txt", "nonce-x1", "different text")
         code, _, err = self.cli("commission", "--caller", "agent",
-                                "--offer", "offer-text-digest-v1", "--input", inp)
+                                "--offer", "offer-text-digest-v2", "--input", inp)
         self.assertEqual(code, 2)
         self.assertIn("NONCE_REUSED", err)
 
@@ -757,6 +801,203 @@ class AccountingReview(_T):
         jobs = json.loads((self.home / "jobs.json").read_text())
         self.assertEqual(jobs[job]["status"], "VERIFIED_REJECTED")
         self.assertEqual(jobs[job]["verdict"]["record"]["verdict"], "rejected")
+
+
+class CommissionTransactions(_T):
+    """Terrynce's review at 42fd93f: two reproduced failures.
+
+    1. An interrupted commission (reservation committed, job record not)
+       retried reserves again — orphan reservation. Fixed by making job
+       creation and reservation one recoverable logical transaction with
+       stable request identity: a deterministic (agent, offer, nonce)
+       request id commits a single transaction record first, and the job
+       record plus the reservation replay from it idempotently.
+    2. Reconcile reports "reservation released" after a rejection verdict
+       commits even when the release has not committed. Fixed by deriving
+       the report from the durable release state (released_jobs): pending
+       is reported as PENDING with the idempotent recovery command named;
+       reconciliation stays read-only.
+
+    Each test fails against the frozen 42fd93f code (COMMISSION_MODULE
+    pointing at the 42fd93f copy) — the old code has no transaction record
+    and no recovery path, so any retry of an identical request dies on
+    NONCE_REUSED — and passes after the fix. test_reconcile_still_reports_
+    committed_release is the control: it passes both sides, pinning the
+    behavior of a release that did commit.
+    """
+
+    def _kill_after_first(self, filename):
+        """Die right after the first atomic write of the named file — the
+        crash the old two-write order produced, and the crash points of
+        the new commit order."""
+        orig_write = commission._write_json
+        died = {"n": 0}
+
+        def crashing_write(path, obj):
+            if str(path).endswith(filename) and died["n"] == 0:
+                orig_write(path, obj)
+                died["n"] += 1
+                raise commission.CommissionError(
+                    "CRASH_SIMULATED",
+                    "test hook: died after %s" % filename)
+            return orig_write(path, obj)
+        return crashing_write, orig_write
+
+    def _audit(self):
+        return commission._reservation_audit(self.home)
+
+    # -- failure 1: orphan reservation --------------------------------------
+    def test_interrupted_commission_retries_without_double_reserve(self):
+        self.setup_basic()
+        inp = self.input("in-orphan-1.txt", "orphan-1")
+        crashing, orig = self._kill_after_first("allowances.json")
+        commission._write_json = crashing
+        try:
+            code, _, err = self.cli("commission", "--caller", "agent",
+                                    "--offer", "offer-text-digest-v1",
+                                    "--input", inp)
+            self.assertEqual(code, 2)
+            self.assertIn("CRASH_SIMULATED", err)
+        finally:
+            commission._write_json = orig
+        # Durable state: the reservation committed, the job record did not
+        # (the old write order). Retry the IDENTICAL request, repeatedly.
+        for _ in range(3):
+            code, out, err = self.cli("commission", "--caller", "agent",
+                                      "--offer", "offer-text-digest-v1",
+                                      "--input", inp)
+            self.assertEqual(code, 0, err)
+        allow = self.agent_allowance()
+        self.assertEqual(allow["reserved"], 50,
+                         "an interrupted commission retried must hold exactly "
+                         "one reservation, not one per retry")
+        jobs = json.loads((self.home / "jobs.json").read_text())
+        self.assertEqual(len(jobs), 1, "exactly one job after repeated retries")
+        job = next(iter(jobs.values()))
+        self.assertEqual(job["agreement"]["nonce"], "orphan-1")
+        self.assertEqual(job["status"], "COMMISSIONED")
+        self.assertIn("AGREEMENT_FROZEN", [e["type"] for e in job["events"]])
+        # reservation totals reconcile against identifiable commitments
+        audit = self._audit()
+        self.assertEqual(len(audit), 1)
+        self.assertTrue(audit[0]["balanced"], audit)
+        self.assertEqual(audit[0]["outstanding_jobs"], [job["job_id"]])
+
+    def test_crash_before_job_commit_recovers_agreement(self):
+        # New commit point: die after the transaction record commits, before
+        # the job record. (No equivalent point exists in the 42fd93f code,
+        # so this passes trivially there; it guards the new architecture.)
+        self.setup_basic()
+        inp = self.input("in-orphan-2.txt", "orphan-2")
+        crashing, orig = self._kill_after_first("commissions.json")
+        commission._write_json = crashing
+        try:
+            code, _, err = self.cli("commission", "--caller", "agent",
+                                    "--offer", "offer-text-digest-v1",
+                                    "--input", inp)
+            self.assertEqual(code, 2)
+            self.assertIn("CRASH_SIMULATED", err)
+        finally:
+            commission._write_json = orig
+        code, out, err = self.cli("commission", "--caller", "agent",
+                                  "--offer", "offer-text-digest-v1",
+                                  "--input", inp)
+        self.assertEqual(code, 0, err)
+        self.assertIn("recovered", out)
+        jobs = json.loads((self.home / "jobs.json").read_text())
+        self.assertEqual(len(jobs), 1)
+        job = next(iter(jobs.values()))
+        self.assertEqual(job["agreement"]["nonce"], "orphan-2")
+        self.assertEqual(self.agent_allowance()["reserved"], 50)
+        audit = self._audit()
+        self.assertTrue(audit[0]["balanced"], audit)
+
+    def test_crash_between_job_and_allowance_writes(self):
+        # The other crash ordering: job record committed, reservation not.
+        # Pre-fix this is unrecoverable (the old code refuses the retry with
+        # NONCE_REUSED); post-fix the retry completes the reservation once.
+        self.setup_basic()
+        inp = self.input("in-orphan-3.txt", "orphan-3")
+        crashing, orig = self._kill_after_first("jobs.json")
+        commission._write_json = crashing
+        try:
+            code, _, err = self.cli("commission", "--caller", "agent",
+                                    "--offer", "offer-text-digest-v1",
+                                    "--input", inp)
+            self.assertEqual(code, 2)
+            self.assertIn("CRASH_SIMULATED", err)
+        finally:
+            commission._write_json = orig
+        code, out, err = self.cli("commission", "--caller", "agent",
+                                  "--offer", "offer-text-digest-v1",
+                                  "--input", inp)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(self.agent_allowance()["reserved"], 50)
+        self.assertEqual(len(json.loads((self.home / "jobs.json").read_text())), 1)
+        audit = self._audit()
+        self.assertTrue(audit[0]["balanced"], audit)
+
+    # -- failure 2: reconcile must not claim a release that never committed --
+    def test_reconcile_reports_pending_release_truthfully(self):
+        self.setup_basic()
+        job = self.commission_job("rl-1")
+        self.cli("work", "--caller", "seller", "--job", job, "--wrong-input")
+        self.cli("submit", "--caller", "seller", "--job", job)
+        # Crash between the verdict commit and the reservation release.
+        crashing, orig = self._kill_after_first("jobs.json")
+        commission._write_json = crashing
+        try:
+            code, _, err = self.cli("verify", "--caller", "owner", "--job", job)
+            self.assertEqual(code, 2)
+            self.assertIn("CRASH_SIMULATED", err)
+        finally:
+            commission._write_json = orig
+        jobs = json.loads((self.home / "jobs.json").read_text())
+        self.assertEqual(jobs[job]["status"], "VERIFIED_REJECTED")
+        self.assertEqual(self.agent_allowance()["reserved"], 50)
+        # Reconcile derives the report from the DURABLE release state. The
+        # release has NOT committed, so it must say PENDING — never
+        # "released" — and must name the idempotent recovery command.
+        code, out, err = self.cli("reconcile")
+        self.assertEqual(code, 0, err)
+        job_line = next(l for l in out.splitlines() if job in l)
+        self.assertNotIn("reservation released", job_line,
+                         "reconcile must not claim a release that never committed")
+        self.assertIn("release PENDING", job_line)
+        self.assertIn("verify", job_line)
+        self.assertIn(job, job_line)
+        # Reconcile changed nothing (read-only).
+        self.assertEqual(self.agent_allowance()["reserved"], 50)
+        self.assertEqual(json.loads((self.home / "jobs.json").read_text())[job]["status"],
+                         "VERIFIED_REJECTED")
+        # Repeated recovery: exactly one release.
+        for _ in range(3):
+            code, _, err = self.cli("verify", "--caller", "owner", "--job", job)
+            self.assertEqual(code, 2, err)  # still rejected
+        allow = self.agent_allowance()
+        self.assertEqual(allow["reserved"], 0)
+        self.assertEqual(allow["released_jobs"].count(job), 1)
+        # Reservation totals reconcile to zero against identifiable
+        # commitments.
+        audit = self._audit()
+        self.assertTrue(audit[0]["balanced"], audit)
+        self.assertEqual(audit[0]["outstanding_total"], 0)
+        self.assertEqual(audit[0]["outstanding_jobs"], [])
+
+    def test_reconcile_still_reports_committed_release(self):
+        # The control: a release that DID commit is still reported as
+        # released.
+        self.setup_basic()
+        job = self.commission_job("rl-2")
+        self.cli("work", "--caller", "seller", "--job", job, "--wrong-input")
+        self.cli("submit", "--caller", "seller", "--job", job)
+        code, _, _ = self.cli("verify", "--caller", "owner", "--job", job)
+        self.assertEqual(code, 2)
+        code, out, err = self.cli("reconcile")
+        self.assertEqual(code, 0, err)
+        job_line = next(l for l in out.splitlines() if job in l)
+        self.assertIn("reservation released", job_line)
+        self.assertNotIn("PENDING", job_line)
 
 
 if __name__ == "__main__":

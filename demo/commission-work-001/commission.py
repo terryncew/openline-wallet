@@ -28,6 +28,9 @@ This preview adds only the commission-specific pieces:
   - the frozen agreement record (signed, hash-bound)
   - fund reservation against the agent's delegated budget
   - receiver-owned verification of a service result from its input
+  - one recoverable logical transaction per commission: a deterministic
+    request identity commits a single transaction record first; the job
+    record and the reservation replay from it idempotently
   - idempotent event-log reconciliation (read-only, no recovery subsystem)
 
 Scope: one service, one operator host, simulated money. See README.md
@@ -274,6 +277,10 @@ def cmd_init(args) -> int:
     _write_json(h / "allowances.json", {})
     _write_json(h / "offers.json", {})
     _write_json(h / "jobs.json", {})
+    # Commission transaction records: one recoverable logical transaction
+    # per commission request, keyed by stable request identity. The record
+    # commits first; the job record and the reservation replay from it.
+    _write_json(h / "commissions.json", {})
     # The seller's implementation lives in the seller's own directory and
     # is never copied into buyer state: the buyer buys results, not code.
     impl_src = Path(__file__).resolve().parent / "seller_impl" / "text_digest.py"
@@ -326,6 +333,7 @@ def cmd_delegate(args) -> int:
             "granted": args.budget,
             "reserved": reserved,
             "spent": spent,
+            "reserved_jobs": old.get("reserved_jobs", []),
             "settled_jobs": old.get("settled_jobs", []),
             "released_jobs": old.get("released_jobs", []),
             "mandate_id": mandate["data"]["mandate_id"],
@@ -453,8 +461,49 @@ def cmd_commission(args) -> int:
     # Everything that touches shared budget state happens inside one writer
     # lock, so concurrent commissions serialize instead of over-committing.
     with _state_lock(h):
-        allowances = _allowances(h)
         agent = _principal(h, "agent")
+        # Stable request identity: (agent, offer, nonce). The transaction
+        # record is the single commit point for this logical transaction:
+        # it commits first, and the job record plus the reservation replay
+        # from it idempotently. An identical retry therefore returns the
+        # same job with one reservation — never a second reservation and
+        # never a lost agreement. Reversing the old two writes would only
+        # move the hole; the request identity plus this single atomic
+        # commitment is the invariant.
+        request_id = _request_id(agent, args.offer, nonce)
+        txn_store = _read_json(h / "commissions.json", {})
+        txn = txn_store.get(request_id)
+        if txn is not None:
+            # Idempotent retry / crash recovery for this exact request.
+            allowances = _allowances(h)
+            allow = allowances.get(agent)
+            if allow is None:
+                raise CommissionError("NO_ALLOWANCE",
+                                      "the owner has not delegated a budget to this agent")
+            job_id = txn["job_id"]
+            jobs = _read_json(h / "jobs.json", {})
+            did_work = False
+            if job_id not in jobs:
+                jobs[job_id] = txn["job"]  # the agreement is never lost
+                did_work = True
+            if _reserve_once(allow, txn["amount"], job_id):
+                _write_json(h / "allowances.json", allowances)
+                did_work = True
+            if txn["status"] != "COMMITTED":
+                txn["status"] = "COMMITTED"
+                txn["committed_at"] = _utcnow_iso()
+                txn_store[request_id] = txn
+                _write_json(h / "commissions.json", txn_store)
+                did_work = True
+            if did_work:
+                _event(jobs[job_id], "COMMISSION_RECOVERED",
+                       {"request_id": request_id})
+                _write_json(h / "jobs.json", jobs)
+            print("recovered the interrupted commission for this request: %s" % job_id)
+            print("the same job, one reservation (%s), the frozen agreement "
+                  "intact — no second reservation" % _money(txn["amount"]))
+            return 0
+        allowances = _allowances(h)
         allow = allowances.get(agent)
         if allow is None:
             raise CommissionError("NO_ALLOWANCE", "the owner has not delegated a budget to this agent")
@@ -495,9 +544,17 @@ def cmd_commission(args) -> int:
                     "NONCE_REUSED",
                     "nonce %r was already commissioned; every job needs a fresh input" % nonce,
                 )
-        job_id = "job-%s" % sha256_hex(canonical_json(
-            {"agent": agent, "offer": args.offer, "nonce": nonce, "at": _utcnow_iso()}
-        ))[:12]
+        for other_txn in txn_store.values():
+            if other_txn.get("nonce") == nonce:
+                raise CommissionError(
+                    "NONCE_REUSED",
+                    "nonce %r is already committed to an in-flight commission "
+                    "request; every job needs a fresh input" % nonce,
+                )
+        # The job id is derived from the request identity: identical retries
+        # name the identical job, so every replay is idempotent by
+        # construction.
+        job_id = "job-" + request_id[4:16]
         agreement = {
             "schema": "commission.agreement.v1",
             "job_id": job_id,
@@ -537,13 +594,47 @@ def cmd_commission(args) -> int:
             "verdict": None,
             "settlement": None,
         }
+        # One recoverable logical transaction. The transaction record is the
+        # single atomic commit point: it commits first, then the job record
+        # and the reservation are written. A crash anywhere after the
+        # record commits is recovered by replaying from the record —
+        # exactly one job, exactly one reservation, the agreement intact.
         _event(job, "AGREEMENT_FROZEN",
                {"amount": amount, "currency": "SIM_USD (simulated)",
                 "reserved_from_allowance": allow["granted"]})
-        allow["reserved"] += amount
-        _write_json(h / "allowances.json", allowances)
+        txn = {
+            "request_id": request_id,
+            "job_id": job_id,
+            "nonce": nonce,
+            "offer_id": args.offer,
+            "agent": agent,
+            "amount": amount,
+            "agreement_hash": _agreement_hash(agreement),
+            "job": job,
+            "status": "PENDING",
+            "created_at": _utcnow_iso(),
+            "committed_at": None,
+        }
+        txn_store[request_id] = txn
+        _write_json(h / "commissions.json", txn_store)
+        if os.environ.get("COMMISSION_CRASH_AFTER") == "commission-txn":
+            # Demonstration/test hook only: die right after the transaction
+            # record commits, so the recovery path can be exercised honestly.
+            raise CommissionError("CRASH_SIMULATED",
+                                  "demonstration hook: died after the transaction record commit")
         jobs[job_id] = job
         _write_json(h / "jobs.json", jobs)
+        if os.environ.get("COMMISSION_CRASH_AFTER") == "commission-jobs":
+            # Demonstration/test hook only: die after the job record
+            # commits but before the reservation, the other crash ordering.
+            raise CommissionError("CRASH_SIMULATED",
+                                  "demonstration hook: died after the job record commit")
+        _reserve_once(allow, amount, job_id)
+        _write_json(h / "allowances.json", allowances)
+        txn["status"] = "COMMITTED"
+        txn["committed_at"] = _utcnow_iso()
+        txn_store[request_id] = txn
+        _write_json(h / "commissions.json", txn_store)
     print("agreement frozen: %s" % job_id)
     print("buyer %s -> agent %s -> seller %s" % (agreement["buyer"][:16], agent[:16], agreement["seller"][:16]))
     print("service: %s | amount: %s | deadline: %s" % (SERVICE, _money(amount), agreement["deadline"]))
@@ -785,6 +876,12 @@ def cmd_verify(args) -> int:
         _save_job(h, job)  # the job record first: a crash after this point
                            # leaves the verdict on record, and a replay
                            # completes the release exactly once
+        if os.environ.get("COMMISSION_CRASH_AFTER") == "verify-verdict":
+            # Demonstration/test hook only: die between the verdict commit
+            # and the reservation release, so the recovery path and the
+            # truthful reconcile report can be exercised honestly.
+            raise CommissionError("CRASH_SIMULATED",
+                                  "demonstration hook: died after the verdict commit, before the release")
         if not accepted:
             # Cancellation rule: rejection releases the reservation by the
             # FROZEN amount (a tamper demonstration must not corrupt the
@@ -846,6 +943,34 @@ def _positive_amount(value, label: str) -> int:
     return value
 
 
+def _request_id(agent: str, offer_id: str, nonce: str) -> str:
+    """Stable identity for one commission request: (agent, offer, nonce).
+
+    No timestamp — an identical retry of this request maps to the same
+    identity, which is what makes an interrupted commission recoverable
+    instead of reservable twice. The nonce is the client's freshness token:
+    the same nonce means the same request; a different request needs a
+    different nonce.
+    """
+    return "req-" + sha256_hex(canonical_json(
+        {"agent": agent, "offer_id": offer_id, "nonce": nonce}))[:16]
+
+
+def _reserve_once(allow: dict, amount: int, job_id: str) -> bool:
+    """Reserve one job's amount, exactly once per job.
+
+    Returns True if this call reserved it. A job whose reservation is
+    already recorded is a no-op — this is what makes replaying an
+    interrupted commission safe.
+    """
+    reserved_jobs = allow.setdefault("reserved_jobs", [])
+    if job_id in reserved_jobs:
+        return False
+    allow["reserved"] += amount
+    reserved_jobs.append(job_id)
+    return True
+
+
 def _release_reservation(allow: dict, amount: int, job_id: str) -> bool:
     """Release one job's reservation, exactly once per job.
 
@@ -865,6 +990,44 @@ def _release_reservation(allow: dict, amount: int, job_id: str) -> bool:
     allow["reserved"] -= amount
     released.append(job_id)
     return True
+
+
+def _reservation_audit(h: Path) -> list:
+    """Check committed reservation totals against identifiable outstanding
+    commitments, per allowance.
+
+    A job is outstanding when its id is in the allowance's reserved_jobs,
+    minus released and settled ones. The committed `reserved` total must
+    equal the sum of the outstanding jobs' amounts; any job recorded as
+    reserved but missing from jobs.json is reported explicitly. Read-only.
+    """
+    jobs = _read_json(h / "jobs.json", {})
+    report = []
+    for agent, allow in _allowances(h).items():
+        released = set(allow.get("released_jobs", []))
+        settled = set(allow.get("settled_jobs", []))
+        outstanding, missing = [], []
+        for jid in allow.get("reserved_jobs", []):
+            job = jobs.get(jid)
+            if job is None:
+                missing.append(jid)
+                continue
+            if jid in released:
+                continue
+            if "settle:" + job["agreement_hash"] in settled:
+                continue
+            outstanding.append((jid, job["agreement"]["amount"]))
+        total = sum(amount for _, amount in outstanding)
+        reserved = allow.get("reserved", 0)
+        report.append({
+            "agent": agent,
+            "reserved": reserved,
+            "outstanding_total": total,
+            "outstanding_jobs": [jid for jid, _ in outstanding],
+            "missing_jobs": missing,
+            "balanced": total == reserved and not missing,
+        })
+    return report
 
 
 def _finalize_allowance(allow: dict, amount: int, settle_id: str) -> None:
@@ -1107,6 +1270,11 @@ def cmd_status(args) -> int:
               % (_money(allow["granted"]), _money(allow["reserved"]), _money(allow["spent"])))
     else:
         print("  none delegated yet")
+    for row in _reservation_audit(h):
+        print("  reservation audit: reserved %s == outstanding %s over %d job(s) — %s"
+              % (_money(row["reserved"]), _money(row["outstanding_total"]),
+                 len(row["outstanding_jobs"]),
+                 "BALANCED" if row["balanced"] else "MISMATCH"))
     print("jobs:")
     for job in _read_json(h / "jobs.json", {}).values():
         print("  %s  %s" % (job["job_id"], job["status"]))
@@ -1163,7 +1331,19 @@ def cmd_reconcile(args) -> int:
         elif job["status"] == "VERIFIED_ACCEPTED":
             state = "VERIFIED+ACCEPTED, unsettled — settle exactly once"
         elif job["status"] == "VERIFIED_REJECTED":
-            state = "VERIFIED+REJECTED — no payment; reservation released"
+            # The release report is derived from the DURABLE release state,
+            # not from the verdict: a committed verdict whose release has
+            # not committed is reported as PENDING, with the idempotent
+            # recovery command named. Reconciliation stays read-only.
+            allow = _allowances(h).get(job["agreement"]["agent"], {})
+            if job["job_id"] in allow.get("released_jobs", []):
+                state = "VERIFIED+REJECTED — no payment; reservation released"
+            else:
+                recover_caller = (job.get("verdict") or {}).get("record", {}).get("verified_by", "owner")
+                state = ("VERIFIED+REJECTED — no payment; reservation release PENDING — "
+                         "run `verify --caller %s --job %s` to complete the release; "
+                         "the recovery is idempotent and safe to repeat"
+                         % (recover_caller, job["job_id"]))
         elif job["status"] == "SUBMITTED":
             state = "SUBMITTED, unverified — buyer's receiver must verify"
         elif job["status"] == "COMMISSIONED":
@@ -1175,6 +1355,13 @@ def cmd_reconcile(args) -> int:
         print("%s  %s  (%s)" % (job["job_id"], job["status"], state))
         print("    agreement %s | amount %s | events %d"
               % (job["agreement_hash"][:16], _money(a["amount"]), len(job["events"])))
+    # Reservation audit: committed reserved totals against identifiable
+    # outstanding jobs. Read-only, like everything else here.
+    for row in _reservation_audit(h):
+        print("reservation audit: reserved %s vs outstanding %s over %d job(s): %s"
+              % (_money(row["reserved"]), _money(row["outstanding_total"]),
+                 len(row["outstanding_jobs"]),
+                 "BALANCED" if row["balanced"] else "MISMATCH — investigate before new commissions"))
     print("reconciliation is read-only: no work dispatched, no payment made")
     return 0
 
