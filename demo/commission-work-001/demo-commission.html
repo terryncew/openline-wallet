@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1080px; height:1920px; overflow:hidden; background:#0b0e14; }
+  body { font-family:'DejaVu Sans','Helvetica Neue',Helvetica,Arial,sans-serif; color:#f5f7fa; }
+  #stage { position:relative; width:1080px; height:1920px; overflow:hidden;
+           background:radial-gradient(1200px 900px at 540px 700px, #141b29 0%, #0b0e14 62%); }
+  .grid { position:absolute; inset:0; opacity:.3;
+    background-image:radial-gradient(#2a3348 1.5px, transparent 1.6px);
+    background-size:72px 72px; }
+  .mono { font-family:'DejaVu Sans Mono',monospace; }
+  .topbar { position:absolute; top:56px; left:0; width:1080px; text-align:center; z-index:50; }
+  .topbar .pill { display:inline-block; border:2px solid #4a5568; border-radius:40px;
+    padding:14px 38px; font-size:32px; color:#9aa3b2; letter-spacing:2px; background:rgba(11,14,20,.75); }
+  .footbar { position:absolute; bottom:96px; left:0; width:1080px; text-align:center; z-index:50; }
+  .footbar .lbl { font-size:30px; color:#6b7688; letter-spacing:2px; line-height:1.5; }
+  .scene { position:absolute; inset:0; opacity:0; }
+  .kicker { position:absolute; width:940px; left:70px; top:220px; text-align:center;
+    font-size:34px; letter-spacing:6px; color:#6b7688; }
+  .headline { position:absolute; width:940px; left:70px; top:290px; text-align:center;
+    font-size:66px; font-weight:bold; line-height:1.3; }
+  .subline { position:absolute; width:940px; left:70px; top:560px; text-align:center;
+    font-size:44px; line-height:1.5; color:#c6cdd8; }
+  .body { position:absolute; width:920px; left:80px; top:640px; }
+  .card { border-radius:24px;
+    background:linear-gradient(160deg,#182031,#10151f); border:2px solid #33405a;
+    box-shadow:0 30px 80px rgba(0,0,0,.55); padding:36px 40px; margin-bottom:28px; }
+  .card .row { font-size:36px; line-height:1.9; color:#c6cdd8; }
+  .card .row .k { color:#6b7688; }
+  .card .row .v { color:#eef1f6; }
+  .caption { position:absolute; width:920px; left:80px; top:1450px; text-align:center;
+    font-size:40px; line-height:1.55; color:#9aa3b2; }
+  .green { color:#2fd576; } .red { color:#f05454; } .amber { color:#ffb74d; }
+  .accent { color:#60a5fa; } .mut { color:#9aa3b2; }
+  .tag { display:inline-block; font-size:32px; font-weight:bold; letter-spacing:3px;
+    border-radius:20px; padding:10px 26px; border:2px solid; margin:6px 8px 6px 0; }
+  .tag.g { color:#2fd576; border-color:#2fd576; }
+  .tag.r { color:#f05454; border-color:#f05454; }
+  .tag.a { color:#ffb74d; border-color:#ffb74d; }
+  .tag.b { color:#60a5fa; border-color:#60a5fa; }
+  .checks { margin-bottom:8px; }
+  .check { font-size:38px; line-height:2.0; color:#c6cdd8; }
+  .check .ok { color:#2fd576; font-weight:bold; }
+  .refusal { border-radius:24px; margin-bottom:28px;
+    background:#160f12; border:2px solid #5a3333; padding:32px 36px; }
+  .refusal .code { font-size:40px; color:#f05454; font-weight:bold; margin-bottom:14px; }
+  .refusal .msg { font-size:34px; line-height:1.5; color:#c6cdd8; }
+  .refusal.compact { margin-bottom:18px; padding:22px 28px; }
+  .refusal.compact .code { font-size:34px; margin-bottom:8px; }
+  .refusal.compact .msg { font-size:30px; line-height:1.45; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="grid"></div>
+  <div class="topbar"><span class="pill">DEMO VISUALIZATION</span></div>
+  <div id="scenes"></div>
+  <div class="footbar"><div class="lbl">LOCAL DEVELOPER PREVIEW &middot; commission-work-001<br>SIMULATED FUNDS &middot; NO REAL PAYMENTS</div></div>
+</div>
+<script>
+// Every shown outcome is from the real quickstart run (home /tmp/cw-rec).
+var R = {
+  job: "job-7397c2a1ac4b",
+  agree: "471abb562b7d394d",
+  agreeFull: "471abb562b7d394dbafe1b2cf6d93057a9ea32e034a2fe763d55100aed6b3575",
+  input: "c8f93b5c028eb61e",
+  receipt: "settlement_job-7397c2a1ac4b.json",
+  settleId: "settle:471abb562b7d394d&hellip;",
+  checks: ["agreement_integrity","payee_matches_offer","result_submitted",
+           "seller_signature","result_binds_job","acceptance_exact_recompute","within_deadline"]
+};
+// scenes: [t0, t1, kicker, headlineHTML, bodyHTML, captionHTML]
+var SCENES = [
+ [0.0, 4.0, "COMMISSION-WORK-001",
+  "An agent hires an AI seller<br>for <span class='accent'>one job</span>.",
+  "",
+  "The rules freeze first. The money is simulated.<br>This is a demo visualization."],
+ [4.0, 8.0, "SETUP",
+  "The owner funds a bounded allowance.",
+  card([
+    row("owner", "delegates <span class='v'>200 SIM_USD (simulated)</span> to its agent"),
+    row("seller", "offers <span class='v'>text_digest</span> at <span class='v'>50</span>")
+  ]),
+  "Three separate local identities. One operator host.<br>An authority boundary, not a market."],
+ [8.0, 13.5, "AGREEMENT",
+  "The agreement freezes<br><span class='green'>before</span> any work.",
+  card([
+    row("job", "<span class='v mono'>" + R.job + "</span>"),
+    row("agreement", "<span class='v mono'>" + R.agree + "&hellip;</span>"),
+    row("input sha", "<span class='v mono'>" + R.input + "&hellip;</span>"),
+    row("amount", "<span class='v'>50 SIM_USD (simulated)</span> &middot; reserved up front"),
+    row("acceptance", "<span class='v'>receiver recomputes every field</span>")
+  ]),
+  "Identities, task, input binding, price, deadline,<br>cancellation rules. Nothing changes after this."],
+ [13.5, 17.5, "WORK",
+  "The seller does the work<br>and signs the result.",
+  card([
+    row("seller", "runs <span class='v'>text_digest</span> on the frozen input"),
+    row("result", "<span class='v mono'>word_count, line_count, sha256</span>"),
+    row("submit", "<span class='v'>signed submission on record</span>")
+  ]),
+  "The seller keeps its implementation. The buyer gets<br>a result plus a receipt. Nothing installs."],
+ [17.5, 23.0, "VERIFY",
+  "The buyer's receiver checks<br><span class='green'>7 of 7</span>.",
+  checksHTML(),
+  "The seller never grades its own work.<br>The receiver recomputes every field from the frozen input."],
+ [23.0, 28.5, "SETTLE",
+  "Exactly once.",
+  card([
+    row("settle", "<span class='v'>50 SIM_USD (simulated)</span> paid to the seller"),
+    row("idempotency", "<span class='v mono'>" + R.settleId + "</span>"),
+    row("receipt", "<span class='v mono'>" + R.receipt + "</span>"),
+    row("signature", "<span class='v'>verifies</span>")
+  ], refusalHTML("refused [ALREADY_SETTLED]",
+      "the job already settled; replay cannot produce a second payment")),
+  "One settlement. The transfer carries an idempotency key,<br>checked inside the writer lock. A replay is refused."],
+ [28.5, 33.0, "REJECT",
+  "Bad work gets <span class='red'>no payment</span>.",
+  "<div class='body'>" + refusalHTML("REJECTED &mdash; acceptance_exact_recompute: FAIL",
+      "the receiver recomputed from the frozen input; a field did not match") +
+  refusalHTML("refused [SETTLEMENT_REFUSED]",
+      "no payment before the buyer's receiver accepts the result") + "</div>",
+  "The reservation is released. The funds go back<br>to the agent's allowance. Nothing pays."],
+ [33.0, 37.5, "BOUNDARIES",
+  "The agent is weaker<br>than the owner.",
+  "<div class='body' style='text-align:center'>" +
+   "<span class='tag r'>BUDGET_INCREASE_REFUSED</span>" +
+   "<span class='tag r'>ACCEPTANCE_REWRITE_REFUSED</span><br>" +
+   "<span class='tag r'>PAYEE_CHANGE_REFUSED</span>" +
+   "<span class='tag r'>SELF_AUTHORIZATION_REFUSED</span></div>",
+  "Command-layer refusals, tested. Every record signed and verified on read.<br>On this host the operator holds every key: a trusted-operator simulation."],
+ [37.5, 42.0, "REVOKE",
+  "Revocation blocks new work.<br>It never erases what was earned.",
+  card([
+    row("owner", "<span class='v'>revokes</span> the agent's mandate"),
+    row("new job", "<span class='red'>refused [MANDATE_REVOKED]</span>"),
+    row("earned job", "<span class='green'>still settles</span> &mdash; the obligation stands")
+  ]),
+  "Permission changes in flight are explicit.<br>An accepted job remains payable after revocation."],
+ [42.0, 47.5, "HARDENING",
+  "Three fixes.<br>Three refusals.",
+  "<div class='body'>" +
+  refusalHTML("refused [INSUFFICIENT_ALLOWANCE]",
+      "budget 50, spent 50: settled money is gone, not committable again", true) +
+  refusalHTML("settlement COMMITTED &mdash; no second transfer",
+      "the process died after the transfer was written; the retry completed the records", true) +
+  refusalHTML("refused [AGREEMENT_NOT_AUTHENTIC]",
+      "the payee was rewritten after verification; only the signed agreement moves money", true) + "</div>",
+  "Spent money cannot be re-committed. A crash cannot pay twice.<br>The payee comes only from the signed agreement."],
+ [47.5, 52.0, "END",
+  "The worker can change.<br><span class='accent'>Your authority stays with you.</span>",
+  "",
+  "commission-work-001 &middot; one service, local only, simulated funds<br>" +
+  "trusted-operator simulation &middot; no market, no real payments<br><br>" +
+  "<span class='mono' style='font-size:34px'>bash demo/commission-work-001/quickstart.sh</span>"]
+];
+function row(k, v) { return "<div class='row'><span class='k'>" + k + "</span> &nbsp;" + v + "</div>"; }
+function card(rows, extra) { return "<div class='body'><div class='card'>" + rows.join("") + "</div>" + (extra || "") + "</div>"; }
+function checksHTML() {
+  var h = "<div class='body'><div class='checks'>";
+  for (var i = 0; i < R.checks.length; i++)
+    h += "<div class='check'><span class='ok'>PASS</span> &nbsp;" + R.checks[i] + "</div>";
+  return h + "</div></div>";
+}
+function refusalHTML(code, msg, compact) {
+  return "<div class='refusal" + (compact ? " compact" : "") + "'><div class='code'>" + code +
+         "</div><div class='msg'>" + msg + "</div></div>";
+}
+var stage = document.getElementById("scenes");
+var built = [];
+SCENES.forEach(function(s, i) {
+  var d = document.createElement("div");
+  d.className = "scene"; d.id = "sc" + i;
+  d.innerHTML = (s[2] ? "<div class='kicker'>" + s[2] + "</div>" : "") +
+                "<div class='headline'>" + s[3] + "</div>" +
+                s[4] +
+                (s[5] ? "<div class='caption'>" + s[5] + "</div>" : "");
+  stage.appendChild(d); built.push(d);
+});
+function fade(t, t0, t1) { // 0 outside, ramps 0.4s in/out
+  if (t < t0 || t > t1) return 0;
+  var a = Math.min(1, (t - t0) / 0.4), b = Math.min(1, (t1 - t) / 0.4);
+  return Math.min(a, b);
+}
+window.renderAt = function(t) {
+  for (var i = 0; i < SCENES.length; i++)
+    built[i].style.opacity = fade(t, SCENES[i][0], SCENES[i][1]);
+};
+window.renderAt(0);
+</script>
+</body>
+</html>
