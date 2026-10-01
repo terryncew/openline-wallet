@@ -1,5 +1,7 @@
 # OpenLine Wallet
 
+Receiver-owned authorization: the system receiving an agent's request decides what the agent may do, not the agent's vendor.
+
 **The model proposes, the receiver decides, and the proof travels.**
 
 OpenLine Wallet keeps user-owned authority history outside the AI provider.
