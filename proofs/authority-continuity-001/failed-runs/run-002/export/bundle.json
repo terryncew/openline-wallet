@@ -1,0 +1,639 @@
+{
+  "ac09_reused_evidence": {
+    "note": "Trust-root succession did not occur in this run.",
+    "produced_by_this_run": false,
+    "result": "PASS",
+    "source": "frozen prereg assertion"
+  },
+  "experiment": "AUTHORITY-CONTINUITY-001",
+  "frozen_hashes": {
+    "OPENLINE-AUTHORITY-CONTINUITY-v0.1.md": "2f96264c7dbc92cf13587ab932eb4d14aa876f6cfce6950d2f96909f3efe0c26",
+    "PREREG-v1.0.md": "3807bc088bc0236e2ce869018f9355c05581fa6082c3f948daddab90adb62e1a"
+  },
+  "grants": [
+    {
+      "grant_id": "G-A",
+      "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+      "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+      "scope": "full",
+      "signature": "6f581cbbfd7e335419fe25aac53f7dfa49fd029a1753589b509e1750461ff5e6bad4085596ad5c27863d7fb126e2fc8ec12a719d1322da24a0b429478f2fb403",
+      "subject_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0",
+      "valid_from_seq": 1,
+      "valid_until_seq": null
+    },
+    {
+      "grant_id": "G-B",
+      "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+      "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+      "scope": "full",
+      "signature": "15d63462c1ee88a6134eba5c7379a0d43fc6444edf74c2a6680d49b695847ea5e090572503f2288b33aab5279a5865dd0b5164a2127b0db9934f7e72e278470a",
+      "subject_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a",
+      "valid_from_seq": 1,
+      "valid_until_seq": null
+    }
+  ],
+  "ledger": [
+    {
+      "amount": 100,
+      "grant_id": "G-B",
+      "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+      "phase_1_receipt_id": "R-003",
+      "worker_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a"
+    }
+  ],
+  "mandate": {
+    "issued_seq": 1,
+    "job": {
+      "acceptance_criteria": "phase-1 evidence must contain a well-formed transfer order (payer, payee, amount = 100, phase = 1); phase-2 evidence must reference the accepted phase-1 receipt and contain a matching execution record (phase = 2).",
+      "description": "Prepare and execute a vendor transfer of 100 units in two phases. Phase 1 (prepare): assemble the transfer order. Phase 2 (execute): commit the transfer to the receiver-guarded ledger.",
+      "phases": [
+        "prepare",
+        "execute"
+      ]
+    },
+    "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+    "owner_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+    "signature": "2bc2d496a36b7d152c230ed2c7614c8135a8cc2c747fe156064dc4fe090b4edc50dff4f10ff298dc1e8862d2ba7a8e60edeb427135c49fa5d1fb724d8aa6e90d"
+  },
+  "processes": [
+    {
+      "command": [
+        "/root/.pyenv/versions/3.12.13/bin/python",
+        "/workspace/openline-wallet/proofs/authority-continuity-001/run.py",
+        "--worker",
+        "worker-a",
+        "--phase",
+        "1"
+      ],
+      "home": "/tmp/authority-continuity-workers-64i64ulf/worker-a-home",
+      "returncode": 0,
+      "stdout_sha256": "e354d90ab3a4a16331e4e65b0bbb79be6cfb0bec39a12c856effed01ec7106b2"
+    },
+    {
+      "command": [
+        "/root/.pyenv/versions/3.12.13/bin/python",
+        "/workspace/openline-wallet/proofs/authority-continuity-001/run.py",
+        "--worker",
+        "worker-b",
+        "--phase",
+        "2",
+        "--receipt-id",
+        "R-003"
+      ],
+      "home": "/tmp/authority-continuity-workers-64i64ulf/worker-b-pre-home",
+      "returncode": 0,
+      "stdout_sha256": "a1e6ffed4d86490984910f1065c22fc8c10e0080f3db73a4ffbab07d6557a5a5"
+    },
+    {
+      "command": [
+        "/root/.pyenv/versions/3.12.13/bin/python",
+        "/workspace/openline-wallet/proofs/authority-continuity-001/run.py",
+        "--worker",
+        "worker-b",
+        "--phase",
+        "2",
+        "--receipt-id",
+        "R-003"
+      ],
+      "home": "/tmp/authority-continuity-workers-64i64ulf/worker-b-home",
+      "returncode": 0,
+      "stdout_sha256": "97c2119833d71e953a79a7d9dd7275f658bceb45ea9c485243253480f6b8aa41"
+    }
+  ],
+  "public_keys": {
+    "owner": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+    "receiver": "5a8602351a7a36707773143923bd7f252947531d5e693ccaa7f358619acca47d"
+  },
+  "receipts": [
+    {
+      "action": "mandate-admitted",
+      "decision": "ACCEPTED",
+      "grant_id": null,
+      "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+      "payload_hash": "08a4295f292d24dc321f9180ec8958adc5b3e3b5632a6aa586cfeb72b6a62d83",
+      "prev_receipt_hash": null,
+      "reason_codes": [],
+      "receipt_id": "R-001",
+      "signature": "1cf29fe0bfb5565f5bf9c062912fb3d0f26eac75c7bead8ee93231e5b44161512c1b8c9a4f87af02c420926853b2dbf2df725ade99ac5348f9cf639ac6b44d0a",
+      "worker_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304"
+    },
+    {
+      "action": "grant-admitted",
+      "decision": "ACCEPTED",
+      "grant_id": "G-A",
+      "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+      "payload_hash": "18bce3d9e2d07eaf305a04818d39a5ca0a0203ecdf7e4ff30f813250ce71e9b4",
+      "prev_receipt_hash": "09a46846f4c9cb9f49563bb66ad8203f6acabb66a1b9280942c57da9699ea789",
+      "reason_codes": [],
+      "receipt_id": "R-002",
+      "signature": "8319e2e4f0326afba6a95861f3b96e640905da4b94ea7a82d72accbc70ee5ffc847906ada65c9610f6e04b6162a145aee5248601e7cf3c614eb896047cfb250f",
+      "worker_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0"
+    },
+    {
+      "action": "phase-1",
+      "decision": "ACCEPTED",
+      "grant_id": "G-A",
+      "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+      "payload_hash": "695421f37255d171b5d9172161c9c3668b9ac3a73baed1caa076045c45857742",
+      "prev_receipt_hash": "d212d58ff47d73effef46f78d5b3a3cc02bb3c3725fc0414e7a6283d82590e81",
+      "reason_codes": [],
+      "receipt_id": "R-003",
+      "signature": "2f9df38d072424d1ce2c82e5b4f2cf5aa43b1286f1633dfa376ea067db0204c90390a6c801e8763ba5bc59aaa427f5dcb3fbf02429710ef9e19d38a41c7ff60b",
+      "worker_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0"
+    },
+    {
+      "action": "revocation-recorded",
+      "decision": "ACCEPTED",
+      "grant_id": "G-A",
+      "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+      "payload_hash": "bdabb2cfb2dc2890b709ab2cab10d03d846ab6e1938bece1b78dc06df259034b",
+      "prev_receipt_hash": "fad5f2277aad09d4507f834f2ca7f62a143c27239f124dac6123b8bec5adfdf8",
+      "reason_codes": [],
+      "receipt_id": "R-004",
+      "signature": "bf13e296cf5724045b1fd467324f51046a0e3af4e082f236bed0a51027d1e6401ef593bb6048b950444927b944bc8bb9eaaa3cae5af697ed526112ca7887140a",
+      "worker_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304"
+    },
+    {
+      "action": "grant-admitted",
+      "decision": "ACCEPTED",
+      "grant_id": "G-B",
+      "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+      "payload_hash": "07306e0537ad9b1d102fc86740fd50dcac36a81e71a67b1ae91f206f5a46738a",
+      "prev_receipt_hash": "5641c87e54010f08737c8ec9ca5b0a33383a6035bb220c2971c7eb8c1c4c9bc4",
+      "reason_codes": [],
+      "receipt_id": "R-005",
+      "signature": "eda5ef2cd423e313c212228d6714147108f861b9ad09b65c5c55de5be683e223c40b16e215e1e72b6cb0cfb8586600ccba4fd178dec17ab18673b45f1152ab00",
+      "worker_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a"
+    },
+    {
+      "action": "phase-2",
+      "decision": "ACCEPTED",
+      "grant_id": "G-B",
+      "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+      "payload_hash": "62603e3ee4974721fcd26f1299fbaee652768715de9d945b0cf0011630443468",
+      "prev_receipt_hash": "fc8d1e993e98b44f6b74f7e59f12f5b41ce0be16ec90e93e1784eaef968c20e4",
+      "reason_codes": [],
+      "receipt_id": "R-006",
+      "signature": "ec9c9a81889886944a9d3978b74badbffa833642fa4ffaaf0b9a2fd3101fe6b11b35c94dad3768f96e8b40a0c736ad09c25e218aeb287737345d2798f6ab8a0c",
+      "worker_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a"
+    }
+  ],
+  "revocation": {
+    "grant_id": "G-A",
+    "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+    "reason": "worker A removed from job",
+    "revocation_id": "REV-A",
+    "seq": 4,
+    "signature": "1f0d124c3d1a1411d2b92aedb4de0e0aa9fe320764e1cd77612c200d1a6746364da5782f1ec91b87202b63169300695aaa55aa532d811f09d8ac622f26810305"
+  },
+  "run_log": [
+    {
+      "decision": "ACCEPTED",
+      "kind": "mandate",
+      "ledger_length": 0,
+      "reason_codes": [],
+      "receipt_id": "R-001",
+      "receipt_log_length": 1,
+      "request": {
+        "artifact": {
+          "issued_seq": 1,
+          "job": {
+            "acceptance_criteria": "phase-1 evidence must contain a well-formed transfer order (payer, payee, amount = 100, phase = 1); phase-2 evidence must reference the accepted phase-1 receipt and contain a matching execution record (phase = 2).",
+            "description": "Prepare and execute a vendor transfer of 100 units in two phases. Phase 1 (prepare): assemble the transfer order. Phase 2 (execute): commit the transfer to the receiver-guarded ledger.",
+            "phases": [
+              "prepare",
+              "execute"
+            ]
+          },
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "owner_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "signature": "2bc2d496a36b7d152c230ed2c7614c8135a8cc2c747fe156064dc4fe090b4edc50dff4f10ff298dc1e8862d2ba7a8e60edeb427135c49fa5d1fb724d8aa6e90d"
+        }
+      },
+      "seq": 1
+    },
+    {
+      "decision": "ACCEPTED",
+      "kind": "grant",
+      "ledger_length": 0,
+      "reason_codes": [],
+      "receipt_id": "R-002",
+      "receipt_log_length": 2,
+      "request": {
+        "artifact": {
+          "grant_id": "G-A",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "scope": "full",
+          "signature": "6f581cbbfd7e335419fe25aac53f7dfa49fd029a1753589b509e1750461ff5e6bad4085596ad5c27863d7fb126e2fc8ec12a719d1322da24a0b429478f2fb403",
+          "subject_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        }
+      },
+      "seq": 2
+    },
+    {
+      "decision": "ACCEPTED",
+      "kind": "attempt",
+      "ledger_length": 0,
+      "reason_codes": [],
+      "receipt_id": "R-003",
+      "receipt_log_length": 3,
+      "request": {
+        "action": "phase-1",
+        "control": null,
+        "evidence": {
+          "amount": 100,
+          "payee": "vendor",
+          "payer": "owner",
+          "phase": 1
+        },
+        "grant": {
+          "grant_id": "G-A",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "scope": "full",
+          "signature": "6f581cbbfd7e335419fe25aac53f7dfa49fd029a1753589b509e1750461ff5e6bad4085596ad5c27863d7fb126e2fc8ec12a719d1322da24a0b429478f2fb403",
+          "subject_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        },
+        "special": null,
+        "worker_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0"
+      },
+      "seq": 3
+    },
+    {
+      "decision": "ACCEPTED",
+      "kind": "revocation",
+      "ledger_length": 0,
+      "reason_codes": [],
+      "receipt_id": "R-004",
+      "receipt_log_length": 4,
+      "request": {
+        "artifact": {
+          "grant_id": "G-A",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "reason": "worker A removed from job",
+          "revocation_id": "REV-A",
+          "seq": 4,
+          "signature": "1f0d124c3d1a1411d2b92aedb4de0e0aa9fe320764e1cd77612c200d1a6746364da5782f1ec91b87202b63169300695aaa55aa532d811f09d8ac622f26810305"
+        }
+      },
+      "seq": 4
+    },
+    {
+      "decision": "REFUSED",
+      "kind": "attempt",
+      "ledger_length": 0,
+      "reason_codes": [
+        "grant_revoked"
+      ],
+      "receipt_id": null,
+      "receipt_log_length": 4,
+      "request": {
+        "action": "phase-2",
+        "control": "C1",
+        "evidence": {
+          "amount": 100,
+          "payee": "vendor",
+          "payer": "owner",
+          "phase": 2,
+          "phase_1_receipt_id": "R-003"
+        },
+        "grant": {
+          "grant_id": "G-A",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "scope": "full",
+          "signature": "6f581cbbfd7e335419fe25aac53f7dfa49fd029a1753589b509e1750461ff5e6bad4085596ad5c27863d7fb126e2fc8ec12a719d1322da24a0b429478f2fb403",
+          "subject_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        },
+        "special": null,
+        "worker_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0"
+      },
+      "seq": 5
+    },
+    {
+      "decision": "REFUSED",
+      "kind": "attempt",
+      "ledger_length": 0,
+      "reason_codes": [
+        "replayed_authorization"
+      ],
+      "receipt_id": null,
+      "receipt_log_length": 4,
+      "request": {
+        "action": "phase-1",
+        "control": "C2",
+        "evidence": {
+          "amount": 100,
+          "payee": "vendor",
+          "payer": "owner",
+          "phase": 1
+        },
+        "grant": {
+          "grant_id": "G-A",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "scope": "full",
+          "signature": "6f581cbbfd7e335419fe25aac53f7dfa49fd029a1753589b509e1750461ff5e6bad4085596ad5c27863d7fb126e2fc8ec12a719d1322da24a0b429478f2fb403",
+          "subject_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        },
+        "special": "replay",
+        "worker_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0"
+      },
+      "seq": 6
+    },
+    {
+      "decision": "REFUSED",
+      "kind": "attempt",
+      "ledger_length": 0,
+      "reason_codes": [
+        "missing_grant"
+      ],
+      "receipt_id": null,
+      "receipt_log_length": 4,
+      "request": {
+        "action": "phase-2",
+        "control": "C3-no-grant",
+        "evidence": {
+          "amount": 100,
+          "payee": "vendor",
+          "payer": "owner",
+          "phase": 2,
+          "phase_1_receipt_id": "R-003"
+        },
+        "grant": null,
+        "special": null,
+        "worker_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a"
+      },
+      "seq": 7
+    },
+    {
+      "decision": "REFUSED",
+      "kind": "attempt",
+      "ledger_length": 0,
+      "reason_codes": [
+        "worker_mismatch"
+      ],
+      "receipt_id": null,
+      "receipt_log_length": 4,
+      "request": {
+        "action": "phase-2",
+        "control": "C3-a-grant",
+        "evidence": {
+          "amount": 100,
+          "payee": "vendor",
+          "payer": "owner",
+          "phase": 2,
+          "phase_1_receipt_id": "R-003"
+        },
+        "grant": {
+          "grant_id": "G-A",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "scope": "full",
+          "signature": "6f581cbbfd7e335419fe25aac53f7dfa49fd029a1753589b509e1750461ff5e6bad4085596ad5c27863d7fb126e2fc8ec12a719d1322da24a0b429478f2fb403",
+          "subject_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        },
+        "special": null,
+        "worker_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a"
+      },
+      "seq": 8
+    },
+    {
+      "decision": "REFUSED",
+      "kind": "attempt",
+      "ledger_length": 0,
+      "reason_codes": [
+        "grant_not_admitted"
+      ],
+      "receipt_id": null,
+      "receipt_log_length": 4,
+      "request": {
+        "action": "phase-2",
+        "control": "C4",
+        "evidence": {
+          "amount": 100,
+          "payee": "vendor",
+          "payer": "owner",
+          "phase": 2,
+          "phase_1_receipt_id": "R-003"
+        },
+        "grant": {
+          "grant_id": "G-C4",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "scope": "full",
+          "signature": "3f2d2d89d6b5f12cbb07221f5c36d90bc3476938f53ad19aed045e44b4e5e79c1cad75b3bd313866386c1a341caac6385bffccdd63be50dd9d014aad9f5c700c",
+          "subject_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        },
+        "special": null,
+        "worker_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0"
+      },
+      "seq": 9
+    },
+    {
+      "decision": "REFUSED",
+      "kind": "attempt",
+      "ledger_length": 0,
+      "reason_codes": [
+        "grant_not_admitted"
+      ],
+      "receipt_id": null,
+      "receipt_log_length": 4,
+      "request": {
+        "action": "phase-2",
+        "control": "C5",
+        "evidence": {
+          "amount": 100,
+          "payee": "vendor",
+          "payer": "owner",
+          "phase": 2,
+          "phase_1_receipt_id": "R-003"
+        },
+        "grant": {
+          "grant_id": "G-C5",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "mandate_id": "fe25ccd364416897fb1984223219506a4fc612e2b81758f97ad69ffe79349487",
+          "scope": "full",
+          "signature": "a703a7c41d60c90efaad5819db6b79edc5503395fd7eabb75608d432ee27eb3045a53bc3f466063065f9f9f3b389937253e8df53b171b6ac75cd380ea8518c0a",
+          "subject_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        },
+        "special": null,
+        "worker_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0"
+      },
+      "seq": 10
+    },
+    {
+      "decision": "REFUSED",
+      "kind": "attempt",
+      "ledger_length": 0,
+      "reason_codes": [
+        "receipt_signature_invalid"
+      ],
+      "receipt_id": null,
+      "receipt_log_length": 4,
+      "request": {
+        "action": "phase-2",
+        "control": "C6",
+        "evidence": {
+          "chain_tip": {
+            "action": "phase-2",
+            "decision": "ACCEPTED",
+            "grant_id": "G-A",
+            "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+            "payload_hash": "695421f37255d171b5d9172161c9c3668b9ac3a73baed1caa076045c45857742",
+            "prev_receipt_hash": "d212d58ff47d73effef46f78d5b3a3cc02bb3c3725fc0414e7a6283d82590e81",
+            "reason_codes": [],
+            "receipt_id": "R-003",
+            "signature": "2f9df38d072424d1ce2c82e5b4f2cf5aa43b1286f1633dfa376ea067db0204c90390a6c801e8763ba5bc59aaa427f5dcb3fbf02429710ef9e19d38a41c7ff60b",
+            "worker_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0"
+          }
+        },
+        "grant": {
+          "grant_id": "G-A",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "scope": "full",
+          "signature": "6f581cbbfd7e335419fe25aac53f7dfa49fd029a1753589b509e1750461ff5e6bad4085596ad5c27863d7fb126e2fc8ec12a719d1322da24a0b429478f2fb403",
+          "subject_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        },
+        "special": "tampered_receipt",
+        "worker_pubkey": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0"
+      },
+      "seq": 11
+    },
+    {
+      "decision": "REFUSED",
+      "kind": "attempt",
+      "ledger_length": 0,
+      "reason_codes": [
+        "authority_not_rooted_at_owner"
+      ],
+      "receipt_id": null,
+      "receipt_log_length": 4,
+      "request": {
+        "action": "phase-2",
+        "control": "C7",
+        "evidence": {
+          "amount": 100,
+          "payee": "vendor",
+          "payer": "owner",
+          "phase": 2,
+          "phase_1_receipt_id": "R-003"
+        },
+        "grant": {
+          "grant_id": "SELF-INSTALL",
+          "issuer_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a",
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "scope": "full",
+          "signature": "d5d6d9b79f27c59d1fd7a98a1d2616131f470666800a98c86c82f2dd7afe36168d725f09e829cf729487418adf368e33cfceb8322a7be341b49ea03e5fdb0207",
+          "subject_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        },
+        "special": "self_install",
+        "worker_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a"
+      },
+      "seq": 12
+    },
+    {
+      "decision": "REFUSED",
+      "kind": "attempt",
+      "ledger_length": 0,
+      "reason_codes": [
+        "missing_grant"
+      ],
+      "receipt_id": null,
+      "receipt_log_length": 4,
+      "request": {
+        "action": "phase-2",
+        "control": "S7",
+        "evidence": {
+          "amount": 100,
+          "payee": "vendor",
+          "payer": "owner",
+          "phase": 2,
+          "phase_1_receipt_id": "R-003"
+        },
+        "grant": null,
+        "special": null,
+        "worker_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a"
+      },
+      "seq": 13
+    },
+    {
+      "decision": "ACCEPTED",
+      "kind": "successor-grant",
+      "ledger_length": 0,
+      "reason_codes": [],
+      "receipt_id": "R-005",
+      "receipt_log_length": 5,
+      "request": {
+        "artifact": {
+          "grant_id": "G-B",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "scope": "full",
+          "signature": "15d63462c1ee88a6134eba5c7379a0d43fc6444edf74c2a6680d49b695847ea5e090572503f2288b33aab5279a5865dd0b5164a2127b0db9934f7e72e278470a",
+          "subject_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        }
+      },
+      "seq": 14
+    },
+    {
+      "decision": "ACCEPTED",
+      "kind": "attempt",
+      "ledger_length": 1,
+      "reason_codes": [],
+      "receipt_id": "R-006",
+      "receipt_log_length": 6,
+      "request": {
+        "action": "phase-2",
+        "control": null,
+        "evidence": {
+          "amount": 100,
+          "payee": "vendor",
+          "payer": "owner",
+          "phase": 2,
+          "phase_1_receipt_id": "R-003"
+        },
+        "grant": {
+          "grant_id": "G-B",
+          "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+          "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+          "scope": "full",
+          "signature": "15d63462c1ee88a6134eba5c7379a0d43fc6444edf74c2a6680d49b695847ea5e090572503f2288b33aab5279a5865dd0b5164a2127b0db9934f7e72e278470a",
+          "subject_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a",
+          "valid_from_seq": 1,
+          "valid_until_seq": null
+        },
+        "special": null,
+        "worker_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a"
+      },
+      "seq": 15
+    }
+  ],
+  "worker_public_keys": {
+    "worker-a": "3488a6d43109cd82dba32cf5dbaf885fc54b6dc8de31c5433d6f27b6154c30d0",
+    "worker-b": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a",
+    "worker-c": "a5d937d8d1bca890c7629a973b5ecda1ae69b317cda6de900c32c09b7ffd0559"
+  }
+}

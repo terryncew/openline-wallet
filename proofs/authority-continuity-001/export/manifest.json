@@ -1,0 +1,12 @@
+{
+  "bundle.json": "38b652064268b6def9d1e39172937f6125531db1e5cd3c077cb0e46c0d56763f",
+  "grant-a.json": "a471d629d733eda49cc945205e8e088fa425c7a80f5158c8dc20c253901e1ff7",
+  "grant-b.json": "99b5be308400a6f4843b0a6389d950d8fb55cda3d390e09d690f9ea48680a238",
+  "ledger.json": "09c1f7d52dead331bf2a000dabbfbc7e67cee5f1c8553e82fa4bc2f749c36a41",
+  "mandate.json": "64cab61c6beb44143ced17c5e2991e580b2c8fb7bb62aa7fbf17fe2a9f83ed12",
+  "processes.json": "e80125c1e990dad454411862358bbc03b805b71886b6e30fab67702b9863d22b",
+  "public-keys.json": "7c064bce301f0d8cddfc2681fcbe6a092be653933a33a32985142da90743a35b",
+  "receipts.json": "5f0bf812a70e7dca557f43e59610fa658927dbbf8f9280cd161ebf375d80e142",
+  "revocation-a.json": "acfbbd13dbaf7b3a82f77034c6d37809041f1931833e421fa10fbc37dd0a7c3b",
+  "run-log.json": "5664b1884d34f6cda8e1aeb4ed9846e4141991b0b635194bf0b2fee87ed62646"
+}

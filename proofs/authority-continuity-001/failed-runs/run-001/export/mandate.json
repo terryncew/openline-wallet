@@ -1,0 +1,14 @@
+{
+  "issued_seq": 1,
+  "job": {
+    "acceptance_criteria": "phase-1 evidence must contain a well-formed transfer order (payer, payee, amount = 100, phase = 1); phase-2 evidence must reference the accepted phase-1 receipt and contain a matching execution record (phase = 2).",
+    "description": "Prepare and execute a vendor transfer of 100 units in two phases. Phase 1 (prepare): assemble the transfer order. Phase 2 (execute): commit the transfer to the receiver-guarded ledger.",
+    "phases": [
+      "prepare",
+      "execute"
+    ]
+  },
+  "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+  "owner_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+  "signature": "2bc2d496a36b7d152c230ed2c7614c8135a8cc2c747fe156064dc4fe090b4edc50dff4f10ff298dc1e8862d2ba7a8e60edeb427135c49fa5d1fb724d8aa6e90d"
+}

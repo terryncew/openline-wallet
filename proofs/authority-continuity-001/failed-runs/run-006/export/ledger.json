@@ -1,0 +1,9 @@
+[
+  {
+    "amount": 100,
+    "grant_id": "G-B",
+    "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+    "phase_1_receipt_id": "R-003",
+    "worker_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a"
+  }
+]
