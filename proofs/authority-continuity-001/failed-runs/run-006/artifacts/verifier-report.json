@@ -1,0 +1,12 @@
+{
+  "clean_home": true,
+  "command": "python -I verify.py --bundle <read-only-export> --profile <frozen-profile>",
+  "inputs": {
+    "bundle_manifest": "1f4170549ae688ff444e2023629f354e996eb1208cc208099f55dc050907e129",
+    "profile": "2f96264c7dbc92cf13587ab932eb4d14aa876f6cfce6950d2f96909f3efe0c26"
+  },
+  "network_used": false,
+  "returncode": 1,
+  "stderr": "Traceback (most recent call last):\n  File \"/tmp/authority-continuity-verifier-ziblbddl/verify.py\", line 88, in <module>\n    p=argparse.ArgumentParser(); p.add_argument(\"--bundle\",type=Path,required=True); p.add_argument(\"--profile\",type=Path,required=True); a=p.parse_args(); raise SystemExit(main(a.bundle,a.profile))\n                                                                                                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/authority-continuity-verifier-ziblbddl/verify.py\", line 62, in main\n    elif not valid(g, owner): reasons=[\"authority_not_rooted_at_owner\"]\n             ^^^^^^^^^^^^^^^\n  File \"/tmp/authority-continuity-verifier-ziblbddl/verify.py\", line 18, in valid\n    Ed25519PublicKey.from_public_bytes(bytes.fromhex(public_key)).verify(bytes.fromhex(artifact[\"signature\"]), bytes.fromhex(digest(body)))\ncryptography.exceptions.InvalidSignature\n",
+  "stdout": ""
+}

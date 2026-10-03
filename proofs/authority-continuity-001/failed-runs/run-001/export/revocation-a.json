@@ -1,0 +1,8 @@
+{
+  "grant_id": "G-A",
+  "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+  "reason": "worker A removed from job",
+  "revocation_id": "REV-A",
+  "seq": 4,
+  "signature": "1f0d124c3d1a1411d2b92aedb4de0e0aa9fe320764e1cd77612c200d1a6746364da5782f1ec91b87202b63169300695aaa55aa532d811f09d8ac622f26810305"
+}

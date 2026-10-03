@@ -1,0 +1,12 @@
+{
+  "clean_home": true,
+  "command": "python -I verify.py --bundle <read-only-export> --profile <frozen-profile>",
+  "inputs": {
+    "bundle_manifest": "d1848f85a1d0c1e942bdb55630f460bb91b5aa0fecc94f4982cc1c78dccafbb7",
+    "profile": "2f96264c7dbc92cf13587ab932eb4d14aa876f6cfce6950d2f96909f3efe0c26"
+  },
+  "network_used": false,
+  "returncode": 1,
+  "stderr": "",
+  "stdout": "{\"first_disagreement\": \"negative control coverage\", \"result\": \"FAIL\"}\n"
+}

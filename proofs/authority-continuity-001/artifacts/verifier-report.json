@@ -1,0 +1,12 @@
+{
+  "clean_home": true,
+  "command": "python -I verify.py --bundle <read-only-export> --profile <frozen-profile>",
+  "inputs": {
+    "bundle_manifest": "8d649b6e7795912cefaa4b38ea85cecef73c960eaff747aa821d176a7daa3fab",
+    "profile": "2f96264c7dbc92cf13587ab932eb4d14aa876f6cfce6950d2f96909f3efe0c26"
+  },
+  "network_used": false,
+  "returncode": 0,
+  "stderr": "",
+  "stdout": "{\"controls_verified\": [\"C1\", \"C2\", \"C3\", \"C4\", \"C5\", \"C6\", \"C7\"], \"decisions_verified\": 15, \"receipts_verified\": 6, \"result\": \"PASS\"}\n"
+}

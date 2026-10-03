@@ -1,0 +1,13 @@
+{
+  "export_only_verifier": "FAIL",
+  "negative_controls": {
+    "C1": "REFUSED",
+    "C2": "REFUSED",
+    "C3": "REFUSED",
+    "C4": "REFUSED",
+    "C5": "REFUSED",
+    "C6": "REFUSED",
+    "C7": "REFUSED"
+  },
+  "result": "INCONCLUSIVE_APPARATUS"
+}

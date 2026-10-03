@@ -1,0 +1,45 @@
+[
+  {
+    "command": [
+      "/root/.pyenv/versions/3.12.13/bin/python",
+      "/workspace/openline-wallet/proofs/authority-continuity-001/run.py",
+      "--worker",
+      "worker-a",
+      "--phase",
+      "1"
+    ],
+    "home": "/tmp/authority-continuity-workers-z69_2xgh/worker-a-home",
+    "returncode": 0,
+    "stdout_sha256": "fd71bb2aa9df04001eec0cb409e055a7e7e09bbbcd2c56aa210bf71a93dac59d"
+  },
+  {
+    "command": [
+      "/root/.pyenv/versions/3.12.13/bin/python",
+      "/workspace/openline-wallet/proofs/authority-continuity-001/run.py",
+      "--worker",
+      "worker-b",
+      "--phase",
+      "2",
+      "--receipt-id",
+      "R-003"
+    ],
+    "home": "/tmp/authority-continuity-workers-z69_2xgh/worker-b-pre-home",
+    "returncode": 0,
+    "stdout_sha256": "131361f28f8a6a3b5e6ca35d5c25f2379c0ca0aad78d3052bdf31abcda789b9c"
+  },
+  {
+    "command": [
+      "/root/.pyenv/versions/3.12.13/bin/python",
+      "/workspace/openline-wallet/proofs/authority-continuity-001/run.py",
+      "--worker",
+      "worker-b",
+      "--phase",
+      "2",
+      "--receipt-id",
+      "R-003"
+    ],
+    "home": "/tmp/authority-continuity-workers-z69_2xgh/worker-b-home",
+    "returncode": 0,
+    "stdout_sha256": "0b105ef245271e38e880ae21bf3808cfe48e8cb6dcbd3c488545682e7ee46467"
+  }
+]

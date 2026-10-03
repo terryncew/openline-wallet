@@ -1,0 +1,10 @@
+{
+  "grant_id": "G-B",
+  "issuer_pubkey": "300797818be90e2ff97631daec04e471bb82c8cb276de025ca6b243e73e09304",
+  "mandate_id": "7062d68623819503dc76b1cbb90e2d28397ecb5c8f2cd1a36603aeee9f5bf7a8",
+  "scope": "full",
+  "signature": "15d63462c1ee88a6134eba5c7379a0d43fc6444edf74c2a6680d49b695847ea5e090572503f2288b33aab5279a5865dd0b5164a2127b0db9934f7e72e278470a",
+  "subject_pubkey": "9490f2b97c0d0eea71dfef1b195799450c31bd2f481e0a8d2942f250fe2a828a",
+  "valid_from_seq": 1,
+  "valid_until_seq": null
+}
