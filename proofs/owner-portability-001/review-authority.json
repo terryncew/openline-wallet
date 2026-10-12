@@ -1,0 +1,221 @@
+{
+  "review": "OWNER-PORTABILITY-001 independent local authority review",
+  "verdict": "PASS_WITH_LIMITS",
+  "recorded_packet_sha256": "c5c7e9efef80ceda80d1191296ad6b290c2042932853d7846482cb744a0076c8",
+  "recorded_packet_record_hash": "cc8384283a26cf3e63776af62a9cff456b8cc5ec36135d25d078aa26b42d7829",
+  "public_verifier_result": {
+    "verdict": "OWNER_PORTABILITY_LOCAL_PASS",
+    "transactions": 8,
+    "permitted": 3,
+    "refused": 5,
+    "wallet_events": 5,
+    "gate_receipts": 4,
+    "owner_decisions": 4,
+    "independent_receivers_verified": 2
+  },
+  "recorded_outcomes": [
+    {
+      "step": 1,
+      "site": "site-a",
+      "subject": "agent-a",
+      "decision": "PERMITTED",
+      "reason": null,
+      "terms_version": "v1",
+      "transaction_hash": "65896df3674c1625d1af834ef3400b7785f270260c640c4b9054f21e33ad3fd6",
+      "terms_hash": "fad6a8f9ad834ba3e96b4b9942c7d1edbba91e5281f18f5434f3bd565a5ebd28",
+      "presentation_hash": "a674a59ef396c2de0f3948947f8b7d86a276a8cec7a23b7b8baf4656346523fc",
+      "consent_hash": "de6575b057b9c655dbbc5da098141eccb9d1a39ca5d4f5f6793e6e6301fe1063",
+      "gate_receipt_hash": "0867fba2908a774d4ac87cc52ee7fb5bdee0a89b87a617e461d40490b5101443",
+      "gate_decision": "ALLOWED",
+      "effect_hash": "1fe02bba26e0995b76427a68eb3f5077eb757870774d8e78aa74f69e0fbff0c9",
+      "protected_simulated_effects": 1,
+      "receipt_preserved_in_final_bundle": true
+    },
+    {
+      "step": 2,
+      "site": "site-b",
+      "subject": "agent-a",
+      "decision": "REFUSED",
+      "reason": "ADVERTISING_SHARING_REFUSED",
+      "terms_version": "v1",
+      "transaction_hash": "2decf728fbbafbf747aed337e709d6ac105e4f6305e0b44396204b6caa40025c",
+      "terms_hash": "865e4e3bd965a733269fc5c1aa912b7add359b3a634a913c5174b60e76cc9c33",
+      "presentation_hash": "d481b1baf12517dc5a663a4c2130f2638c8acfe8ddc75c1816c0913ddcc33e54",
+      "consent_hash": null,
+      "gate_receipt_hash": null,
+      "gate_decision": null,
+      "effect_hash": null,
+      "protected_simulated_effects": 0,
+      "receipt_preserved_in_final_bundle": null
+    },
+    {
+      "step": 3,
+      "site": "unknown-site",
+      "subject": "agent-a",
+      "decision": "REFUSED",
+      "reason": "WALLET_NOT_RECOGNIZED",
+      "terms_version": "v1",
+      "transaction_hash": "a9b9565ef5f655a46eabdd50d1d090c3ecebaf292e0492b5e2c71f279083fefe",
+      "terms_hash": "11c81197ed6395770649995cb90842610c3566d439f77af0fe9bc0ade6e8a592",
+      "presentation_hash": "a1b39c670db4f96578b8d33ee23c8b32e5bfd0ed69cdaf046a424682202a159a",
+      "consent_hash": null,
+      "gate_receipt_hash": null,
+      "gate_decision": null,
+      "effect_hash": null,
+      "protected_simulated_effects": 0,
+      "receipt_preserved_in_final_bundle": null
+    },
+    {
+      "step": 4,
+      "site": "declining-site",
+      "subject": "agent-a",
+      "decision": "REFUSED",
+      "reason": "ARRANGEMENT_DECLINED",
+      "terms_version": "v1",
+      "transaction_hash": "777504e7cee00f9ad2a11753c42967e21d9d74caeba891f09cc0a4c11b2a481d",
+      "terms_hash": "422c86f8bb0194abeb5502e1f5a31600a2ec3844026f9b90f9c3213e5f9b5ad0",
+      "presentation_hash": "2526321ffdca95c5215d33b2ff23dd1b5521b31cf690af50c36d67634e876c14",
+      "consent_hash": null,
+      "gate_receipt_hash": null,
+      "gate_decision": null,
+      "effect_hash": null,
+      "protected_simulated_effects": 0,
+      "receipt_preserved_in_final_bundle": null
+    },
+    {
+      "step": 5,
+      "site": "site-a",
+      "subject": "agent-a",
+      "decision": "REFUSED",
+      "reason": "MANDATE_REVOKED",
+      "terms_version": "v1",
+      "transaction_hash": "9c1650d7658effc020d3d1852135e9b88a2206b6dc28a5593b3f865e9188ec8e",
+      "terms_hash": "fad6a8f9ad834ba3e96b4b9942c7d1edbba91e5281f18f5434f3bd565a5ebd28",
+      "presentation_hash": "ef391acf132f1ca2c8ac06305e7ab17224a300d38800d9de2528a7d86428b082",
+      "consent_hash": "de6575b057b9c655dbbc5da098141eccb9d1a39ca5d4f5f6793e6e6301fe1063",
+      "gate_receipt_hash": "c32629cbd42f7558bfd40299146463537396e3c707576bfbe0e11fa4ea40b73d",
+      "gate_decision": "STOPPED",
+      "effect_hash": null,
+      "protected_simulated_effects": 0,
+      "receipt_preserved_in_final_bundle": true
+    },
+    {
+      "step": 6,
+      "site": "site-a",
+      "subject": "agent-b",
+      "decision": "PERMITTED",
+      "reason": null,
+      "terms_version": "v1",
+      "transaction_hash": "c067e5f2fdeb1004269103b2bf02a8295e59d4aaa55d8550c6643c818a9bb7d0",
+      "terms_hash": "fad6a8f9ad834ba3e96b4b9942c7d1edbba91e5281f18f5434f3bd565a5ebd28",
+      "presentation_hash": "42423b12f7dcf93a189bba8c1bc65de73f7ef6f01474c86052e169a7f58e0877",
+      "consent_hash": "de6575b057b9c655dbbc5da098141eccb9d1a39ca5d4f5f6793e6e6301fe1063",
+      "gate_receipt_hash": "239932e12e17762a9ef7f28d0cb6e6c0f0f3a604702d2355a55c69e3cb1cb1d0",
+      "gate_decision": "ALLOWED",
+      "effect_hash": "3fba899284d678601fcd087da5b7bc3ef73c5e93212206997867892079741486",
+      "protected_simulated_effects": 1,
+      "receipt_preserved_in_final_bundle": true
+    },
+    {
+      "step": 7,
+      "site": "site-a",
+      "subject": "agent-b",
+      "decision": "REFUSED",
+      "reason": "CONSENT_BINDING_MISMATCH",
+      "terms_version": "v2",
+      "transaction_hash": "52d233ae4c56a9d22d8286002bbdfd9841874e19b600890736e99c8b13a3a7d7",
+      "terms_hash": "2f7c86a3d7ef9c1c8499791418defeaeb21d93005fb9ebdb72f68f0293bf2f80",
+      "presentation_hash": "c6fffa1a660c8656d78f98ae346a9e3e3d71a85df62925dc6ae3da689ba63e79",
+      "consent_hash": "de6575b057b9c655dbbc5da098141eccb9d1a39ca5d4f5f6793e6e6301fe1063",
+      "gate_receipt_hash": null,
+      "gate_decision": null,
+      "effect_hash": null,
+      "protected_simulated_effects": 0,
+      "receipt_preserved_in_final_bundle": null
+    },
+    {
+      "step": 8,
+      "site": "site-a",
+      "subject": "agent-b",
+      "decision": "PERMITTED",
+      "reason": null,
+      "terms_version": "v2",
+      "transaction_hash": "4c65bb1ee110ed05b60b12ef09355c73ea275161949541eb60f4b09dbd9e61e5",
+      "terms_hash": "2f7c86a3d7ef9c1c8499791418defeaeb21d93005fb9ebdb72f68f0293bf2f80",
+      "presentation_hash": "de8ecd248a4648e7b172ca5cde0eff17ffc24e91c3e7a8bd10973f148505b257",
+      "consent_hash": "32c59bd86381c3b8b989a336c8703fc3d3236055343bd3abfb21bdf68d264b71",
+      "gate_receipt_hash": "691ed7d91525598dd3fa91404109b3a8d0dabd7d553808ab28fffe3d42848171",
+      "gate_decision": "ALLOWED",
+      "effect_hash": "62a5679b1dc4f078066cedecfa6683b58a658b05b08a6e5f4fd3c15338cbe368",
+      "protected_simulated_effects": 1,
+      "receipt_preserved_in_final_bundle": true
+    }
+  ],
+  "admissions": [
+    {
+      "site": "site-a",
+      "signed_admission_hash": "8cd71b897932843ff51c652544b3745e84f55afe7ee993d0c499d3f50a228da4",
+      "bundle_hash": "54bb7c595fa0291e5dce0203282688fef0d8c5b9766d4ff6c5d159f2089a597e",
+      "receiver_key": "df572556a940093fe2e26039cc515b7a9db1f2d3a84386b824809e37ba0eb57a"
+    },
+    {
+      "site": "site-b",
+      "signed_admission_hash": "bee01537a4646d1e4304032c6fe420aaaf4d27b0f47c948c12efdccd9e692eee",
+      "bundle_hash": "54bb7c595fa0291e5dce0203282688fef0d8c5b9766d4ff6c5d159f2089a597e",
+      "receiver_key": "511a26b0251143444c66883e21f7040049211aefdbcd07a67a336b65c1fdd1d3"
+    }
+  ],
+  "history": {
+    "initial_wallet_events": 1,
+    "final_wallet_events": 5,
+    "gate_receipts_preserved": 4,
+    "owner_decisions": 4,
+    "prefix_and_receipt_preservation_verified": true
+  },
+  "agent_credentials": {
+    "agent_a_public_key": "aeb09b6842bdbf39d3ab007affc51ed77cc79dc886b9659e4b4d875305309b98",
+    "agent_b_public_key": "9f172c66b41bf36a1935c6aee3eeea6a5d172be9722965f27a4093375460cd43",
+    "owner_root_public_key": "3741b98c44a2567133160f9eda102a2a2ebb3de09168ee964b162506eba7e384",
+    "three_distinct_keys": true,
+    "b_v1_scope": [
+      "reserve:e9cd9346dad73c52f7cdc206ac03680eb40927fed668cd29ec60ee4c452ecd6e"
+    ],
+    "b_v2_scope": [
+      "reserve:1779aa406cf2ea39f494c0ec15e48bcd0dc28535977be4928340ca4a52ed6126"
+    ],
+    "finding": "B holder presentations verify under B own distinct key and owner-issued narrow mandates. The run passes B key plus public records into B presentation creation. Source keeps A, B, owner keys in one process; this proves input and signature separation, not cryptographic proof of non-disclosure, OS isolation, or uncompromised controller."
+  },
+  "receiver_enforcement": {
+    "distinct_receiver_keys": true,
+    "same_initial_bundle_independently_admitted": true,
+    "story_b_gate_action_receipt": null,
+    "story_b_decision_stage": "Website policy rejects advertising sharing before ReferenceGate.evaluate; admit_bundle still verifies signed authority.",
+    "supplemental_review_tests": 7,
+    "supplemental_direct_gate_checks": 20,
+    "supplemental_signed_gate_receipts": 16,
+    "supplemental_protected_effects": 0,
+    "supplemental_findings": "Both distinct ReferenceGate instances reject forged bundles, wrong-holder signatures, challenge replay, cross-receiver challenges, observed-stale authority and revoked A. Both permit B with B own key and reject A key presented as B under B mandate. Direct Gate allowance does not constitute Website B advertising-policy acceptance.",
+    "evidence_directory": "review-gate-evidence",
+    "test_log": "logs/review-gate-tests.log"
+  },
+  "targeted_existing_experiment_tests": {
+    "tests": 25,
+    "passed": 25,
+    "failed": 0,
+    "skipped": 0
+  },
+  "limitations": [
+    "Receivers are independently configured and keyed synthetic instances of the same receiver implementation in one process; no independently operated website accepted the arrangement.",
+    "Refusals have no effect record and Website.transact appends no simulated effect on a refusal; signatures attest this local transcript, not absence of undisclosed external effects.",
+    "Signed policy refusals intentionally have no Gate action receipt. Authority admission and policy refusal are distinct decisions.",
+    "Public verifier is experiment-specific and uses self-attested fixture pins; trusted identities require an independent distribution channel.",
+    "Verifier enforces observed owner/bundle head progression only on policy-compatible transaction paths, whereas Website runtime records valid owner heads and bundle admissions even on policy refusals. This does not alter these eight outcomes; verifier should not be presented as a general replay of arbitrary refusal or rollback sequences.",
+    "Offline receivers cannot detect withheld revocation or consent-withdrawal records they have never observed; tests establish rollback refusal after observation.",
+    "No production keys, paid APIs, network operations, real identities, website logins, terms acceptance, or protected effects were used in supplemental review."
+  ],
+  "reproduction": [
+    ".venv/bin/python -m openline_wallet.owner_portability verify proofs/owner-portability-001/final-evidence/evidence.json --trust-anchors proofs/owner-portability-001/final-evidence/trust-anchors.json",
+    ".venv/bin/python -m unittest discover -s tests -p test_owner_portability.py -v",
+    "OWNER_PORTABILITY_REVIEW_EVIDENCE=/tmp/owner-portability-review-new-run .venv/bin/python -m unittest discover -s tests -p test_owner_portability_review.py -v"
+  ]
+}

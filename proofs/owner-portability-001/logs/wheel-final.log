@@ -1,0 +1,17 @@
+WARNING: The directory '/home/agent/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing /workspace/openline-wallet
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: openline-wallet
+  Building wheel for openline-wallet (pyproject.toml): started
+  Building wheel for openline-wallet (pyproject.toml): finished with status 'done'
+  Created wheel for openline-wallet: filename=openline_wallet-0.1.0-py3-none-any.whl size=107256 sha256=3ad5de02efe9445e37b9bd4a5e538d7ac5b6f7580a2b9194dd88f91a0624506b
+  Stored in directory: /tmp/pip-ephem-wheel-cache-5_xbuzlh/wheels/bf/3e/db/802cd027de4bc70f1abdcc20c1ada285deea371c56b1e429b5
+Successfully built openline-wallet
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: python -m pip install --upgrade pip

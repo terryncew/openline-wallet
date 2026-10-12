@@ -1,0 +1,12 @@
+test_b_uses_own_key_and_a_cannot_sign_b_mandate (test_owner_portability_review.IndependentReceiverReviewTests.test_b_uses_own_key_and_a_cannot_sign_b_mandate) ... ok
+test_challenges_are_receiver_specific (test_owner_portability_review.IndependentReceiverReviewTests.test_challenges_are_receiver_specific) ... ok
+test_each_receiver_enforces_one_use_challenges (test_owner_portability_review.IndependentReceiverReviewTests.test_each_receiver_enforces_one_use_challenges) ... ok
+test_each_receiver_rejects_forged_authority (test_owner_portability_review.IndependentReceiverReviewTests.test_each_receiver_rejects_forged_authority) ... ok
+test_each_receiver_rejects_revoked_a (test_owner_portability_review.IndependentReceiverReviewTests.test_each_receiver_rejects_revoked_a) ... ok
+test_each_receiver_rejects_stale_authority_after_observation (test_owner_portability_review.IndependentReceiverReviewTests.test_each_receiver_rejects_stale_authority_after_observation) ... ok
+test_each_receiver_rejects_wrong_holder (test_owner_portability_review.IndependentReceiverReviewTests.test_each_receiver_rejects_wrong_holder) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.068s
+
+OK

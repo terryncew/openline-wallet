@@ -1,0 +1,122 @@
+{
+  "schema": "owner-portability.baseline-review.v1",
+  "baseline_commit": "c46e82a324199050239540f1825a3b0c942e4053",
+  "baseline_source": "git archive into separate source snapshot; no branch or worktree switch",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "python_executable": "/workspace/openline-wallet/.venv/bin/python",
+  "baseline_module_source": "/workspace/owner-portability-baseline-review/src/openline_wallet/__init__.py",
+  "test_override": "Path.home() -> /workspace/onboarding-test-home; does not change process HOME or source files",
+  "tests_run": 196,
+  "passed": 188,
+  "failed": 1,
+  "errors": 0,
+  "skipped": 7,
+  "failure_tests": [
+    "test_approved_job_live_sandbox.LiveSandboxTests.test_real_cli_creates_helper_in_preflight_home"
+  ],
+  "failure_tracebacks": [
+    {
+      "test": "test_approved_job_live_sandbox.LiveSandboxTests.test_real_cli_creates_helper_in_preflight_home",
+      "traceback": "Traceback (most recent call last):\n  File \"/workspace/owner-portability-baseline-review/tests/test_approved_job_live_sandbox.py\", line 46, in test_real_cli_creates_helper_in_preflight_home\n    live.sandbox_preflight(Path(root) / 'out')\n  File \"/workspace/owner-portability-baseline-review/proofs/approved-job-live-001/run.py\", line 219, in sandbox_preflight\n    result = command_result(command, repo, env, 45)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/mock.py\", line 1139, in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/mock.py\", line 1143, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/mock.py\", line 1204, in _execute_mock_call\n    result = effect(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/owner-portability-baseline-review/tests/test_approved_job_live_sandbox.py\", line 39, in invoke\n    self.assertIn('0.153.0', result.stdout)\nAssertionError: '0.153.0' not found in 'codex-cli 0.159.2\\n'\n"
+    }
+  ],
+  "skipped_tests": [
+    {
+      "test": "test_rrsi_promotion_adapter.PromotionAdapterCase.test_accept_expected_signer",
+      "reason": "pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d",
+      "coverage_not_executed": "Acceptance of a package signed by the pinned optimizer signer using the exact upstream-derived component."
+    },
+    {
+      "test": "test_rrsi_promotion_adapter.PromotionAdapterCase.test_install_invoke_exact_artifact",
+      "reason": "pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d",
+      "coverage_not_executed": "Install/invoke of the exact accepted component plus signed invocation receipt with loaded digest."
+    },
+    {
+      "test": "test_rrsi_promotion_adapter.PromotionAdapterCase.test_refuse_bad_dependency",
+      "reason": "pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d",
+      "coverage_not_executed": "Rejection of a candidate with non-allowlisted import and prevention of installing an unaccepted candidate."
+    },
+    {
+      "test": "test_rrsi_promotion_adapter.PromotionAdapterCase.test_refuse_changed_base",
+      "reason": "pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d",
+      "coverage_not_executed": "Rejection of a candidate against changed incumbent base (C1)."
+    },
+    {
+      "test": "test_rrsi_promotion_adapter.PromotionAdapterCase.test_refuse_different_signer_before_checks",
+      "reason": "pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d",
+      "coverage_not_executed": "Rejection of a different signer before operator checks, with no acceptance decision recorded."
+    },
+    {
+      "test": "test_rrsi_promotion_adapter.PromotionAdapterCase.test_refuse_substituted_artifact",
+      "reason": "pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d",
+      "coverage_not_executed": "Refusal of the next gated invocation after replacing deployed bytes outside install."
+    },
+    {
+      "test": "test_rrsi_promotion_adapter.PromotionAdapterCase.test_revocation_refuses_next_invocation",
+      "reason": "pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d",
+      "coverage_not_executed": "Refusal of the next gated invocation following revocation."
+    }
+  ],
+  "source_hashes": {
+    "tests/test_approved_job_live_sandbox.py": {
+      "baseline_sha256": "5080adfab186422bf03bb665298a3d5ddad5c6ccf634bc41d41e9d25e25a0320",
+      "current_sha256": "5080adfab186422bf03bb665298a3d5ddad5c6ccf634bc41d41e9d25e25a0320",
+      "byte_identical": true
+    },
+    "proofs/approved-job-live-001/run.py": {
+      "baseline_sha256": "53af179ea8fd74f9009f026b0dbd999bff3d5916f5a84bc768b316d93fc3c83e",
+      "current_sha256": "53af179ea8fd74f9009f026b0dbd999bff3d5916f5a84bc768b316d93fc3c83e",
+      "byte_identical": true
+    },
+    "tests/test_rrsi_promotion_adapter.py": {
+      "baseline_sha256": "b35d4213ce013edc1772beb19da689f95c1617af70f13d10169a3ddca1bcd73f",
+      "current_sha256": "b35d4213ce013edc1772beb19da689f95c1617af70f13d10169a3ddca1bcd73f",
+      "byte_identical": true
+    },
+    "demo/rrsi-promotion-adapter/promote.py": {
+      "baseline_sha256": "52a007006870fab70f5ac87c07ac3f85e94a7cbdcb63ea11adaf999e168561eb",
+      "current_sha256": "52a007006870fab70f5ac87c07ac3f85e94a7cbdcb63ea11adaf999e168561eb",
+      "byte_identical": true
+    }
+  },
+  "expected_codex_version_substring": "0.153.0",
+  "installed_codex_version_stdout": "codex-cli 0.159.2\n",
+  "installed_codex_version_stderr": "WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)\n",
+  "installed_codex_version_returncode": 0,
+  "failure_on_unchanged_baseline": true,
+  "version_assertion_prevents_helper_creation_assertion_execution": true,
+  "coverage_limit": "The CLI version assertion fails before assertions for the preflight helper aliases, so the failing test does not establish helper creation behavior on installed 0.159.2. Seven RRSI integration cases were discovered but not executed because pinned upstream fixture commit is absent. No provider or remote-site acceptance is tested.",
+  "upstream_fixture_commit": "e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d",
+  "upstream_fixture_component": "third_party/harbor_terminus2/terminus_json_plain_parser.py",
+  "log_path": "proofs/owner-portability-001/logs/baseline-review-full-suite.log",
+  "log_sha256": "c2a2535cefe7a8e825cb86388030f6f563953c4713ac77efde639db7914bc653",
+  "network_operations": "None external; baseline tests may use loopback fixture HTTP, local Git, and codex --version. No live provider commands, network fetches, or paid APIs.",
+  "baseline_archive_sha256": "299e58e32af9d87d80b2e223423de6f127ab7182c2980d47207898850a3e01d2",
+  "installed_codex_version_check_context": "Additional local codex --version check inherited the normal injected environment; stderr describes that context, not the isolated preflight CODEX_HOME used by the failing test.",
+  "repository_codex_pin_evidence": [
+    {
+      "path": "tests/test_approved_job_live_sandbox.py",
+      "line": 39,
+      "text": "self.assertIn('0.153.0', result.stdout)"
+    },
+    {
+      "path": ".github/workflows/approved-job-live-001.yml",
+      "line": 134,
+      "text": "npm install -g @anthropic-ai/claude-code@2.1.260 @openai/codex@0.153.0"
+    },
+    {
+      "path": "proofs/approved-job-live-001/frozen/receipt.json",
+      "line": 40,
+      "text": "\"codex_cli\": \"0.153.0\""
+    }
+  ],
+  "reproduction_commands": [
+    "cd /workspace/openline-wallet",
+    "git archive --format=tar --output=/tmp/owner-portability-baseline-review.tar c46e82a324199050239540f1825a3b0c942e4053",
+    "mkdir /workspace/owner-portability-baseline-review",
+    "tar -xf /tmp/owner-portability-baseline-review.tar -C /workspace/owner-portability-baseline-review",
+    "PYTHONPATH=/workspace/owner-portability-baseline-review/src /workspace/openline-wallet/.venv/bin/python - <<'PY'\nfrom pathlib import Path\nfrom unittest.mock import patch\nimport unittest\nimport openline_wallet\nassert Path(openline_wallet.__file__).resolve().is_relative_to(Path('/workspace/owner-portability-baseline-review/src'))\nwith patch.object(Path, 'home', return_value=Path('/workspace/onboarding-test-home')):\n    result = unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.discover('/workspace/owner-portability-baseline-review/tests'))\nraise SystemExit(0 if result.wasSuccessful() else 1)\nPY"
+  ],
+  "installed_codex_executable": "/opt/codex/bin/codex",
+  "installed_codex_executable_resolved": "/opt/codex/bin/codex"
+}

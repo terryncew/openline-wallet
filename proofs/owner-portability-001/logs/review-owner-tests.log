@@ -1,0 +1,37 @@
+test_advertising_requirement_refused_even_if_owner_approves (test_owner_portability.OwnerPortabilityTests.test_advertising_requirement_refused_even_if_owner_approves) ... ok
+test_agent_self_approval (test_owner_portability.OwnerPortabilityTests.test_agent_self_approval) ... ok
+test_changed_terms_require_new_approval_and_mandate (test_owner_portability.OwnerPortabilityTests.test_changed_terms_require_new_approval_and_mandate) ... ok
+test_cross_action_approval (test_owner_portability.OwnerPortabilityTests.test_cross_action_approval) ... ok
+test_cross_site_approval (test_owner_portability.OwnerPortabilityTests.test_cross_site_approval) ... ok
+test_expired_consent (test_owner_portability.OwnerPortabilityTests.test_expired_consent) ... ok
+test_financial_obligation_needs_explicit_approval (test_owner_portability.OwnerPortabilityTests.test_financial_obligation_needs_explicit_approval) ... ok
+test_forged_wallet_authority (test_owner_portability.OwnerPortabilityTests.test_forged_wallet_authority) ... ok
+test_matching_explicit_consent_permits (test_owner_portability.OwnerPortabilityTests.test_matching_explicit_consent_permits) ... ok
+test_owner_log_fork (test_owner_portability.OwnerPortabilityTests.test_owner_log_fork) ... ok
+test_preferences_are_not_consent (test_owner_portability.OwnerPortabilityTests.test_preferences_are_not_consent) ... ok
+test_public_verifier_and_tampering (test_owner_portability.OwnerPortabilityTests.test_public_verifier_and_tampering) ... ok
+test_receiver_declines (test_owner_portability.OwnerPortabilityTests.test_receiver_declines) ... ok
+test_replayed_challenge (test_owner_portability.OwnerPortabilityTests.test_replayed_challenge) ... ok
+test_revocation_observed_on_policy_refusal_is_retained (test_owner_portability.OwnerPortabilityTests.test_revocation_observed_on_policy_refusal_is_retained) ... ok
+test_revoked_a_and_independent_b_key (test_owner_portability.OwnerPortabilityTests.test_revoked_a_and_independent_b_key) ... ok
+test_stale_bundle_after_observed_revocation (test_owner_portability.OwnerPortabilityTests.test_stale_bundle_after_observed_revocation) ... ok
+test_stale_presentation (test_owner_portability.OwnerPortabilityTests.test_stale_presentation) ... ok
+test_tampered_terms (test_owner_portability.OwnerPortabilityTests.test_tampered_terms) ... ok
+test_unknown_wallet (test_owner_portability.OwnerPortabilityTests.test_unknown_wallet) ... ok
+test_unsigned_preferences_fail (test_owner_portability.OwnerPortabilityTests.test_unsigned_preferences_fail) ... ok
+test_verifier_rejects_resealed_semantic_forgeries (test_owner_portability.OwnerPortabilityTests.test_verifier_rejects_resealed_semantic_forgeries) ... ok
+test_withdrawal_cannot_be_rolled_back (test_owner_portability.OwnerPortabilityTests.test_withdrawal_cannot_be_rolled_back) ... ok
+test_withdrawn_consent (test_owner_portability.OwnerPortabilityTests.test_withdrawn_consent) ... ok
+test_wrong_holder_key (test_owner_portability.OwnerPortabilityTests.test_wrong_holder_key) ... ok
+test_b_uses_own_key_and_a_cannot_sign_b_mandate (test_owner_portability_review.IndependentReceiverReviewTests.test_b_uses_own_key_and_a_cannot_sign_b_mandate) ... ok
+test_challenges_are_receiver_specific (test_owner_portability_review.IndependentReceiverReviewTests.test_challenges_are_receiver_specific) ... ok
+test_each_receiver_enforces_one_use_challenges (test_owner_portability_review.IndependentReceiverReviewTests.test_each_receiver_enforces_one_use_challenges) ... ok
+test_each_receiver_rejects_forged_authority (test_owner_portability_review.IndependentReceiverReviewTests.test_each_receiver_rejects_forged_authority) ... ok
+test_each_receiver_rejects_revoked_a (test_owner_portability_review.IndependentReceiverReviewTests.test_each_receiver_rejects_revoked_a) ... ok
+test_each_receiver_rejects_stale_authority_after_observation (test_owner_portability_review.IndependentReceiverReviewTests.test_each_receiver_rejects_stale_authority_after_observation) ... ok
+test_each_receiver_rejects_wrong_holder (test_owner_portability_review.IndependentReceiverReviewTests.test_each_receiver_rejects_wrong_holder) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 0.443s
+
+OK

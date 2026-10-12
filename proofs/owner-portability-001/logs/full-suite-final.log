@@ -1,0 +1,254 @@
+test_both_network_policies_are_checked_without_provider_auth (test_approved_job_live_sandbox.LiveSandboxTests.test_both_network_policies_are_checked_without_provider_auth) ... ok
+test_empty_change_set_is_not_reported_as_an_unapproved_path (test_approved_job_live_sandbox.LiveSandboxTests.test_empty_change_set_is_not_reported_as_an_unapproved_path) ... ok
+test_extra_path_still_rejected (test_approved_job_live_sandbox.LiveSandboxTests.test_extra_path_still_rejected) ... ok
+test_namespace_failure_stops_preflight_and_preserves_diagnostic (test_approved_job_live_sandbox.LiveSandboxTests.test_namespace_failure_stops_preflight_and_preserves_diagnostic) ... ok
+test_preflight_home_is_outside_os_temp_and_is_cleaned_up (test_approved_job_live_sandbox.LiveSandboxTests.test_preflight_home_is_outside_os_temp_and_is_cleaned_up) ... ok
+test_real_cli_creates_helper_in_preflight_home (test_approved_job_live_sandbox.LiveSandboxTests.test_real_cli_creates_helper_in_preflight_home) ... FAIL
+test_zero_exit_without_probe_completion_is_rejected (test_approved_job_live_sandbox.LiveSandboxTests.test_zero_exit_without_probe_completion_is_rejected) ... ok
+test_duplicate_keys_fail_closed (test_canonical.CanonicalJsonTests.test_duplicate_keys_fail_closed) ... ok
+test_floats_fail_closed (test_canonical.CanonicalJsonTests.test_floats_fail_closed) ... ok
+test_keys_are_sorted_and_integers_are_stable (test_canonical.CanonicalJsonTests.test_keys_are_sorted_and_integers_are_stable) ... ok
+test_unsafe_integer_fails_closed (test_canonical.CanonicalJsonTests.test_unsafe_integer_fails_closed) ... ok
+test_accept_refuses_tampered_signature (test_capability_installer.CapinstallCase.test_accept_refuses_tampered_signature) ... ok
+test_accept_refuses_unsigned_package (test_capability_installer.CapinstallCase.test_accept_refuses_unsigned_package) ... ok
+test_altered_acceptance_policy (test_capability_installer.CapinstallCase.test_altered_acceptance_policy) ... ok
+test_full_flow (test_capability_installer.CapinstallCase.test_full_flow) ... ok
+test_refuses_manifest_substitution (test_capability_installer.CapinstallCase.test_refuses_manifest_substitution) ... ok
+test_refuses_seller_principal_mismatch (test_capability_installer.CapinstallCase.test_refuses_seller_principal_mismatch) ... ok
+test_rejected_package (test_capability_installer.CapinstallCase.test_rejected_package) ... ok
+test_settle_refuses_signed_receipt_with_forged_outer_fields (test_capability_installer.CapinstallCase.test_settle_refuses_signed_receipt_with_forged_outer_fields) ... ok
+test_settle_requires_verified_invocation (test_capability_installer.CapinstallCase.test_settle_requires_verified_invocation) ... ok
+test_substituted_artifact (test_capability_installer.CapinstallCase.test_substituted_artifact) ... ok
+test_wrong_buyer (test_capability_installer.CapinstallCase.test_wrong_buyer) ... ok
+test_wrong_version (test_capability_installer.CapinstallCase.test_wrong_version) ... ok
+test_cli_authorize_export_verify_revoke (test_cli.CliTests.test_cli_authorize_export_verify_revoke) ... ok
+test_all_members_are_required_and_original_receipts_verify (test_closure_set.ClosureSetTests.test_all_members_are_required_and_original_receipts_verify) ... ok
+test_auditor_cannot_promote_missing_evidence (test_closure_set.ClosureSetTests.test_auditor_cannot_promote_missing_evidence) ... ok
+test_auditor_report_cannot_be_accepted_before_its_timestamp (test_closure_set.ClosureSetTests.test_auditor_report_cannot_be_accepted_before_its_timestamp) ... ok
+test_canonical_membership_and_request_types_are_enforced (test_closure_set.ClosureSetTests.test_canonical_membership_and_request_types_are_enforced) ... ok
+test_closure_clock_is_sampled_after_inflight_drain (test_closure_set.ClosureSetTests.test_closure_clock_is_sampled_after_inflight_drain) ... ok
+test_one_poisoned_member_cannot_be_counted_away (test_closure_set.ClosureSetTests.test_one_poisoned_member_cannot_be_counted_away) ... ok
+test_prepared_action_is_fenced_by_real_receiver (test_closure_set.ClosureSetTests.test_prepared_action_is_fenced_by_real_receiver) ... ok
+test_receiver_uncertainty_blocks_witness (test_closure_set.ClosureSetTests.test_receiver_uncertainty_blocks_witness) ... ok
+test_stale_request_and_nonce_replay_fail (test_closure_set.ClosureSetTests.test_stale_request_and_nonce_replay_fail) ... ok
+test_tampered_membership_and_request_cannot_change_the_world (test_closure_set.ClosureSetTests.test_tampered_membership_and_request_cannot_change_the_world) ... ok
+test_unrecognized_key_and_extra_member_are_not_quorum_votes (test_closure_set.ClosureSetTests.test_unrecognized_key_and_extra_member_are_not_quorum_votes) ... ok
+test_wrong_member_and_duplicate_keys_are_rejected (test_closure_set.ClosureSetTests.test_wrong_member_and_duplicate_keys_are_rejected) ... ok
+test_commission_refuses_negative_price_offer (test_commission_work.AccountingReview.test_commission_refuses_negative_price_offer) ... ok
+test_commitment_cannot_exceed_funded_balance (test_commission_work.AccountingReview.test_commitment_cannot_exceed_funded_balance) ... ok
+test_commitment_within_funded_balance_succeeds (test_commission_work.AccountingReview.test_commitment_within_funded_balance_succeeds) ... ok
+test_concurrent_verify_of_wrong_submission_releases_once (test_commission_work.AccountingReview.test_concurrent_verify_of_wrong_submission_releases_once) ... ok
+test_crash_between_release_and_verdict_never_double_releases (test_commission_work.AccountingReview.test_crash_between_release_and_verdict_never_double_releases) ... ok
+test_crash_between_verdict_and_release_reconciles_once (test_commission_work.AccountingReview.test_crash_between_verdict_and_release_reconciles_once) ... ok
+test_negative_budget_refused (test_commission_work.AccountingReview.test_negative_budget_refused) ... ok
+test_negative_offer_price_refused_before_signing (test_commission_work.AccountingReview.test_negative_offer_price_refused_before_signing) ... ok
+test_regrant_preserves_commitments_and_refuses_reduction (test_commission_work.AccountingReview.test_regrant_preserves_commitments_and_refuses_reduction) ... ok
+test_settle_refuses_unfunded_commitment (test_commission_work.AccountingReview.test_settle_refuses_unfunded_commitment) ... ok
+test_verify_accept_is_idempotent (test_commission_work.AccountingReview.test_verify_accept_is_idempotent) ... ok
+test_zero_price_not_supported (test_commission_work.AccountingReview.test_zero_price_not_supported) ... ok
+test_agent_cannot_authorize_itself (test_commission_work.AgentBoundaries.test_agent_cannot_authorize_itself) ... ok
+test_agent_cannot_change_payee (test_commission_work.AgentBoundaries.test_agent_cannot_change_payee) ... ok
+test_agent_cannot_override_price (test_commission_work.AgentBoundaries.test_agent_cannot_override_price) ... ok
+test_agent_cannot_raise_budget (test_commission_work.AgentBoundaries.test_agent_cannot_raise_budget) ... ok
+test_agent_cannot_rewrite_acceptance (test_commission_work.AgentBoundaries.test_agent_cannot_rewrite_acceptance) ... ok
+test_seller_cannot_revoke_agent (test_commission_work.AgentBoundaries.test_seller_cannot_revoke_agent) ... ok
+test_seller_cannot_verify_own_work (test_commission_work.AgentBoundaries.test_seller_cannot_verify_own_work) ... ok
+test_crash_before_job_commit_recovers_agreement (test_commission_work.CommissionTransactions.test_crash_before_job_commit_recovers_agreement) ... ok
+test_crash_between_job_and_allowance_writes (test_commission_work.CommissionTransactions.test_crash_between_job_and_allowance_writes) ... ok
+test_interrupted_commission_retries_without_double_reserve (test_commission_work.CommissionTransactions.test_interrupted_commission_retries_without_double_reserve) ... ok
+test_reconcile_reports_pending_release_truthfully (test_commission_work.CommissionTransactions.test_reconcile_reports_pending_release_truthfully) ... ok
+test_reconcile_still_reports_committed_release (test_commission_work.CommissionTransactions.test_reconcile_still_reports_committed_release) ... ok
+test_reconcile_surfaces_orphan_with_empty_jobs (test_commission_work.CommissionTransactions.test_reconcile_surfaces_orphan_with_empty_jobs) ... ok
+test_concurrent_reservations_cannot_overcommit (test_commission_work.ConcurrentReservation.test_concurrent_reservations_cannot_overcommit) ... ok
+test_insufficient_allowance_refused (test_commission_work.Funds.test_insufficient_allowance_refused) ... ok
+test_parallel_jobs_cannot_double_commit (test_commission_work.Funds.test_parallel_jobs_cannot_double_commit) ... ok
+test_successful_work_settles_exactly_once (test_commission_work.HappyPath.test_successful_work_settles_exactly_once) ... ok
+test_resubmit_refused_and_rework_reuses_output (test_commission_work.Idempotency.test_resubmit_refused_and_rework_reuses_output) ... ok
+test_reconcile_is_readonly_and_derives_next_steps (test_commission_work.Reconciliation.test_reconcile_is_readonly_and_derives_next_steps) ... ok
+test_crash_mid_settle_never_pays_twice (test_commission_work.RegressionFixes.test_crash_mid_settle_never_pays_twice) ... ok
+test_spent_plus_reserved_accounting (test_commission_work.RegressionFixes.test_spent_plus_reserved_accounting) ... ok
+test_substituted_payee_after_verify_refused (test_commission_work.RegressionFixes.test_substituted_payee_after_verify_refused) ... ok
+test_rejected_work_pays_nothing_and_releases_reservation (test_commission_work.RejectedWork.test_rejected_work_pays_nothing_and_releases_reservation) ... ok
+test_revoked_agent_blocked_but_earned_obligation_payable (test_commission_work.Revocation.test_revoked_agent_blocked_but_earned_obligation_payable) ... ok
+test_altered_agreement_amount_refused (test_commission_work.Tampering.test_altered_agreement_amount_refused) ... ok
+test_altered_input_hash_refused (test_commission_work.Tampering.test_altered_input_hash_refused) ... ok
+test_altered_payee_refused (test_commission_work.Tampering.test_altered_payee_refused) ... ok
+test_altered_signed_result_refused_at_submit (test_commission_work.Tampering.test_altered_signed_result_refused_at_submit) ... ok
+test_identical_request_recovers_without_double_reserve (test_commission_work.Tampering.test_identical_request_recovers_without_double_reserve) ... ok
+test_nonce_reuse_across_requests_refused (test_commission_work.Tampering.test_nonce_reuse_across_requests_refused) ... ok
+test_callback_failure_seals_restarts_and_blocks_closure (test_effect_closure.EffectClosureTests.test_callback_failure_seals_restarts_and_blocks_closure) ... ok
+test_closure_requires_authentic_revocation_and_rejects_rollback (test_effect_closure.EffectClosureTests.test_closure_requires_authentic_revocation_and_rejects_rollback) ... ok
+test_closure_waits_for_effect_already_at_frontier (test_effect_closure.EffectClosureTests.test_closure_waits_for_effect_already_at_frontier) ... ok
+test_corrupt_ledger_seals_instead_of_issuing_success (test_effect_closure.EffectClosureTests.test_corrupt_ledger_seals_instead_of_issuing_success) ... ok
+test_exact_original_receiver_allows_stale_admitted_work (test_effect_closure.EffectClosureTests.test_exact_original_receiver_allows_stale_admitted_work)
+Expected negative control, loaded from the pinned, byte-exact v0.1 source. ... ok
+test_exclusive_writer_and_shutdown (test_effect_closure.EffectClosureTests.test_exclusive_writer_and_shutdown) ... ok
+test_expiry_and_stale_bundle_fail_closed (test_effect_closure.EffectClosureTests.test_expiry_and_stale_bundle_fail_closed) ... ok
+test_forged_admission_cannot_cross_frontier (test_effect_closure.EffectClosureTests.test_forged_admission_cannot_cross_frontier) ... ok
+test_hold_revoke_close_release_blocks_effect (test_effect_closure.EffectClosureTests.test_hold_revoke_close_release_blocks_effect) ... ok
+test_narrowing_fences_predecessor_but_successor_can_act (test_effect_closure.EffectClosureTests.test_narrowing_fences_predecessor_but_successor_can_act) ... ok
+test_normal_effect_and_history_survive_revocation (test_effect_closure.EffectClosureTests.test_normal_effect_and_history_survive_revocation) ... ok
+test_real_http_hold_close_release (test_effect_closure.EffectClosureTests.test_real_http_hold_close_release)
+The actual ThreadingHTTPServer must fence a request already in /execute. ... ok
+test_regrant_does_not_resurrect_old_ticket (test_effect_closure.EffectClosureTests.test_regrant_does_not_resurrect_old_ticket) ... ok
+test_ticket_replay_is_idempotent_and_binding_is_exact (test_effect_closure.EffectClosureTests.test_ticket_replay_is_idempotent_and_binding_is_exact) ... ok
+test_acknowledged_merge_can_confirm_after_receiver_restart (test_github_ack_reconcile.AcknowledgedGitHubSettlementTests.test_acknowledged_merge_can_confirm_after_receiver_restart) ... ok
+test_acknowledged_merge_can_confirm_late_without_retry (test_github_ack_reconcile.AcknowledgedGitHubSettlementTests.test_acknowledged_merge_can_confirm_late_without_retry) ... ok
+test_invalid_settlement_window_fails_closed (test_github_ack_reconcile.AcknowledgedGitHubSettlementTests.test_invalid_settlement_window_fails_closed) ... ok
+test_null_pr_merge_sha_can_confirm_exact_acknowledged_commit (test_github_ack_reconcile.AcknowledgedGitHubSettlementTests.test_null_pr_merge_sha_can_confirm_exact_acknowledged_commit)
+Reproduce LIVE-002: PR SHA lags after a successful acknowledgement. ... ok
+test_null_pr_sha_with_wrong_commit_parent_remains_uncertain (test_github_ack_reconcile.AcknowledgedGitHubSettlementTests.test_null_pr_sha_with_wrong_commit_parent_remains_uncertain) ... ok
+test_restart_with_null_pr_sha_confirms_by_exact_commit (test_github_ack_reconcile.AcknowledgedGitHubSettlementTests.test_restart_with_null_pr_sha_confirms_by_exact_commit) ... ok
+test_transport_ambiguous_merge_is_never_promoted (test_github_ack_reconcile.AcknowledgedGitHubSettlementTests.test_transport_ambiguous_merge_is_never_promoted) ... ok
+test_wrong_late_merge_sha_remains_uncertain (test_github_ack_reconcile.AcknowledgedGitHubSettlementTests.test_wrong_late_merge_sha_remains_uncertain) ... ok
+test_actual_merge_drains_before_closure (test_github_effect.GitHubEffectTests.test_actual_merge_drains_before_closure) ... ok
+test_ambiguous_attempt_cannot_be_swept_by_other_ticket (test_github_effect.GitHubEffectTests.test_ambiguous_attempt_cannot_be_swept_by_other_ticket) ... ok
+test_base_drift_is_explicitly_reported (test_github_effect.GitHubEffectTests.test_base_drift_is_explicitly_reported) ... ok
+test_changed_head_or_base_never_calls_merge (test_github_effect.GitHubEffectTests.test_changed_head_or_base_never_calls_merge) ... ok
+test_closure_remains_sealed_after_restart (test_github_effect.GitHubEffectTests.test_closure_remains_sealed_after_restart) ... ok
+test_hold_revoke_close_release_stops_without_network (test_github_effect.GitHubEffectTests.test_hold_revoke_close_release_stops_without_network) ... ok
+test_http_client_is_fixed_host_and_rejects_redirects (test_github_effect.GitHubEffectTests.test_http_client_is_fixed_host_and_rejects_redirects) ... ok
+test_negative_reconciliation_never_clears_ambiguity (test_github_effect.GitHubEffectTests.test_negative_reconciliation_never_clears_ambiguity) ... ok
+test_normal_merge_reconciles_exact_sha_and_preserves_history (test_github_effect.GitHubEffectTests.test_normal_merge_reconciles_exact_sha_and_preserves_history) ... ok
+test_recovered_prepared_ticket_is_durably_fenced (test_github_effect.GitHubEffectTests.test_recovered_prepared_ticket_is_durably_fenced) ... ok
+test_restart_requires_fresh_standing_and_never_retries (test_github_effect.GitHubEffectTests.test_restart_requires_fresh_standing_and_never_retries) ... ok
+test_scope_and_target_validation (test_github_effect.GitHubEffectTests.test_scope_and_target_validation) ... ok
+test_second_ticket_cannot_repeat_a_consumed_target (test_github_effect.GitHubEffectTests.test_second_ticket_cannot_repeat_a_consumed_target) ... ok
+test_tampered_durable_intent_is_not_trusted (test_github_effect.GitHubEffectTests.test_tampered_durable_intent_is_not_trusted) ... ok
+test_transport_failure_is_durable_uncertainty (test_github_effect.GitHubEffectTests.test_transport_failure_is_durable_uncertainty) ... ok
+test_writer_and_identity_are_exclusive (test_github_effect.GitHubEffectTests.test_writer_and_identity_are_exclusive) ... ok
+test_wrong_merge_commit_parent_fails_closed (test_github_effect.GitHubEffectTests.test_wrong_merge_commit_parent_fails_closed) ... ok
+test_wrong_repository_identity_never_calls_merge (test_github_effect.GitHubEffectTests.test_wrong_repository_identity_never_calls_merge) ... ok
+test_wrong_subject_signature_and_scope (test_github_effect.GitHubEffectTests.test_wrong_subject_signature_and_scope) ... ok
+test_all_other_methods_and_paths_fail_before_transport (test_github_http.GitHubHTTPTests.test_all_other_methods_and_paths_fail_before_transport) ... ok
+test_discovery_rejects_default_and_protected_bases (test_github_http.GitHubHTTPTests.test_discovery_rejects_default_and_protected_bases) ... ok
+test_exact_rest_contract_and_read_only_discovery (test_github_http.GitHubHTTPTests.test_exact_rest_contract_and_read_only_discovery) ... ok
+test_full_experiment_and_read_only_recovery (test_github_http.GitHubHTTPTests.test_full_experiment_and_read_only_recovery) ... ok
+test_live_cli_refuses_wrong_confirmation_without_a_mutation (test_github_http.GitHubHTTPTests.test_live_cli_refuses_wrong_confirmation_without_a_mutation) ... STOPPED — GITHUB_EXPLICIT_MERGE_CONFIRMATION_REQUIRED
+ok
+test_transport_error_never_retries_a_successful_remote_effect (test_github_http.GitHubHTTPTests.test_transport_error_never_retries_a_successful_remote_effect) ... ok
+test_late_read_only_recovery_never_reissues_merge (test_github_reconciliation.DelayedMergeReadTests.test_late_read_only_recovery_never_reissues_merge) ... ok
+test_permanent_null_keeps_durable_uncertainty (test_github_reconciliation.DelayedMergeReadTests.test_permanent_null_keeps_durable_uncertainty) ... ok
+test_recorded_live_null_sha_then_terminal_commit (test_github_reconciliation.DelayedMergeReadTests.test_recorded_live_null_sha_then_terminal_commit) ... ok
+test_successful_merge_waits_for_terminal_sha (test_github_reconciliation.DelayedMergeReadTests.test_successful_merge_waits_for_terminal_sha) ... ok
+test_unmerged_or_closed_negative_state_is_not_success (test_github_reconciliation.DelayedMergeReadTests.test_unmerged_or_closed_negative_state_is_not_success) ... ok
+test_wrong_merge_sha_cannot_be_attributed (test_github_reconciliation.DelayedMergeReadTests.test_wrong_merge_sha_cannot_be_attributed) ... ok
+test_wrong_parents_remain_uncertain (test_github_reconciliation.DelayedMergeReadTests.test_wrong_parents_remain_uncertain) ... ok
+test_allowed_call_reaches_downstream_once_and_receipt_is_signed (test_mcp_egress.MCPConsequenceGateTests.test_allowed_call_reaches_downstream_once_and_receipt_is_signed) ... ok
+test_downstream_uncertainty_is_not_retried (test_mcp_egress.MCPConsequenceGateTests.test_downstream_uncertainty_is_not_retried) ... ok
+test_revoked_subject_cannot_reach_downstream (test_mcp_egress.MCPConsequenceGateTests.test_revoked_subject_cannot_reach_downstream) ... ok
+test_schema_valid_but_out_of_contract_call_never_reaches_downstream (test_mcp_egress.MCPConsequenceGateTests.test_schema_valid_but_out_of_contract_call_never_reaches_downstream) ... ok
+test_contract_is_stricter_than_broad_integer_schema (test_mcp_egress.MCPParsingTests.test_contract_is_stricter_than_broad_integer_schema) ... ok
+test_modern_headers_must_match_body (test_mcp_egress.MCPParsingTests.test_modern_headers_must_match_body) ... ok
+test_modern_protocol_requires_routing_headers (test_mcp_egress.MCPParsingTests.test_modern_protocol_requires_routing_headers) ... ok
+test_advertising_requirement_refused_even_if_owner_approves (test_owner_portability.OwnerPortabilityTests.test_advertising_requirement_refused_even_if_owner_approves) ... ok
+test_agent_self_approval (test_owner_portability.OwnerPortabilityTests.test_agent_self_approval) ... ok
+test_changed_terms_require_new_approval_and_mandate (test_owner_portability.OwnerPortabilityTests.test_changed_terms_require_new_approval_and_mandate) ... ok
+test_cross_action_approval (test_owner_portability.OwnerPortabilityTests.test_cross_action_approval) ... ok
+test_cross_site_approval (test_owner_portability.OwnerPortabilityTests.test_cross_site_approval) ... ok
+test_expired_consent (test_owner_portability.OwnerPortabilityTests.test_expired_consent) ... ok
+test_financial_obligation_needs_explicit_approval (test_owner_portability.OwnerPortabilityTests.test_financial_obligation_needs_explicit_approval) ... ok
+test_forged_wallet_authority (test_owner_portability.OwnerPortabilityTests.test_forged_wallet_authority) ... ok
+test_matching_explicit_consent_permits (test_owner_portability.OwnerPortabilityTests.test_matching_explicit_consent_permits) ... ok
+test_owner_log_fork (test_owner_portability.OwnerPortabilityTests.test_owner_log_fork) ... ok
+test_preferences_are_not_consent (test_owner_portability.OwnerPortabilityTests.test_preferences_are_not_consent) ... ok
+test_public_verifier_and_tampering (test_owner_portability.OwnerPortabilityTests.test_public_verifier_and_tampering) ... ok
+test_receiver_declines (test_owner_portability.OwnerPortabilityTests.test_receiver_declines) ... ok
+test_replayed_challenge (test_owner_portability.OwnerPortabilityTests.test_replayed_challenge) ... ok
+test_revocation_observed_on_policy_refusal_is_retained (test_owner_portability.OwnerPortabilityTests.test_revocation_observed_on_policy_refusal_is_retained) ... ok
+test_revoked_a_and_independent_b_key (test_owner_portability.OwnerPortabilityTests.test_revoked_a_and_independent_b_key) ... ok
+test_stale_bundle_after_observed_revocation (test_owner_portability.OwnerPortabilityTests.test_stale_bundle_after_observed_revocation) ... ok
+test_stale_presentation (test_owner_portability.OwnerPortabilityTests.test_stale_presentation) ... ok
+test_tampered_terms (test_owner_portability.OwnerPortabilityTests.test_tampered_terms) ... ok
+test_unknown_wallet (test_owner_portability.OwnerPortabilityTests.test_unknown_wallet) ... ok
+test_unsigned_preferences_fail (test_owner_portability.OwnerPortabilityTests.test_unsigned_preferences_fail) ... ok
+test_verifier_rejects_resealed_semantic_forgeries (test_owner_portability.OwnerPortabilityTests.test_verifier_rejects_resealed_semantic_forgeries) ... ok
+test_withdrawal_cannot_be_rolled_back (test_owner_portability.OwnerPortabilityTests.test_withdrawal_cannot_be_rolled_back) ... ok
+test_withdrawn_consent (test_owner_portability.OwnerPortabilityTests.test_withdrawn_consent) ... ok
+test_wrong_holder_key (test_owner_portability.OwnerPortabilityTests.test_wrong_holder_key) ... ok
+test_platform_exit_001 (test_platform_exit.PlatformExitAcceptanceTests.test_platform_exit_001) ... ok
+test_mcp_provider_switch_keeps_authority_receiver_owned (test_platform_exit_live.PlatformExitLiveAcceptanceTests.test_mcp_provider_switch_keeps_authority_receiver_owned) ... Executing <Task finished name='Task-2' coro=<PlatformExitLiveAcceptanceTests.test_mcp_provider_switch_keeps_authority_receiver_owned() done, defined at /workspace/openline-wallet/tests/test_platform_exit_live.py:27> result=None created at /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/asyncio/runners.py:100> took 0.498 seconds
+ok
+test_changed_frozen_result_is_rejected (test_prior_reappraisal.HistoricalReappraisalTests.test_changed_frozen_result_is_rejected) ... ok
+test_modified_archive_is_rejected (test_prior_reappraisal.HistoricalReappraisalTests.test_modified_archive_is_rejected) ... ok
+test_recorded_source_and_receipts_verify (test_prior_reappraisal.HistoricalReappraisalTests.test_recorded_source_and_receipts_verify) ... ok
+test_rehashed_archive_cannot_change_a_recorded_source (test_prior_reappraisal.HistoricalReappraisalTests.test_rehashed_archive_cannot_change_a_recorded_source) ... ok
+test_fresh_packet_requires_explicit_context (test_provider_verifier_binding.HistoricalBindingTests.test_fresh_packet_requires_explicit_context) ... ok
+test_historical_source_archive_is_exact (test_provider_verifier_binding.HistoricalBindingTests.test_historical_source_archive_is_exact) ... ok
+test_legacy_accepts_foreign_closure_but_repair_rejects (test_provider_verifier_binding.HistoricalBindingTests.test_legacy_accepts_foreign_closure_but_repair_rejects)
+The exact historical verifier accepts a valid foreign closure signer. ... ok
+test_original_packet_passes_with_pinned_context (test_provider_verifier_binding.HistoricalBindingTests.test_original_packet_passes_with_pinned_context) ... ok
+test_foreign_admission_is_not_accepted_as_effect_context (test_provider_verifier_binding.SignedSubstitutionTests.test_foreign_admission_is_not_accepted_as_effect_context) ... ok
+test_legitimate_fresh_fixture_accepts (test_provider_verifier_binding.SignedSubstitutionTests.test_legitimate_fresh_fixture_accepts) ... ok
+test_other_receiver_signature_is_rejected (test_provider_verifier_binding.SignedSubstitutionTests.test_other_receiver_signature_is_rejected) ... ok
+test_source_omission_is_rejected (test_provider_verifier_binding.SignedSubstitutionTests.test_source_omission_is_rejected) ... ok
+test_unrelated_valid_signer_is_rejected (test_provider_verifier_binding.SignedSubstitutionTests.test_unrelated_valid_signer_is_rejected) ... ok
+test_validly_resigned_wrapper_does_not_override_pinned_history (test_provider_verifier_binding.SignedSubstitutionTests.test_validly_resigned_wrapper_does_not_override_pinned_history) ... ok
+test_wrong_effect_target_with_valid_receiver_signature (test_provider_verifier_binding.SignedSubstitutionTests.test_wrong_effect_target_with_valid_receiver_signature) ... ok
+test_wrong_gate_identity_with_valid_receiver_signature (test_provider_verifier_binding.SignedSubstitutionTests.test_wrong_gate_identity_with_valid_receiver_signature) ... ok
+test_wrong_history_head_is_rejected (test_provider_verifier_binding.SignedSubstitutionTests.test_wrong_history_head_is_rejected) ... ok
+test_wrong_mandate_with_valid_receiver_signature (test_provider_verifier_binding.SignedSubstitutionTests.test_wrong_mandate_with_valid_receiver_signature) ... ok
+test_wrong_principal_with_valid_receiver_signature (test_provider_verifier_binding.SignedSubstitutionTests.test_wrong_principal_with_valid_receiver_signature) ... ok
+test_wrong_revocation_head_with_valid_receiver_signature (test_provider_verifier_binding.SignedSubstitutionTests.test_wrong_revocation_head_with_valid_receiver_signature) ... ok
+test_wrong_scope_with_valid_receiver_signature (test_provider_verifier_binding.SignedSubstitutionTests.test_wrong_scope_with_valid_receiver_signature) ... ok
+test_wrong_subject_with_valid_receiver_signature (test_provider_verifier_binding.SignedSubstitutionTests.test_wrong_subject_with_valid_receiver_signature) ... ok
+test_wrong_target_with_valid_receiver_signature (test_provider_verifier_binding.SignedSubstitutionTests.test_wrong_target_with_valid_receiver_signature) ... ok
+test_wrong_wallet_root_is_rejected (test_provider_verifier_binding.SignedSubstitutionTests.test_wrong_wallet_root_is_rejected) ... ok
+test_action_outside_mandate_is_stopped (test_receiver.ReceiverGateTests.test_action_outside_mandate_is_stopped) ... ok
+test_competing_same_sequence_heads_quarantine (test_receiver.ReceiverGateTests.test_competing_same_sequence_heads_quarantine) ... ok
+test_current_history_stops_revoked_old_mandate (test_receiver.ReceiverGateTests.test_current_history_stops_revoked_old_mandate) ... ok
+test_exact_action_and_holder_proof_pass (test_receiver.ReceiverGateTests.test_exact_action_and_holder_proof_pass) ... ok
+test_presentation_is_one_use (test_receiver.ReceiverGateTests.test_presentation_is_one_use) ... ok
+test_receipt_cannot_name_a_different_gate_key (test_receiver.ReceiverGateTests.test_receipt_cannot_name_a_different_gate_key) ... ok
+test_signed_malformed_time_stops_instead_of_raising (test_receiver.ReceiverGateTests.test_signed_malformed_time_stops_instead_of_raising) ... ok
+test_unpinned_root_is_rejected (test_receiver.ReceiverGateTests.test_unpinned_root_is_rejected) ... ok
+test_conflicting_receiver_policy_is_rejected (test_route_authority.RouteAuthorityGateTests.test_conflicting_receiver_policy_is_rejected) ... ok
+test_exposed_sender_can_route_to_authorized_recipient (test_route_authority.RouteAuthorityGateTests.test_exposed_sender_can_route_to_authorized_recipient) ... ok
+test_exposed_sender_cannot_route_to_recipient_without_source_scope (test_route_authority.RouteAuthorityGateTests.test_exposed_sender_cannot_route_to_recipient_without_source_scope) ... ok
+test_protected_read_creates_monotonic_carried_scope (test_route_authority.RouteAuthorityGateTests.test_protected_read_creates_monotonic_carried_scope) ... ok
+test_route_receipt_cannot_be_reused_for_a_second_recipient (test_route_authority.RouteAuthorityGateTests.test_route_receipt_cannot_be_reused_for_a_second_recipient) ... ok
+test_unexposed_sender_can_reach_recipient_without_source_scope (test_route_authority.RouteAuthorityGateTests.test_unexposed_sender_can_reach_recipient_without_source_scope) ... ok
+test_accept_expected_signer (test_rrsi_promotion_adapter.PromotionAdapterCase.test_accept_expected_signer) ... skipped 'pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d'
+test_install_invoke_exact_artifact (test_rrsi_promotion_adapter.PromotionAdapterCase.test_install_invoke_exact_artifact) ... skipped 'pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d'
+test_refuse_bad_dependency (test_rrsi_promotion_adapter.PromotionAdapterCase.test_refuse_bad_dependency) ... skipped 'pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d'
+test_refuse_changed_base (test_rrsi_promotion_adapter.PromotionAdapterCase.test_refuse_changed_base) ... skipped 'pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d'
+test_refuse_different_signer_before_checks (test_rrsi_promotion_adapter.PromotionAdapterCase.test_refuse_different_signer_before_checks) ... skipped 'pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d'
+test_refuse_substituted_artifact (test_rrsi_promotion_adapter.PromotionAdapterCase.test_refuse_substituted_artifact) ... skipped 'pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d'
+test_revocation_refuses_next_invocation (test_rrsi_promotion_adapter.PromotionAdapterCase.test_revocation_refuses_next_invocation) ... skipped 'pinned upstream commit e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d not available in RRSI_REPO=/workspace/onboarding-test-home/workspace/vendor/rrsi; clone it with: git clone https://github.com/google-research/rrsi <dir> && git checkout e4d1a7a0388e02b388bc40eb0a125fcfc7123f8d'
+test_bundle_freshness_is_capped_at_ten_minutes (test_wallet.WalletTests.test_bundle_freshness_is_capped_at_ten_minutes) ... ok
+test_export_verifies_and_contains_no_private_key (test_wallet.WalletTests.test_export_verifies_and_contains_no_private_key) ... ok
+test_identity_has_separate_root_and_epoch_keys (test_wallet.WalletTests.test_identity_has_separate_root_and_epoch_keys) ... ok
+test_import_rejects_wrong_root_key (test_wallet.WalletTests.test_import_rejects_wrong_root_key) ... ok
+test_import_restores_history_only_with_matching_keys (test_wallet.WalletTests.test_import_restores_history_only_with_matching_keys) ... ok
+test_naive_api_timestamp_fails_closed (test_wallet.WalletTests.test_naive_api_timestamp_fails_closed) ... ok
+test_narrow_cannot_expand_scope (test_wallet.WalletTests.test_narrow_cannot_expand_scope) ... ok
+test_narrow_requires_a_strict_subset (test_wallet.WalletTests.test_narrow_requires_a_strict_subset) ... ok
+test_revocation_preserves_original_signature (test_wallet.WalletTests.test_revocation_preserves_original_signature) ... ok
+test_tampered_scope_fails_bundle_verification (test_wallet.WalletTests.test_tampered_scope_fails_bundle_verification) ... ok
+
+======================================================================
+FAIL: test_real_cli_creates_helper_in_preflight_home (test_approved_job_live_sandbox.LiveSandboxTests.test_real_cli_creates_helper_in_preflight_home)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/openline-wallet/tests/test_approved_job_live_sandbox.py", line 46, in test_real_cli_creates_helper_in_preflight_home
+    live.sandbox_preflight(Path(root) / 'out')
+  File "/workspace/openline-wallet/proofs/approved-job-live-001/run.py", line 219, in sandbox_preflight
+    result = command_result(command, repo, env, 45)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/mock.py", line 1139, in __call__
+    return self._mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/mock.py", line 1143, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/unittest/mock.py", line 1204, in _execute_mock_call
+    result = effect(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/openline-wallet/tests/test_approved_job_live_sandbox.py", line 39, in invoke
+    self.assertIn('0.153.0', result.stdout)
+AssertionError: '0.153.0' not found in 'codex-cli 0.159.2\n'
+
+----------------------------------------------------------------------
+Ran 221 tests in 9.420s
+
+FAILED (failures=1, skipped=7)

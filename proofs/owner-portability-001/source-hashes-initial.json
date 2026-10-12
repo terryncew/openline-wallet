@@ -1,0 +1,5 @@
+{
+  "src/openline_wallet/owner_portability.py": "14143b84cbfa4b2bc9b1a08bc1789a5f18a6bcc3838b166335a6e30824e38f85",
+  "tests/test_owner_portability.py": "fcb43d4333a6d1af19c1d4de18ccb2a1be75ce1f543407d8737db19091ba8498",
+  "proofs/owner-portability-001/PREREGISTRATION.md": "8349e4e2b4afc9e26bf33ef6ac58b81bcb5426c03428c97d4298448f914380ac"
+}

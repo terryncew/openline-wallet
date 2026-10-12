@@ -1,0 +1,10 @@
+{
+  "gate_receipts": 4,
+  "independent_receivers_verified": 2,
+  "owner_decisions": 4,
+  "permitted": 3,
+  "refused": 5,
+  "transactions": 8,
+  "verdict": "OWNER_PORTABILITY_LOCAL_PASS",
+  "wallet_events": 5
+}

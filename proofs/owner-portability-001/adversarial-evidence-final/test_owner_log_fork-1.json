@@ -1,0 +1,163 @@
+{
+  "effect_count_after": 1,
+  "effect_count_before": 1,
+  "owner_root": "3166011ceaaee7118518df5a9cd6c45640b857d295833fcd068d96717f298de4",
+  "receiver_key": "f27e54ebf1a7e8e858000fa2974ece038983226491ca16203a76b67a5142eea8",
+  "test": "test_owner_log_fork",
+  "transaction": {
+    "bundle": {
+      "canonicalization": "olp-canonical-json-int-v1",
+      "decision_authority": "RECEIVER_GATE",
+      "epoch_certificate": {
+        "authority": "ISSUE_AND_NARROW_MANDATES",
+        "epoch_id": "epoch_b5537c1a0199c915",
+        "epoch_public_key": "4bd295c5df7cb61654dde4248c8684b2e85277929538cbbc70784d0740186cfa",
+        "expires_at": "2027-10-13T16:39:28.523397Z",
+        "issued_at": "2026-10-12T16:39:28.523397Z",
+        "payload_hash": "d85a29abc7157e9ef02d140be80b973a3371d0e9c299d7e3479973e2503580d1",
+        "principal_id": "openline:principal:e06832b2de9799e8ec34a3520ece2a1d171d28f715ccdad8dba5b7bf20248058",
+        "schema": "openline.wallet.epoch_certificate.v1",
+        "sequence": 1,
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "3166011ceaaee7118518df5a9cd6c45640b857d295833fcd068d96717f298de4",
+          "value": "b77d2529b58906ab3c595b1a4c542fac2dba3ba5a936eaf737358a55982b504b6f74608763ef295b16554352f9aefcab4840e7948d08832a1d8035dc64fa5d0e"
+        }
+      },
+      "events": [
+        {
+          "data": {
+            "expires_at": "2026-10-12T17:39:28.523397Z",
+            "mandate_id": "test-mandate",
+            "predecessor_mandate_id": null,
+            "scopes": [
+              "reserve:821916b58f4d7510105847d556835a1fe7b0a45c9fe1fabc839e447ca175cebb"
+            ],
+            "subject_id": "agent-a",
+            "subject_public_key": "0112ed90c68a9391b9e5d549fd495cbe4d325ac241d91a6d623e6762aad3bc37"
+          },
+          "event_type": "MANDATE_ISSUED",
+          "issued_at": "2026-10-12T16:39:28.523397Z",
+          "payload_hash": "02b2eb4164d2bac518b5cc5c02f270574194640894c2b6a00f971b4460eba58b",
+          "previous_event_hash": null,
+          "principal_id": "openline:principal:e06832b2de9799e8ec34a3520ece2a1d171d28f715ccdad8dba5b7bf20248058",
+          "schema": "openline.wallet.timeline_event.v1",
+          "sequence": 1,
+          "signature": {
+            "algorithm": "Ed25519",
+            "public_key": "4bd295c5df7cb61654dde4248c8684b2e85277929538cbbc70784d0740186cfa",
+            "value": "d9a8c27c1470eeed496fdbec9a36a2b33da15e26091fc30b33e81a71be349694052993ec9c822510562192beadbe694f8f5c0e51cd9cf9cf773a04d807739d04"
+          }
+        }
+      ],
+      "expires_at": "2026-10-12T16:49:28.523397Z",
+      "head": {
+        "event_hash": "01aea65c7376a07437d7cea6698ea60eb4f0127e81d2e836a89009aaf8d40560",
+        "sequence": 1
+      },
+      "issued_at": "2026-10-12T16:39:28.523397Z",
+      "payload_hash": "462bdf4f21c52efdd10f3d6062c8bb57c4fb53253abfb316eee60f0f5789c587",
+      "principal": {
+        "principal_id": "openline:principal:e06832b2de9799e8ec34a3520ece2a1d171d28f715ccdad8dba5b7bf20248058",
+        "root_public_key": "3166011ceaaee7118518df5a9cd6c45640b857d295833fcd068d96717f298de4"
+      },
+      "receipts": [],
+      "schema": "openline.wallet.receiver_bundle.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "3166011ceaaee7118518df5a9cd6c45640b857d295833fcd068d96717f298de4",
+        "value": "905b91b8cff3168682606c5e1321bbf698a3f422d668172dd8ac8d6b34d0cccbcfb1e7e01a4a6fdc00c664ae19986052f4682ce0312fd439c4e41edb66055105"
+      },
+      "wallet_policy_authority": "NONE"
+    },
+    "consent_hash": "52a7b3918346f04b3b403c38298114922407f13c5bf8ccc8d511ee2f9960b6b2",
+    "decided_at": "2026-10-12T16:39:28.523397Z",
+    "decision": "REFUSED",
+    "effect": null,
+    "gate_receipt": null,
+    "owner_log": [
+      {
+        "data": {
+          "constraints": {
+            "advertising_data_sharing": false,
+            "automatic_changed_terms_acceptance": false,
+            "financial_obligations_require_explicit_approval": true
+          }
+        },
+        "issued_at": "2026-10-12T16:39:28.523397Z",
+        "kind": "PREFERENCES",
+        "payload_hash": "a37f94363da2cad7e1e6391b1ad670380a3acafb7a479447301f158ebd8c8b02",
+        "previous": null,
+        "principal_id": "openline:principal:e06832b2de9799e8ec34a3520ece2a1d171d28f715ccdad8dba5b7bf20248058",
+        "schema": "owner-portability.owner-decision.v1",
+        "sequence": 1,
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "3166011ceaaee7118518df5a9cd6c45640b857d295833fcd068d96717f298de4",
+          "value": "29db2ab99f91fb1a921b8fe9d335505b4b305b4d885e0ebe708415b941c011992dfb0a6fe2369a8a53011f0dcd5eac624d3bf354b1922381c61957035ea40e02"
+        }
+      },
+      {
+        "data": {
+          "action": "reserve:821916b58f4d7510105847d556835a1fe7b0a45c9fe1fabc839e447ca175cebb",
+          "expires_at": "2026-10-12T16:44:28.523397Z",
+          "financial_approval": true,
+          "site": "test-site",
+          "terms_hash": "fd4605e3b4b4022551467f07566b60b7047b28b4d6c4a34fbd848fe440282702",
+          "version": "v1"
+        },
+        "issued_at": "2026-10-12T16:39:28.523397Z",
+        "kind": "APPROVE",
+        "payload_hash": "394fa0e5c1b08131d97bf766bf042fafe599c4986d3271a991ca4afe84f9873e",
+        "previous": "38b81bff7bc6df30ea7e1bfd2ec7a44b0f95763dc67bde7c7e3c3a4fa9637f0f",
+        "principal_id": "openline:principal:e06832b2de9799e8ec34a3520ece2a1d171d28f715ccdad8dba5b7bf20248058",
+        "schema": "owner-portability.owner-decision.v1",
+        "sequence": 2,
+        "signature": {
+          "algorithm": "Ed25519",
+          "public_key": "3166011ceaaee7118518df5a9cd6c45640b857d295833fcd068d96717f298de4",
+          "value": "50b9a1092c297c2cc143bc7290d7f0f66b34befee8d0d58178771bd46bab5459470ab7e03a971d54291980bf102e93081edd27e88669cd5ee732483f70ec9c0c"
+        }
+      }
+    ],
+    "payload_hash": "357d1a6c14b179aec86ad408dccf17ddc68479575195384822f8a44710ce6c3f",
+    "presentation": {
+      "action": "reserve:821916b58f4d7510105847d556835a1fe7b0a45c9fe1fabc839e447ca175cebb",
+      "bundle_head_hash": "01aea65c7376a07437d7cea6698ea60eb4f0127e81d2e836a89009aaf8d40560",
+      "issued_at": "2026-10-12T16:39:28.523397Z",
+      "mandate_id": "test-mandate",
+      "payload_hash": "b3640a9a3e4c926701564479944d99eb6eaef96000cd0ebbab0475670e83ef9f",
+      "principal_id": "openline:principal:e06832b2de9799e8ec34a3520ece2a1d171d28f715ccdad8dba5b7bf20248058",
+      "receiver_challenge": "challenge_f62f0e4d381349f4ef1f6a1351b13904",
+      "schema": "openline.wallet.holder_presentation.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "0112ed90c68a9391b9e5d549fd495cbe4d325ac241d91a6d623e6762aad3bc37",
+        "value": "2b32924f4dccfe8e7191cb86b7bfa2be202297f69aa4131791d6cef9fa285dae2c486b9b3a519dd86b2f089215b3f0ba012f63459da12428b6ed01ad7c66cf03"
+      },
+      "subject_id": "agent-a",
+      "subject_public_key": "0112ed90c68a9391b9e5d549fd495cbe4d325ac241d91a6d623e6762aad3bc37"
+    },
+    "reason": "OWNER_HEAD_STALE_OR_FORKED",
+    "schema": "owner-portability.transaction.v1",
+    "signature": {
+      "algorithm": "Ed25519",
+      "public_key": "f27e54ebf1a7e8e858000fa2974ece038983226491ca16203a76b67a5142eea8",
+      "value": "a556ecbd44dbb534b7741ba8b35c62db0434158c5f0ce0b7279cc2db497564ed0344662011202610d95457e0f47020fb91b225f0c0f76e66ad9918f4fd2dc200"
+    },
+    "site": "test-site",
+    "terms": {
+      "advertising_data_sharing": false,
+      "new_financial_obligation": false,
+      "payload_hash": "ed2e9278dbdc5123e352024cf9761ade8fff193c98da46b3b7bffaf6b03e2ff0",
+      "schema": "owner-portability.terms.v1",
+      "signature": {
+        "algorithm": "Ed25519",
+        "public_key": "f27e54ebf1a7e8e858000fa2974ece038983226491ca16203a76b67a5142eea8",
+        "value": "32dfdd3ed5b4447fd2337f22e0e0c4f3a4b25e8dd4920e3f5110c2bee8d975b506075276e47d60abc58b75dc98e0f9b91e66ae1b59fe7514a83357a0843ba808"
+      },
+      "site": "test-site",
+      "version": "v1"
+    }
+  }
+}

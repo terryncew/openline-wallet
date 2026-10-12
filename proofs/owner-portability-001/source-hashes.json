@@ -1,0 +1,9 @@
+{
+  "src/openline_wallet/owner_portability.py": "14143b84cbfa4b2bc9b1a08bc1789a5f18a6bcc3838b166335a6e30824e38f85",
+  "tests/test_owner_portability.py": "fcb43d4333a6d1af19c1d4de18ccb2a1be75ce1f543407d8737db19091ba8498",
+  "tests/test_owner_portability_review.py": "c6c748c099e969010710e8c3eb22b4ad2527ffc06a99aaf1ddee865267b22b25",
+  "proofs/owner-portability-001/PREREGISTRATION.md": "8349e4e2b4afc9e26bf33ef6ac58b81bcb5426c03428c97d4298448f914380ac",
+  "proofs/owner-portability-001/REPORT.md": "8568264f5d6986a52cd11a00b7e9b2471f970e1c98acc9328e4146661c9475b9",
+  "proofs/owner-portability-001/REVIEW.md": "8313068eba0940ad3358a34eabf1507788cfb32bd519b5e11c2af26c702e1445",
+  "proofs/owner-portability-001/OAUTH_COMPARISON.md": "45bb1c280857029c4412205df700067496008d3ca05ef74d76bfcb5d2ca07f8f"
+}

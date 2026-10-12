@@ -1,0 +1,26 @@
+{
+  "owner_root": "f57e36e9887db769b3e6ca1b42e397288545029887cbb7d5365eee91823d2c94",
+  "principal": "openline:principal:a1cead865b2335427966906928847c7ee69aefd08a96617236dc77a9a0e59387",
+  "sites": {
+    "declining-site": {
+      "declines": true,
+      "public_key": "b3a8e801b8ba5b96f4226df408b93a8de42cf3b51bf92e3b8fd32c2f337bbef4",
+      "recognizes": true
+    },
+    "site-a": {
+      "declines": false,
+      "public_key": "88bb4044f762957da9d629cf9ed689c9dcad7fcdbaea3815d12b0703d898914c",
+      "recognizes": true
+    },
+    "site-b": {
+      "declines": false,
+      "public_key": "5edc6482a3872795f8d7f521ab922201babeafc2eb15994b7c369be1f6a969a5",
+      "recognizes": true
+    },
+    "unknown-site": {
+      "declines": false,
+      "public_key": "428b05292c4b173db678ce623ff646b4d6b66c6f58fad9ea262afae8b8b3f9c1",
+      "recognizes": false
+    }
+  }
+}
