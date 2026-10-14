@@ -276,4 +276,8 @@ This repository began in 2025 as a browser-based receipt viewer. The current Pyt
 
 ## License
 
-Apache License 2.0 — see [`LICENSE`](LICENSE).
+Apache License 2.0 — see [`LICENSE`](LICENSE), copyright 2026 Terrynce White.
+
+See [`NOTICE`](NOTICE) for attribution notices,
+[`CITATION.cff`](CITATION.cff) for a ready-made software citation, and
+[`ATTRIBUTION.md`](ATTRIBUTION.md) for what the license requires and does not require.
