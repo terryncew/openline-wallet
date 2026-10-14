@@ -1,0 +1,30 @@
+{
+  "confirmation": "RUN GITHUB ACK CLOSURE",
+  "experiment_id": "GITHUB-ACK-CLOSURE-LIVE-002",
+  "forced_boundary": "After successful GitHub merge acknowledgement is durably recorded, force immediate _settled_merge to raise GITHUB_MERGE_NOT_RECONCILED exactly once in the initial receiver.",
+  "predecessor": {
+    "experiment_id": "GITHUB-CREDENTIAL-OVERREACH-LIVE-001",
+    "live_run_id": 34727022516,
+    "verdict": "GITHUB_PROVIDER_OUTCOME_UNRESOLVED"
+  },
+  "provider_sandbox_base": "b5ca4fa5c5b86d6015c546de426795c07b796af7",
+  "recovery": {
+    "max_late_wait_seconds": 60,
+    "max_total_merge_requests": 1,
+    "mutation_retry_allowed": false,
+    "read_only_settlement": true,
+    "receiver_restart_required": true,
+    "required_active_frontiers": 0,
+    "required_closure_status": "EFFECT_CLOSED",
+    "required_effect_status": "MERGE_CONFIRMED"
+  },
+  "sandbox_repository": "terryncew/openline-provider-sandbox",
+  "schema": "openline.github-ack-closure-live-002.preregistration.v1",
+  "status": "PREREGISTERED",
+  "verdicts": {
+    "fail": "GITHUB_ACKNOWLEDGED_EFFECT_CLOSURE_FAILED",
+    "inconclusive": "GITHUB_ACKNOWLEDGED_EFFECT_CLOSURE_UNRESOLVED",
+    "pass": "GITHUB_ACKNOWLEDGED_EFFECT_CLOSURE_ENFORCED"
+  },
+  "wallet_commit": "323c11f55c9c6bcc6d618ce4c0f3f19cbbc627bd"
+}

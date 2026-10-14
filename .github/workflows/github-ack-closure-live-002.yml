@@ -1,0 +1,114 @@
+name: GITHUB-ACK-CLOSURE-LIVE-002
+
+on:
+  push:
+    branches: [main, "proof/**"]
+    paths:
+      - ".github/workflows/github-ack-closure-live-002.yml"
+      - "GITHUB_ACK_CLOSURE_LIVE_002.md"
+      - "PREREGISTRATION_GITHUB_ACK_CLOSURE_LIVE_002.json"
+      - "scripts/github_ack_closure_live_002.py"
+      - "tests/test_github_ack_closure_live_002.py"
+  pull_request:
+    paths:
+      - ".github/workflows/github-ack-closure-live-002.yml"
+      - "GITHUB_ACK_CLOSURE_LIVE_002.md"
+      - "PREREGISTRATION_GITHUB_ACK_CLOSURE_LIVE_002.json"
+      - "scripts/github_ack_closure_live_002.py"
+      - "tests/test_github_ack_closure_live_002.py"
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Type RUN GITHUB ACK CLOSURE to authorize one disposable GitHub merge"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-ack-closure-live-002
+  cancel-in-progress: false
+
+jobs:
+  controlled-proof:
+    if: github.event_name != 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: terryncew/openline-wallet
+          ref: 323c11f55c9c6bcc6d618ce4c0f3f19cbbc627bd
+          path: wallet
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact Wallet
+        run: python -m pip install "./wallet[mcp]"
+      - name: Verify exact Wallet pin
+        run: test "$(git -C wallet rev-parse HEAD)" = "323c11f55c9c6bcc6d618ce4c0f3f19cbbc627bd"
+      - name: Existing provider sandbox plus recovery tests
+        run: python -m unittest discover -s tests -v
+      - name: Compile launcher
+        run: python -m compileall -q scripts tests
+
+  live-provider:
+    if: github.event_name == 'workflow_dispatch' && inputs.confirmation == 'RUN GITHUB ACK CLOSURE'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: terryncew/openline-wallet
+          ref: 323c11f55c9c6bcc6d618ce4c0f3f19cbbc627bd
+          path: wallet
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install exact Wallet
+        run: python -m pip install "./wallet[mcp]"
+      - name: Verify exact Wallet pin
+        run: test "$(git -C wallet rev-parse HEAD)" = "323c11f55c9c6bcc6d618ce4c0f3f19cbbc627bd"
+      - name: Test Wallet before provider authority
+        run: python -m unittest discover -s wallet/tests -v
+      - name: Test provider harness before provider authority
+        run: python -m unittest discover -s tests -v
+      - name: Run real acknowledged-effect closure proof
+        env:
+          OPENLINE_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPERIMENT_RUN_ID: ${{ github.run_id }}
+        run: |
+          python scripts/github_ack_closure_live_002.py             --run-id "$EXPERIMENT_RUN_ID"             --state "$RUNNER_TEMP/github-ack-closure-private"             --output "$RUNNER_TEMP/github-ack-closure-public"             --confirm 'RUN GITHUB ACK CLOSURE'
+      - name: Independently verify public evidence
+        run: |
+          python scripts/github_ack_closure_live_002.py             --verify "$RUNNER_TEMP/github-ack-closure-public"             --require-live
+      - name: Reject accidental private-key evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/github-ack-closure-public"
+          if [[ -d "$OUT" ]] && find "$OUT" -type f -name '*.key' | grep -q .; then
+            echo "::error::private key entered public evidence"
+            exit 3
+          fi
+      - name: Preserve public evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-ack-closure-live-002-${{ github.run_id }}
+          path: ${{ runner.temp }}/github-ack-closure-public/
+          if-no-files-found: warn
+          retention-days: 90
