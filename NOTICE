@@ -1,0 +1,12 @@
+OpenLine Wallet
+Copyright 2026 Terrynce White
+
+This product is licensed under the Apache License, Version 2.0.
+See LICENSE for the full license text.
+
+This distribution contains no vendored third-party source code.
+Third-party packages used at runtime (e.g. cryptography, mcp) are
+separate distributions governed by their own licenses.
+
+The Apache License 2.0 grants no trademark rights. Use of the name
+"OpenLine" does not imply endorsement by the author.

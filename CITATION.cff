@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+title: OpenLine Wallet
+version: 0.1.0
+date-released: 2026-10-14
+authors:
+  - family-names: White
+    given-names: Terrynce
+repository-code: 'https://github.com/terryncew/openline-wallet'
+url: 'https://github.com/terryncew/openline-wallet'
+license: Apache-2.0
+abstract: >-
+  Portable, owner-held authority mandates and signed decision receipts
+  for AI agents. The Wallet lets an owner scope and revoke what an
+  agent may do; independent receivers enforce those mandates at
+  consequence time.
+keywords:
+  - ai-agents
+  - authorization
+  - portable-authority
+  - signed-receipts
+  - revocation
+# The identifiers below are RELATED RESEARCH, not software releases.
+# Cite the software via this file; cite the reports via their DOIs.
+references:
+  - type: report
+    title: 'Receiver-Side Authorization Failures in Cross-Boundary AI Agent Systems: A Case Study of Scope Reflection, Fail-Closed Policy Checks, and Signed Decisions'
+    authors:
+      - family-names: White
+        given-names: Terrynce A.
+    year: 2026
+    doi: 10.5281/zenodo.23358012
+    url: 'https://doi.org/10.5281/zenodo.23358012'
+    notes: 'OpenLine Technical Report 001 (OPENLINE-TR-2026-RECEIVER-001)'
+  - type: report
+    title: 'Receiver-Owned Authority for AI Agents: Portable Mandates, Receiver Enforcement, and Verifiable Receipts'
+    authors:
+      - family-names: White
+        given-names: Terrynce A.
+    year: 2026
+    doi: 10.5281/zenodo.23219814
+    url: 'https://doi.org/10.5281/zenodo.23219814'
+    notes: 'OpenLine technical paper I (v1.0)'
